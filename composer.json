@@ -1,0 +1,22 @@
+{
+    "name": "admin/admin_auth",
+    "description": "Admin module form package for Laravel",
+    "type": "library",
+    "version": "1.0.0",  
+    "license": "MIT",
+    "autoload": {
+      "psr-4": {
+        "admin\\admin_auth\\": "src/"
+      }
+    },
+    "extra": { 
+      "laravel": {
+        "providers": [
+          "admin\\admin_auth\\AdminModuleServiceProvider"
+        ]
+      }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+  }
+  
