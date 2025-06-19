@@ -13,7 +13,7 @@ This package provides authentication features for the admin section of your appl
 
 Add the following to your `composer.json` to use the package from a local path:
 
-````json
+```json
 "repositories": [
     {
         "type": "vcs",
