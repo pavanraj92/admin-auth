@@ -20,6 +20,7 @@ Add the following to your `composer.json` to use the package from a local path:
         "url": "https://github.com/pavanraj92/admin-auth.git"
     }
 ]
+```
 
 ## Installation
 
