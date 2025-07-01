@@ -1,7 +1,7 @@
 @extends('admin::admin.layouts.master')
 
-@section('title', 'Package Settings')
-@section('page-title', 'Package Settings')
+@section('title', 'Package Manager')
+@section('page-title', 'Package Manager')
 
 @section('content')
     <div class="container-fluid">
@@ -20,13 +20,13 @@
                                     <h5 class="card-title font-weight-bold">
                                         {{ $displayName }}
                                         <span
-                                            class="badge badge-pill badge-{{ $installed ? 'success' : 'danger' }} float-right">
+                                            class="badge badge-pill badge-{{ $installed ? 'success' : 'danger' }} float-right p-1">
                                             {{ $installed ? 'Installed' : 'Not Installed' }}
                                         </span>
                                     </h5>
                                     <p class="card-text"
-                                        style="max-height: 48px; overflow: hidden; text-overflow: ellipsis;">
-                                        {{ isset($info['description']) && $info['description'] ? Str::limit($info['description'], 90) : 'No description available.' }}
+                                        style="max-height: 100px; overflow-y: auto; text-overflow: ellipsis;">
+                                        {{ isset($info['description']) && $info['description'] ? $info['description'] : 'No description available.' }}
                                     </p>
                                 </div>
                                 <div class="col-md-12 text-right">
@@ -65,13 +65,18 @@
                 const token = form.querySelector('input[name="_token"]').value;
 
                 Swal.fire({
-                    title: `Are you sure you want to ${action} this package?`,
+                    text: `Are you sure you want to ${action} this package?`,
                     //text: `${displayName}`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: `Yes, ${action} it!`
+                    confirmButtonText: `Yes, ${action} it!`,                    
+                    cancelButtonText: 'No, cancel!',
+                    customClass: {
+                        confirmButton: 'btn btn-outline-success',
+                        cancelButton: 'btn btn-outline-danger',
+                    }
                 }).then((result) => {
                     if (result.isConfirmed) {
                         button.disabled = true;
@@ -91,6 +96,7 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success || data.status === 'success') {
+                                    button.innerHTML = `Completed`;
                                     Swal.fire({
                                         title: 'Success',
                                         text: data.message ||

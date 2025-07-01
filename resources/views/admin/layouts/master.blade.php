@@ -112,62 +112,26 @@
                             </a>
                         </li>
 
+                        @if (Route::has('admin.admins.index'))
+                            <li class="sidebar-item">
+                                <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                                    href="{{ route('admin.admins.index') }}" aria-expanded="false">
+                                    <i class="fas fa-users"></i>
+                                    <span class="hide-menu">Admin Manager</span>
+                                </a>
+                            </li>
+                        @endif
+
                         @if (Route::has('admin.users.index'))
                             <li class="sidebar-item {{ Route::is('admin.users.*') ? 'selected' : '' }}">
                                 <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.users.*') ? 'active' : '' }}"
                                     href="{{ route('admin.users.index') }}" aria-expanded="false">
-                                    <i class="mdi mdi-account"></i>
+                                    <i class="fas fa-users"></i>
                                     <span class="hide-menu">User Manager</span>
                                 </a>
                             </li>
                         @endif
 
-                        @if (Route::has('admin.pages.index'))
-                            <li class="sidebar-item {{ Route::is('admin.pages.*') ? 'selected' : '' }}">
-                                <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.pages.*') ? 'active' : '' }}"
-                                    href="{{ route('admin.pages.index') }}" aria-expanded="false">
-                                    <i class="mdi mdi-arrange-bring-forward"></i>
-                                    <span class="hide-menu">CMS Pages Manager</span>
-                                </a>
-                            </li>
-                        @endif
-
-                        @if (Route::has('admin.emails.index'))
-                            <li class="sidebar-item {{ Route::is('admin.emails.*') ? 'selected' : '' }}">
-                                <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.emails.*') ? 'active' : '' }}"
-                                    href="{{ route('admin.emails.index') }}" aria-expanded="false">
-                                    <i class="mdi mdi-email-outline"></i>
-                                    <span class="hide-menu">Email Template Manager</span>
-                                </a>
-                            </li>
-                        @endif
-                        @if (Route::has('admin.faqs.index'))
-                            <li class="sidebar-item {{ Route::is('admin.faqs.*') ? 'selected' : '' }}">
-                                <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.faqs.*') ? 'active' : '' }}"
-                                    href="{{ route('admin.faqs.index') }}" aria-expanded="false">
-                                    <i class="fas fa-question-circle"></i>
-                                    <span class="hide-menu">Faq Manager</span>
-                                </a>
-                            </li>
-                        @endif
-                        @if (Route::has('admin.settings.index'))
-                            <li class="sidebar-item {{ Route::is('admin.settings.*') ? 'selected' : '' }}">
-                                <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.settings.*') ? 'active' : '' }}"
-                                    href="{{ route('admin.settings.index') }}" aria-expanded="false">
-                                    <i class="fas fa-cog"></i>
-                                    <span class="hide-menu">Setting Manager</span>
-                                </a>
-                            </li>
-                        @endif
-                        @if (Route::has('admin.banners.index'))
-                            <li class="sidebar-item">
-                                <a class="sidebar-link waves-effect waves-dark sidebar-link"
-                                    href="{{ route('admin.banners.index') }}" aria-expanded="false">
-                                    <i class="fas fa-image"></i>
-                                    <span class="hide-menu">Banner Manager</span>
-                                </a>
-                            </li>
-                        @endif
                         @if (Route::has('admin.category.index'))
                             <li class="sidebar-item">
                                 <a class="sidebar-link waves-effect waves-dark sidebar-link"
@@ -177,12 +141,59 @@
                                 </a>
                             </li>
                         @endif
-                        @if (Route::has('admin.admins.index'))
+
+                        @if (Route::has('admin.pages.index') || Route::has('admin.emails.index') || Route::has('admin.faqs.index') || Route::has('admin.banners.index'))
                             <li class="sidebar-item">
-                                <a class="sidebar-link waves-effect waves-dark sidebar-link"
-                                    href="{{ route('admin.admins.index') }}" aria-expanded="false">
-                                    <i class="fas fa-user-cog"></i>
-                                    <span class="hide-menu">Admin Manager</span>
+                                <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false">
+                                    <i class="fas fa-folder-open"></i>
+                                    <span class="hide-menu">Manage Content</span>
+                                </a>
+                                <ul aria-expanded="false" class="collapse first-level">                                  
+                                    @if (Route::has('admin.pages.index'))
+                                        <li class="sidebar-item">
+                                            <a href="{{ route('admin.pages.index') }}" class="sidebar-link">
+                                                <i class="fas fa-circle"></i>
+                                                <span class="hide-menu">CMS Pages Manager</span>
+                                            </a>
+                                        </li>
+                                    @endif
+
+                                    @if (Route::has('admin.emails.index'))
+                                        <li class="sidebar-item">
+                                            <a href="{{ route('admin.emails.index') }}" class="sidebar-link">
+                                                <i class="fas fa-circle"></i>
+                                                <span class="hide-menu">Email Template Manager</span>
+                                            </a>
+                                        </li>
+                                    @endif
+
+                                    @if (Route::has('admin.faqs.index'))
+                                        <li class="sidebar-item">
+                                            <a href="{{ route('admin.faqs.index') }}" class="sidebar-link">
+                                                <i class="fas fa-circle"></i>
+                                                <span class="hide-menu">Faq Manager</span>
+                                            </a>
+                                        </li>
+                                    @endif
+
+                                    @if (Route::has('admin.banners.index'))
+                                        <li class="sidebar-item">
+                                            <a href="{{ route('admin.banners.index') }}" class="sidebar-link">
+                                                <i class="fas fa-circle"></i>
+                                                <span class="hide-menu">Banner Manager</span>
+                                            </a>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </li>                      
+                        @endif
+
+                        @if (Route::has('admin.settings.index'))
+                            <li class="sidebar-item {{ Route::is('admin.settings.*') ? 'selected' : '' }}">
+                                <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.settings.*') ? 'active' : '' }}"
+                                    href="{{ route('admin.settings.index') }}" aria-expanded="false">
+                                    <i class="fas fa-cog"></i>
+                                    <span class="hide-menu">Setting Manager</span>
                                 </a>
                             </li>
                         @endif
@@ -193,7 +204,7 @@
             <div class="sidebar-bottom-link p-3 mt-auto" style="position: sticky; bottom: 0; background: #222d32;">
                 <a class="sidebar-link d-flex align-items-center" href="{{ route('admin.packages') }}">
                     <i class="fas fa-box mr-2"></i>
-                    <span class="hide-menu">Package Setting</span>
+                    <span class="hide-menu">Package Manager</span>
                 </a>
             </div>
         </aside>
