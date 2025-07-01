@@ -19,7 +19,7 @@ class AdminModuleServiceProvider extends ServiceProvider
 
         $this->publishes([  
             __DIR__.'/../resources/views' => resource_path('views/vendor/admin_auth'),
-            __DIR__ . '/../resources/css/backend' => public_path('backend'),
+            __DIR__ . '/../resources/assets/backend' => public_path('backend'),
         ], 'admin_auth');
 
         $this->registerAdminRoutes();

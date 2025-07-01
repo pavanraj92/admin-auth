@@ -5,13 +5,14 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
+    <meta name="description" content="@yield('meta_description', 'This is admin panel')">
     <meta name="author" content="">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/png" sizes="16x16" href="../../assets/images/favicon.png">
     <title>@yield('title', 'Admin Panel')</title>
     <link href="{{ asset('backend/assets/libs/chartist/dist/chartist.min.css') }}" rel="stylesheet">
     <link href="{{ asset('backend/dist/css/style.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('backend/custom.css') }}" rel="stylesheet">
     <!-- Toastr CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -77,9 +78,11 @@
                                     class="rounded-circle" width="31">
                             </a>
                             <div class="dropdown-menu dropdown-menu-right user-dd animated">
-                                <a class="dropdown-item" href="{{ route('admin.profile') }}"><i class="ti-user m-r-5 m-l-5"></i>
+                                <a class="dropdown-item" href="{{ route('admin.profile') }}"><i
+                                        class="ti-user m-r-5 m-l-5"></i>
                                     My Profile</a>
-                                <a class="dropdown-item" href="{{ route('admin.change-password') }}"><i class="fas fa-lock m-r-5 m-l-5"></i></i>
+                                <a class="dropdown-item" href="{{ route('admin.change-password') }}"><i
+                                        class="fas fa-lock m-r-5 m-l-5"></i></i>
                                     Change Password</a>
                                 <!--Logout admin -->
                                 <div class="dropdown-divider"></div>
@@ -97,8 +100,8 @@
             </nav>
         </header>
 
-        <aside class="left-sidebar" data-sidebarbg="skin5">
-            <div class="scroll-sidebar">
+        <aside class="left-sidebar d-flex flex-column" data-sidebarbg="skin5">
+            <div class="scroll-sidebar flex-grow-1" style="overflow-y: auto;">
                 <nav class="sidebar-nav">
                     <ul id="sidebarnav">
                         <li class="sidebar-item">
@@ -109,36 +112,89 @@
                             </a>
                         </li>
 
+                        @if (Route::has('admin.users.index'))
+                            <li class="sidebar-item {{ Route::is('admin.users.*') ? 'selected' : '' }}">
+                                <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.users.*') ? 'active' : '' }}"
+                                    href="{{ route('admin.users.index') }}" aria-expanded="false">
+                                    <i class="mdi mdi-account"></i>
+                                    <span class="hide-menu">User Manager</span>
+                                </a>
+                            </li>
+                        @endif
+
                         @if (Route::has('admin.pages.index'))
-                        <li class="sidebar-item {{ Route::is('admin.pages.*') ? 'selected' : '' }}">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.pages.*') ? 'active' : '' }}"
-                                href="{{ route('admin.pages.index') }}" aria-expanded="false">
-                                <i class="mdi mdi-arrange-bring-forward"></i>
-                                <span class="hide-menu">CMS Pages Manager</span>
-                            </a>
-                        </li>
+                            <li class="sidebar-item {{ Route::is('admin.pages.*') ? 'selected' : '' }}">
+                                <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.pages.*') ? 'active' : '' }}"
+                                    href="{{ route('admin.pages.index') }}" aria-expanded="false">
+                                    <i class="mdi mdi-arrange-bring-forward"></i>
+                                    <span class="hide-menu">CMS Pages Manager</span>
+                                </a>
+                            </li>
                         @endif
 
                         @if (Route::has('admin.emails.index'))
-                        <li class="sidebar-item {{ Route::is('admin.emails.*') ? 'selected' : '' }}">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.emails.*') ? 'active' : '' }}"
-                                href="{{ route('admin.emails.index') }}" aria-expanded="false">
-                                <i class="mdi mdi-email-outline"></i>
-                                <span class="hide-menu">Email Template Manager</span>
-                            </a>
-                        </li>
+                            <li class="sidebar-item {{ Route::is('admin.emails.*') ? 'selected' : '' }}">
+                                <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.emails.*') ? 'active' : '' }}"
+                                    href="{{ route('admin.emails.index') }}" aria-expanded="false">
+                                    <i class="mdi mdi-email-outline"></i>
+                                    <span class="hide-menu">Email Template Manager</span>
+                                </a>
+                            </li>
                         @endif
                         @if (Route::has('admin.faqs.index'))
-                        <li class="sidebar-item {{ Route::is('admin.faqs.*') ? 'selected' : '' }}">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.faqs.*') ? 'active' : '' }}"
-                                href="{{ route('admin.faqs.index') }}" aria-expanded="false">
-                                <i class="fas fa-question-circle"></i>
-                                <span class="hide-menu">Faq Manager</span>
-                            </a>
-                        </li>
+                            <li class="sidebar-item {{ Route::is('admin.faqs.*') ? 'selected' : '' }}">
+                                <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.faqs.*') ? 'active' : '' }}"
+                                    href="{{ route('admin.faqs.index') }}" aria-expanded="false">
+                                    <i class="fas fa-question-circle"></i>
+                                    <span class="hide-menu">Faq Manager</span>
+                                </a>
+                            </li>
                         @endif
+                        @if (Route::has('admin.settings.index'))
+                            <li class="sidebar-item {{ Route::is('admin.settings.*') ? 'selected' : '' }}">
+                                <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.settings.*') ? 'active' : '' }}"
+                                    href="{{ route('admin.settings.index') }}" aria-expanded="false">
+                                    <i class="fas fa-cog"></i>
+                                    <span class="hide-menu">Setting Manager</span>
+                                </a>
+                            </li>
+                        @endif
+                        @if (Route::has('admin.banners.index'))
+                            <li class="sidebar-item">
+                                <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                                    href="{{ route('admin.banners.index') }}" aria-expanded="false">
+                                    <i class="fas fa-image"></i>
+                                    <span class="hide-menu">Banner Manager</span>
+                                </a>
+                            </li>
+                        @endif
+                        @if (Route::has('admin.category.index'))
+                            <li class="sidebar-item">
+                                <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                                    href="{{ route('admin.category.index') }}" aria-expanded="false">
+                                    <i class="fas fa-th-large"></i>
+                                    <span class="hide-menu">Category Manager</span>
+                                </a>
+                            </li>
+                        @endif
+                        @if (Route::has('admin.admins.index'))
+                            <li class="sidebar-item">
+                                <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                                    href="{{ route('admin.admins.index') }}" aria-expanded="false">
+                                    <i class="fas fa-user-cog"></i>
+                                    <span class="hide-menu">Admin Manager</span>
+                                </a>
+                            </li>
+                        @endif
+
                     </ul>
                 </nav>
+            </div>
+            <div class="sidebar-bottom-link p-3 mt-auto" style="position: sticky; bottom: 0; background: #222d32;">
+                <a class="sidebar-link d-flex align-items-center" href="{{ route('admin.packages') }}">
+                    <i class="fas fa-box mr-2"></i>
+                    <span class="hide-menu">Package Setting</span>
+                </a>
             </div>
         </aside>
         <div class="page-wrapper">
@@ -199,25 +255,25 @@
     <script src="{{ asset('backend/dist/js/pages/dashboards/dashboard1.js') }}"></script>
     <!-- Toastr JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-     <!-- sweetalert JS -->
+    <!-- sweetalert JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!--custom script -->
     <script src="{{ asset('backend/custom.js') }}"></script>
 
     <script>
-        @if(session('success'))
+        @if (session('success'))
             toastr.success("{{ session('success') }}");
         @endif
 
-        @if(session('error'))
+        @if (session('error'))
             toastr.error("{{ session('error') }}");
         @endif
 
-        @if(session('info'))
+        @if (session('info'))
             toastr.info("{{ session('info') }}");
         @endif
 
-        @if(session('warning'))
+        @if (session('warning'))
             toastr.warning("{{ session('warning') }}");
         @endif
     </script>

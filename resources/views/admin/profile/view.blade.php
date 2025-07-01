@@ -1,6 +1,9 @@
 @extends('admin::admin.layouts.master')
 
 @section('title', 'Admin Profile')
+@section('meta_description')
+View and update your admin profile information.
+@endsection
 
 @section('page-title', 'Profile')
 

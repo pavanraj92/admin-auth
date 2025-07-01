@@ -1,0 +1,47 @@
+ .select2-container--default .select2-selection--single {
+    height: 34px;
+    line-height: 1.5;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 36px;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px;
+}
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+    line-height: 36px;
+}
+.select2-container--default .select2-selection--single .select2-selection__clear {
+    line-height: 36px;
+}     
+.select2-container .select2-selection--single {
+    color: #4F5467;
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    height: 35px; 
+}
+
+
+/* ckeditor height fixed */
+.ck-editor__editable_inline {
+    min-height: 250px !important;
+    max-height: 250px !important;
+    overflow-y: auto;
+}
+
+.left-sidebar {
+    min-height: 100vh;
+    background: #263544;
+    color: #fff;
+}
+.sidebar-bottom-link {
+    border-top: 1px solid #2a3f54;
+    background: #263544;
+}
+.sidebar-bottom-link .sidebar-link {
+    color: #fff;
+}
+.sidebar-bottom-link .sidebar-link:hover {
+    color: #ffffff;
+    text-decoration: none;
+}

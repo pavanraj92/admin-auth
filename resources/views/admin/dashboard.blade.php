@@ -2,6 +2,9 @@
 @extends('admin::admin.layouts.master')
 
 @section('title', 'Admin Dashboard')
+@section('meta_description')
+Admin dashboard overview, statistics, and recent sales.
+@endsection
 
 @section('page-title', 'Dashboard')
 

@@ -1,6 +1,9 @@
 @extends('admin::admin.layouts.master')
 
 @section('title', 'Admin Change Password')
+@section('meta_description')
+Use this page to change your password
+@endsection
 
 @section('page-title', 'Change Password')
 
