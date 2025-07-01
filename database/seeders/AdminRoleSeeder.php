@@ -14,8 +14,7 @@ class AdminRoleSeeder extends Seeder
     {
         $roles = [
             ['name' => 'Super Admin', 'slug' => 'super-admin','created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Admin', 'slug' => 'admin', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Manager', 'slug' => 'manager', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Admin', 'slug' => 'admin', 'created_at' => now(), 'updated_at' => now()],            
         ];
 
         DB::table('admin_roles')->insert($roles);
