@@ -60,21 +60,20 @@
         document.querySelectorAll('.install-uninstall-btn').forEach(function(button) {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
+                const allButtons = document.querySelectorAll('.install-uninstall-btn');
                 const form = this.closest('form');
                 const action = this.dataset.action;
                 const displayName = this.dataset.name;
-                console.log(form.action)
                 const url = form.action;
                 const token = form.querySelector('input[name="_token"]').value;
 
                 Swal.fire({
                     text: `Are you sure you want to ${action} this package?`,
-                    //text: `${displayName}`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: `Yes, ${action} it!`,                    
+                    confirmButtonText: `Yes, ${action} it!`,
                     cancelButtonText: 'No, cancel!',
                     customClass: {
                         confirmButton: 'btn btn-outline-success',
@@ -82,46 +81,43 @@
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        button.disabled = true;
-                        const originalText = button.innerHTML;
-                        button.innerHTML =
-                            `<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Processing...`;
-                        // AJAX request
+                        // Disable all buttons
+                        allButtons.forEach(btn => btn.disabled = true);
+                        const originalText = this.innerHTML;
+                        this.innerHTML = `<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Processing...`;
+
                         fetch(url, {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': token,
-                                    'Accept': 'application/json',
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({})
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success || data.status === 'success') {
-                                    button.innerHTML = `Completed`;
-                                    Swal.fire({
-                                        title: 'Success',
-                                        text: data.message ||
-                                            'Operation successful.',
-                                        icon: 'success',
-                                        timer: 1500,
-                                        showConfirmButton: false
-                                    }).then(() => window.location.reload());
-                                } else {
-                                    Swal.fire('Error', data.message ||
-                                        'Operation failed.', 'error');
-                                    button.disabled = false;
-                                    button.innerHTML = originalText;
-                                }
-                            })
-                            .catch((error) => {
-                                console.error('Fetch error:', error);
-                                Swal.fire('Error', 'Something went wrong.',
-                                    'error');
-                                button.disabled = false;
-                                button.innerHTML = originalText;
-                            });
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': token,
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({})
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success || data.status === 'success') {
+                                this.innerHTML = `Completed`;
+                                Swal.fire({
+                                    title: 'Success',
+                                    text: data.message || 'Operation successful.',
+                                    icon: 'success',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => window.location.reload());
+                            } else {
+                                Swal.fire('Error', data.message || 'Operation failed.', 'error');
+                                allButtons.forEach(btn => btn.disabled = false);
+                                this.innerHTML = originalText;
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Fetch error:', error);
+                            Swal.fire('Error', 'Something went wrong.', 'error');
+                            allButtons.forEach(btn => btn.disabled = false);
+                            this.innerHTML = originalText;
+                        });
                     }
                 });
             });
