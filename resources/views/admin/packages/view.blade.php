@@ -2,6 +2,9 @@
 
 @section('title', 'Package Manager')
 @section('page-title', 'Package Manager')
+@section('breadcrumb')
+    <li class="breadcrumb-item active" aria-current="page">Manage Packages</li>
+@endsection
 
 @section('content')
     <div class="container-fluid">

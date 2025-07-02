@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class PackageController extends Controller
 {
@@ -85,7 +86,7 @@ class PackageController extends Controller
 
     protected function removePublishedFiles($vendor, $package)
     {
-        $singular = rtrim($package, 's');
+        $singular = Str::singular($package);
         $pascalCase = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $singular)));
 
         $paths = [
@@ -93,7 +94,7 @@ class PackageController extends Controller
             resource_path("views/admin/{$singular}"),
             app_path("Http/Controllers/Admin/{$pascalCase}Manager"),
             app_path("Models/Admin/{$pascalCase}"),
-            base_path("routes/admin/admin_{$singular}.php"),
+            base_path("routes/admin/{$singular}.php"),
         ];
 
         foreach ($paths as $path) {
@@ -102,8 +103,8 @@ class PackageController extends Controller
             }
         }
 
-        if (Schema::hasTable('pages')) {
-            Schema::drop('pages');
+        if (Schema::hasTable($package)) {
+            Schema::drop($package);
         }
         
         \DB::table('migrations')

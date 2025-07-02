@@ -45,3 +45,12 @@
     color: #ffffff;
     text-decoration: none;
 }
+
+.table-no-border,
+.table-no-border td,
+.table-no-border th,
+.table-no-border tr {
+    border: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+}

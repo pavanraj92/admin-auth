@@ -49,6 +49,25 @@ composer require admin/admin_auth
 
 Edit the `config/admin_auth.php` file to customize authentication settings.
 
+Also, update your `config/auth.php` file to add the `admin` guard and provider:
+
+```php
+'guards' => [
+    // existing guards...
+    'admin' => [
+        'driver' => 'session',
+        'provider' => 'admins',
+    ],
+],
+
+'providers' => [
+    // existing providers...
+    'admins' => [
+        'driver' => 'eloquent',
+        'model' => admin\admin_auth\Models\Admin::class,
+    ],
+],
+
 ## License
 
 This package is open-sourced software licensed under the [MIT license](LICENSE).

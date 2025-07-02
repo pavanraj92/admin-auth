@@ -132,10 +132,10 @@
                             </li>
                         @endif
 
-                        @if (Route::has('admin.category.index'))
+                        @if (Route::has('admin.categories.index'))
                             <li class="sidebar-item">
                                 <a class="sidebar-link waves-effect waves-dark sidebar-link"
-                                    href="{{ route('admin.category.index') }}" aria-expanded="false">
+                                    href="{{ route('admin.categories.index') }}" aria-expanded="false">
                                     <i class="fas fa-th-large"></i>
                                     <span class="hide-menu">Category Manager</span>
                                 </a>

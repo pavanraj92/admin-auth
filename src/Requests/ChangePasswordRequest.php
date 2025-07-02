@@ -46,7 +46,7 @@ class ChangePasswordRequest extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            if (!Hash::check($this->old_password, auth()->user()->password)) {
+            if (!Hash::check($this->old_password, auth('admin')->user()->password)) {
                 $validator->errors()->add('old_password', 'The old password is incorrect.');
             }
         });

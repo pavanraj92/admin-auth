@@ -56,38 +56,45 @@ $(document).ready(function() {
         var text = $(this).data('text') || "You won't be able to revert this!"; // Default text if not specified
 
         Swal.fire({
-            title: 'Are you sure?',
-            text: text,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
+        //   title: "Are you sure?",
+          text: text,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!",
+          cancelButtonText: "No, cancel!",
+          customClass: {
+            confirmButton: "btn btn-outline-danger",
+            cancelButton: "btn btn-outline-success",
+          },
         }).then((result) => {
-            if (result.isConfirmed) {
+          if (result.isConfirmed) {
             $.ajax({
-                type: method,
-                url: url,
-                data: { id: id },
-                success: function(response) {
+              type: method,
+              url: url,
+              data: { id: id },
+              success: function (response) {
                 if (response.success) {
-                    currentElement.closest('tr').remove();
-                    toastr.success(response.message);
-                    setTimeout(function() {
-                        location.reload();
-                    }, 1000);
+                  currentElement.closest("tr").remove();
+                  toastr.success(response.message);
+                  setTimeout(function () {
+                    location.reload();
+                  }, 1000);
                 } else {
-                    toastr.error(response.message);
+                  toastr.error(response.message);
                 }
-                },
-                error: function(xhr, status, error) {
-                console.error('Error deleting record:', error);
-                console.error('Status:', status);   
-                console.error('Response:', xhr.responseText);               
-                toastr.error('An error occurred while deleting the record. please try again.');
-                }
+              },
+              error: function (xhr, status, error) {
+                console.error("Error deleting record:", error);
+                console.error("Status:", status);
+                console.error("Response:", xhr.responseText);
+                toastr.error(
+                  "An error occurred while deleting the record. please try again."
+                );
+              },
             });
-            }
+          }
         });
     });
 });

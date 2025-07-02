@@ -19,8 +19,8 @@ class AdminController extends Controller
     public function profileUpdate(ProfileRequest $request)
     {
         try {
-            $admin = auth()->user();
-    
+            $admin = auth('admin')->user();
+
             $admin->first_name   = $request->first_name ?? '';
             $admin->last_name    = $request->last_name ?? '';
             $admin->email        = $request->email ?? '';
@@ -44,7 +44,7 @@ class AdminController extends Controller
     public function updatePassword(ChangePasswordRequest $request)
     {
         try {
-            $user = auth()->user();
+            $user = auth('admin')->user();
 
             $user->password = Hash::make($request->new_password);
             $user->save();
