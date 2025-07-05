@@ -98,3 +98,34 @@ $(document).ready(function() {
         });
     });
 });
+
+
+$.validator.addMethod(
+  "alphabetsOnly",
+  function (value, element) {
+    return this.optional(element) || /^[a-zA-Z\s]+$/.test(value);
+  },
+  "Please enter letters only"
+);
+
+$(document).ready(function () {
+  $(".numbers-only").on("input", function () {
+    this.value = this.value.replace(/[^0-9]/g, "");
+  });
+});
+$(document).ready(function () {
+  $(".alphabets-only").on("input", function () {
+    this.value = this.value.replace(/[^a-zA-Z\s]/g, "");
+  });
+});
+
+$.validator.addMethod(
+  "customEmail",
+  function (value, element) {
+    return (
+      this.optional(element) ||
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
+    );
+  },
+  "Please enter a valid email address"
+);

@@ -22,14 +22,14 @@ View and update your admin profile information.
                             <div class="form-group row">
                                 <div class="col-md-6">
                                     <label for="first_name">First Name<span class="text-danger">*</span></label>
-                                    <input type="text" name="first_name" id="first_name" placeholder="First Name" class="form-control form-control-line" value="{{$admin->first_name ?? ''}}">
+                                    <input type="text" name="first_name" id="first_name" placeholder="First Name" class="form-control form-control-line alphabets-only" value="{{$admin->first_name ?? ''}}">
                                     @error('first_name')
                                     <div class="text-danger validation-error">{{ $message }}</div>
                                     @enderror
                                 </div>
                                 <div class="col-md-6">
                                     <label for="last_name">Last Name<span class="text-danger">*</span></label>
-                                    <input type="text" name="last_name" id="last_name" placeholder="Last Name" class="form-control form-control-line" value="{{$admin->last_name ?? ''}}">
+                                    <input type="text" name="last_name" id="last_name" placeholder="Last Name" class="form-control form-control-line alphabets-only" value="{{$admin->last_name ?? ''}}">
                                     @error('last_name')
                                     <div class="text-danger validation-error">{{ $message }}</div>
                                     @enderror

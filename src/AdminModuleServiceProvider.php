@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class AdminModuleServiceProvider extends ServiceProvider
 {
@@ -16,10 +17,20 @@ class AdminModuleServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'admin');
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
+        $this->publishes([
+            __DIR__ . '/../resources/assets/backend' => public_path('backend'),
+        ], 'admin_assets');
+
+          // Optionally: Automatically publish once
+        if (!file_exists(public_path('backend'))) {
+            Artisan::call('vendor:publish', [
+                '--tag' => 'admin_assets',
+                '--force' => true,
+            ]);
+        }
 
         $this->publishes([  
             __DIR__.'/../resources/views' => resource_path('views/admin/admin_auth'),
-            __DIR__ . '/../resources/assets/backend' => public_path('backend'),
             __DIR__ . '/../src/Controllers' => app_path('Http/Controllers/Admin/AdminAuthManager'),
             __DIR__ . '/../src/Models' => app_path('Models/Admin/AdminAuth'),
             __DIR__ . '/routes/web.php' => base_path('routes/admin/admin_auth.php'),
