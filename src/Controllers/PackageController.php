@@ -62,17 +62,17 @@ class PackageController extends Controller
                     ]);
 
                     // Run the seeder
-                    if (is_dir(base_path('vendor/admin/users'))) {
+                    if (is_dir(base_path('vendor/admin/settings'))) {
                         Artisan::call('db:seed', [
-                        '--class' => 'Packages\\Admin\\Users\\Database\\Seeders\\SeedUserRolesSeeder',
+                        '--class' => 'packages\\admin\\settings\\database\\seeders\\SettingSeeder',
                         '--force' => true,
                         ]);
                     }
-
-                    if (is_dir(base_path('vendor/admin/settings'))) {
+            
+                    if (is_dir(base_path('vendor/admin/admin_role_permissions'))) {
                         Artisan::call('db:seed', [
-                        '--class' => 'Packages\\Admin\\Settings\\Database\\Seeders\\SettingSeeder',
-                        '--force' => true,
+                            '--class' => 'Packages\\Admin\\AdminRolePermissions\\database\\seeders\\AssignAdminRoleSeeder',
+                            '--force' => true,
                         ]);
                     }
 
