@@ -99,15 +99,6 @@ $(document).ready(function() {
     });
 });
 
-
-$.validator.addMethod(
-  "alphabetsOnly",
-  function (value, element) {
-    return this.optional(element) || /^[a-zA-Z\s]+$/.test(value);
-  },
-  "Please enter letters only"
-);
-
 $(document).ready(function () {
   $(".numbers-only").on("input", function () {
     this.value = this.value.replace(/[^0-9]/g, "");
@@ -119,13 +110,33 @@ $(document).ready(function () {
   });
 });
 
-$.validator.addMethod(
-  "customEmail",
-  function (value, element) {
-    return (
-      this.optional(element) ||
-      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)
-    );
-  },
-  "Please enter a valid email address"
-);
+//dynamic global modal implementation
+$(document).on('click', '.open-dynamic-modal', function () {
+  const config = $(this).data('config') || {};
+
+  $('#globalModalTitle').text(config.title || 'Modal Title');
+  $('#globalDynamicForm').attr('action', config.action_url || '#');
+  $('#globalModalBody').html(config.body_html || '<p>No content</p>');
+
+  // If Select2 is needed
+  if (config.init_select2) {
+      $('#globalModalBody').find('select.select2').select2({
+          dropdownParent: $('#globalDynamicModal'),
+          placeholder: config.placeholder || 'Select',
+          width: '100%',
+          ajax: config.ajax_url ? {
+              url: config.ajax_url,
+              dataType: 'json',
+              delay: 250,
+              processResults: function (data) {
+                  return {
+                      results: data
+                  };
+              },
+              cache: true
+          } : undefined
+      });
+  }
+
+  $('#globalDynamicModal').modal('show');
+});

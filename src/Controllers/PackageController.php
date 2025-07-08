@@ -39,6 +39,7 @@ class PackageController extends Controller
                 if ($exitCode === 0) {
                     // Remove published files
                     $this->removePublishedFiles($vendor, $package);
+
                     Artisan::call('optimize:clear');
                     $message = "Package '{$vendor}/{$package}' uninstalled successfully.";
                 } else {
@@ -59,6 +60,22 @@ class PackageController extends Controller
                         '--path' => "vendor/{$vendor}/{$package}/database/migrations",
                         '--force' => true,
                     ]);
+
+                    // Run the seeder
+                    if (is_dir(base_path('vendor/admin/users'))) {
+                        Artisan::call('db:seed', [
+                        '--class' => 'Packages\\Admin\\Users\\Database\\Seeders\\SeedUserRolesSeeder',
+                        '--force' => true,
+                        ]);
+                    }
+
+                    if (is_dir(base_path('vendor/admin/settings'))) {
+                        Artisan::call('db:seed', [
+                        '--class' => 'Packages\\Admin\\Settings\\Database\\Seeders\\SettingSeeder',
+                        '--force' => true,
+                        ]);
+                    }
+
                     $message = "Package '{$vendor}/{$package}' installed successfully.";
                 } else {
                     $message = "❌Composer failed. Output:\n" . $output;
