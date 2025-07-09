@@ -123,9 +123,21 @@ class PackageController extends Controller
         if (Schema::hasTable($package)) {
             Schema::drop($package);
         }
+
+        // If package is 'users', also drop user_roles table
+        if ($package === 'users' && Schema::hasTable('user_roles')) {
+            Schema::drop('user_roles');
+        }
         
         \DB::table('migrations')
           ->where('migration', 'like', '%create_'.$package.'_table%')
           ->delete();
+
+         // Also remove user_roles migration record if applicable
+        if ($package === 'users') {
+            \DB::table('migrations')
+                ->where('migration', 'like', '%create_user_roles_table%')
+                ->delete();
+        }
     }
 }
