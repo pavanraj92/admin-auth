@@ -23,6 +23,7 @@ class Admin extends Authenticatable
         'username',
         'email',
         'password',
+        'mobile',
         'website_name',
         'website_slug'
     ];
@@ -52,6 +53,35 @@ class Admin extends Authenticatable
                 $admin->website_slug = Str::slug($admin->website_name);
             }
         });
+    }
+
+    public function scopeFilter($query, $name)
+    {
+        if ($name) {
+            return $query->where(function ($q) use ($name) {
+                $q->where('first_name', 'like', '%' . $name . '%')
+                  ->orWhere('last_name', 'like', '%' . $name . '%');
+            });
+        }
+        return $query;
+    }
+    /**
+     * filter by status
+     */
+    public function scopeFilterByStatus($query, $status)
+    {
+        if (!is_null($status)) {
+            return $query->where('status', $status);
+        }
+
+        return $query;
+    }
+
+    public function getFullNameAttribute()
+    {
+        $first = trim($this->first_name ?? '');
+        $last = trim($this->last_name ?? '');
+        return trim("{$first} {$last}");
     }
 
     public static function getPerPageLimit(): int

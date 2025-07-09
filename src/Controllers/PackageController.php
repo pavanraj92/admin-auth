@@ -68,6 +68,13 @@ class PackageController extends Controller
                         '--force' => true,
                         ]);
                     }
+
+                    if (is_dir(base_path('vendor/admin/users'))) {
+                        Artisan::call('db:seed', [
+                        '--class' => 'packages\\admin\\users\\database\\seeders\\SeedUserRolesSeeder',
+                        '--force' => true,
+                        ]);
+                    }
             
                     if (is_dir(base_path('vendor/admin/admin_role_permissions'))) {
                         Artisan::call('db:seed', [
