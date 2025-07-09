@@ -2,6 +2,8 @@
 
 namespace admin\admin_auth\Models;
 
+use admin\admin_role_permissions\Models\Role;
+use admin\admin_role_permissions\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,7 +13,7 @@ use Illuminate\Support\Facades\Config;
 
 class Admin extends Authenticatable
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -60,7 +62,7 @@ class Admin extends Authenticatable
         if ($name) {
             return $query->where(function ($q) use ($name) {
                 $q->where('first_name', 'like', '%' . $name . '%')
-                  ->orWhere('last_name', 'like', '%' . $name . '%');
+                    ->orWhere('last_name', 'like', '%' . $name . '%');
             });
         }
         return $query;
@@ -91,4 +93,13 @@ class Admin extends Authenticatable
             : 10;
     }
 
+    public function roles()
+    {
+        return $this->belongsToMany(
+            Role::class,
+            'role_admin',      // pivot table name
+            'admin_id',        // foreign key on pivot table for this model
+            'role_id'          // foreign key on pivot table for Role model
+        );
+    }
 }
