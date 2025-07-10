@@ -3,13 +3,17 @@
 namespace admin\admin_auth\Models;
 
 use admin\admin_role_permissions\Models\Role;
-use admin\admin_role_permissions\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
+
+// Define a dummy trait if the real one doesn't exist
+if (!trait_exists('admin\\admin_role_permissions\\Traits\\HasRoles')) {
+    trait HasRoles { }
+}
 
 class Admin extends Authenticatable
 {
