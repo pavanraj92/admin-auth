@@ -39,9 +39,11 @@ class PackageController extends Controller
                 if ($exitCode === 0) {
                     // Remove published files
                     $this->removePublishedFiles($vendor, $package);
+                    $packageKey = "{$vendor}/{$package}";
+                    $displayName = config("constants.package_display_names.$packageKey", $packageKey);
 
                     Artisan::call('optimize:clear');
-                    $message = "Package '{$vendor}/{$package}' uninstalled successfully.";
+                    $message = "Package '{$displayName}' Uninstalled Successfully.";
                 } else {
                     $message = "❌Composer failed. Output:\n" . $output;
                     return response()->json([
@@ -64,15 +66,15 @@ class PackageController extends Controller
                     // Run the seeder
                     if (is_dir(base_path('vendor/admin/settings'))) {
                         Artisan::call('db:seed', [
-                        '--class' => 'Admin\Settings\Database\Seeders\\SettingSeeder',
-                        '--force' => true,
+                            '--class' => 'Admin\Settings\Database\Seeders\\SettingSeeder',
+                            '--force' => true,
                         ]);
                     }
 
                     if (is_dir(base_path('vendor/admin/users'))) {
                         Artisan::call('db:seed', [
-                        '--class' => 'Admin\Users\Database\Seeders\\SeedUserRolesSeeder',
-                        '--force' => true,
+                            '--class' => 'Admin\Users\Database\Seeders\\SeedUserRolesSeeder',
+                            '--force' => true,
                         ]);
                     }
 
@@ -83,7 +85,10 @@ class PackageController extends Controller
                         ]);
                     }
 
-                    $message = "Package '{$vendor}/{$package}' installed successfully.";
+                    $packageKey = "{$vendor}/{$package}";
+                    $displayName = config("constants.package_display_names.$packageKey", $packageKey);
+
+                    $message = "Package '{$displayName}' Installed Successfully.";
                 } else {
                     $message = "❌Composer failed. Output:\n" . $output;
                     return response()->json([
