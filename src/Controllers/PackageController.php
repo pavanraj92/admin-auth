@@ -64,14 +64,14 @@ class PackageController extends Controller
                     // Run the seeder
                     if (is_dir(base_path('vendor/admin/settings'))) {
                         Artisan::call('db:seed', [
-                        '--class' => 'packages\\admin\\settings\\database\\seeders\\SettingSeeder',
+                        '--class' => 'Admin\Settings\Database\Seeders\\SettingSeeder',
                         '--force' => true,
                         ]);
                     }
 
                     if (is_dir(base_path('vendor/admin/users'))) {
                         Artisan::call('db:seed', [
-                        '--class' => 'packages\\admin\\users\\database\\seeders\\SeedUserRolesSeeder',
+                        '--class' => 'Admin\Users\Database\Seeders\\SeedUserRolesSeeder',
                         '--force' => true,
                         ]);
                     }
