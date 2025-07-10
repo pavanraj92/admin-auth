@@ -10,15 +10,13 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
 
-// Define a dummy trait if the real one doesn't exist
-// if (!trait_exists('admin\\admin_role_permissions\\Traits\\HasRoles')) {
-//     trait HasRoles { }
-// }
-
-if (trait_exists(\admin\admin_role_permissions\Traits\HasRoles::class)) {
-    class_alias(\admin\admin_role_permissions\Traits\HasRoles::class, 'HasRolesFallback');
-} else {
+if (!trait_exists(\admin\admin_role_permissions\Traits\HasRoles::class)) {
     trait HasRolesFallback {}
+} else {
+    class_alias(
+        \admin\admin_role_permissions\Traits\HasRoles::class,
+        __NAMESPACE__ . '\HasRolesFallback'
+    );
 }
 
 class Admin extends Authenticatable

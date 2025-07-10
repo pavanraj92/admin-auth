@@ -186,7 +186,7 @@
                         @endphp
                         <li class="sidebar-item {{ Route::is('admin.users.*') ? 'selected' : '' }}">
                             <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is('admin.users.*') ? 'active' : '' }}" href="javascript:void(0)" aria-expanded="{{ Route::is('admin.users.*') ? 'true' : 'false' }}">
-                                <i class="fas fa-folder-open"></i>
+                                <i class="fas fa-users"></i>
                                 <span class="hide-menu">Manage Users</span>
                             </a>
                             <ul aria-expanded="{{ Route::is('admin.users.*') ? 'true' : 'false' }}" class="collapse first-level {{ Route::is('admin.users.*') ? 'in' : '' }}">

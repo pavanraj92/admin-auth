@@ -72,7 +72,9 @@
         @endforeach
     </div>
 </div>
+
 @endsection
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.install-uninstall-btn').forEach(function(button) {
@@ -86,7 +88,7 @@
                 const token = form.querySelector('input[name="_token"]').value;
 
                 Swal.fire({
-                    text: `Are you sure you want to ${action} this package?`,
+                    text: `Are you sure you want to ${action} ${displayName} package?`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -99,6 +101,21 @@
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        // Show and animate progress bar
+                        const progressBar = document.getElementById('package-progress');
+                        const progressBarInner = document.getElementById('package-progress-bar');
+                        progressBar.style.display = 'block';
+                        progressBarInner.style.width = '0%';
+
+                        // Animate to 90% while waiting
+                        let progress = 0;
+                        const interval = setInterval(() => {
+                            if (progress < 90) {
+                                progress += 10;
+                                progressBarInner.style.width = progress + '%';
+                            }
+                        }, 200);
+
                         // Disable all buttons
                         allButtons.forEach(btn => btn.disabled = true);
                         const originalText = this.innerHTML;
@@ -115,6 +132,13 @@
                             })
                             .then(response => response.json())
                             .then(data => {
+                                clearInterval(interval);
+                                progressBarInner.style.width = '100%';
+                                setTimeout(() => {
+                                    progressBar.style.display = 'none';
+                                    progressBarInner.style.width = '0%';
+                                }, 500);
+
                                 if (data.success || data.status === 'success') {
                                     this.innerHTML = `Completed`;
                                     Swal.fire({
@@ -131,6 +155,10 @@
                                 }
                             })
                             .catch((error) => {
+                                clearInterval(interval);
+                                progressBar.style.display = 'none';
+                                progressBarInner.style.width = '0%';
+
                                 console.error('Fetch error:', error);
                                 Swal.fire('Error', 'Something went wrong.', 'error');
                                 allButtons.forEach(btn => btn.disabled = false);
