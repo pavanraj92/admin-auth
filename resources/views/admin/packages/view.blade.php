@@ -39,20 +39,30 @@
                                 @php
                                 $displayName = config('constants.package_display_names.' . $route, $route);
                                 @endphp
-                                @if ($route != 'admin/settings')
+                                @if ($route === 'admin/settings')
+                                @if (!$installed)
+                                <button type="button"
+                                    class="btn btn-outline-success install-uninstall-btn"
+                                    data-package="{{ $route }}" data-name="{{ $displayName }}"
+                                    data-action="install">
+                                    Install
+                                </button>
+                                @else
+                                {{-- Do nothing OR show an invisible placeholder if needed --}}
+                                <div style="visibility: hidden;">
+                                    <button type="button" class="btn btn-outline-secondary">Placeholder</button>
+                                </div>
+                                @endif
+                                @else
                                 <button type="button"
                                     class="btn btn-outline-{{ $installed ? 'danger' : 'success' }} install-uninstall-btn"
                                     data-package="{{ $route }}" data-name="{{ $displayName }}"
                                     data-action="{{ $installed ? 'uninstall' : 'install' }}">
                                     {{ $installed ? 'Uninstall' : 'Install' }}
                                 </button>
-                                @else
-                                {{-- Render invisible placeholder to preserve card height --}}
-                                <div style="visibility: hidden;">
-                                    <button type="button" class="btn btn-outline-secondary">Placeholder</button>
-                                </div>
                                 @endif
-                                
+
+
                             </form>
                         </div>
                     </div>
