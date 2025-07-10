@@ -11,13 +11,19 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
 
 // Define a dummy trait if the real one doesn't exist
-if (!trait_exists('admin\\admin_role_permissions\\Traits\\HasRoles')) {
-    trait HasRoles { }
+// if (!trait_exists('admin\\admin_role_permissions\\Traits\\HasRoles')) {
+//     trait HasRoles { }
+// }
+
+if (trait_exists(\admin\admin_role_permissions\Traits\HasRoles::class)) {
+    class_alias(\admin\admin_role_permissions\Traits\HasRoles::class, 'HasRolesFallback');
+} else {
+    trait HasRolesFallback {}
 }
 
 class Admin extends Authenticatable
 {
-    use HasFactory, SoftDeletes, HasRoles;
+    use HasFactory, SoftDeletes, HasRolesFallback;
 
     /**
      * The attributes that are mass assignable.
