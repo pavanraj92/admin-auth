@@ -99,14 +99,11 @@
                 </div>
             </nav>
         </header>
-        @php
-        $hasRolePackage = file_exists(base_path('vendor/admin/admin_role_permissions'));
-        @endphp
         <aside class="left-sidebar d-flex flex-column" data-sidebarbg="skin5">
             <div class="scroll-sidebar flex-grow-1" style="overflow-y: auto;">
                 <nav class="sidebar-nav">
                     <ul id="sidebarnav">
-                        @if((!$hasRolePackage && auth('admin')->user()) || ($hasRolePackage && auth('admin')->user() && method_exists(auth('admin')->user(), 'hasPermission') && auth('admin')->user()->hasPermission('dashboard')))
+                        @admincan('dashboard')
                         <li class="sidebar-item">
                             <a class="sidebar-link waves-effect waves-dark sidebar-link"
                                 href="{{ route('admin.dashboard') }}" aria-expanded="false">
@@ -114,9 +111,9 @@
                                 <span class="hide-menu">Dashboard</span>
                             </a>
                         </li>
-                        @endif
+                        @endadmincan
 
-                        @if((!$hasRolePackage && auth('admin')->user()) || ($hasRolePackage && auth('admin')->user() && method_exists(auth('admin')->user(), 'hasPermission') && auth('admin')->user()->hasPermission('admin_manager_list')))
+                        @admincan('admin_manager_list')
                         @if (Route::has('admin.admins.index'))
                         <li class="sidebar-item {{ Route::is('admin.admins.*') ? 'selected' : '' }}">
                             <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.admins.*') ? 'active' : '' }}"
@@ -126,19 +123,12 @@
                             </a>
                         </li>
                         @endif
-                        @endif
-                        @if (
-                        (!$hasRolePackage && auth('admin')->user()) ||
-                        (
-                        $hasRolePackage &&
-                        auth('admin')->user() &&
-                        method_exists(auth('admin')->user(), 'hasPermission') &&
-                        (
-                        auth('admin')->user()->hasPermission('roles_manager_list') ||
-                        auth('admin')->user()->hasPermission('permission_manager_list')
-                        )
-                        )
-                        )
+                        @endadmincan
+
+                        @php
+                        $canAccess = admincan('roles_manager_list') || admincan('permission_manager_list');
+                        @endphp
+                        @if($canAccess)
                         @if (Route::has('admin.roles.index') || Route::has('admin.permissions.index'))
                         @php
                         $activeRoutes = ['admin.roles.*', 'admin.permissions.*'];
@@ -149,7 +139,7 @@
                                 <span class="hide-menu">Role Permssion Manager</span>
                             </a>
                             <ul aria-expanded="false" class="collapse first-level {{ Route::is($activeRoutes) ? 'in' : '' }}">
-                                @if((!$hasRolePackage && auth('admin')->user()) || ($hasRolePackage && auth('admin')->user() && method_exists(auth('admin')->user(), 'hasPermission') && auth('admin')->user()->hasPermission('roles_manager_list')))
+                                @admincan('roles_manager_list')
                                 @if (Route::has('admin.roles.index'))
                                 <li class="sidebar-item" {{ Route::is('admin.roles.*') ? 'selected' : '' }}>
                                     <a href="{{ route('admin.roles.index') }}" class="sidebar-link {{ Route::is('admin.roles.*') ? 'active' : '' }}">
@@ -158,9 +148,9 @@
                                     </a>
                                 </li>
                                 @endif
-                                @endif
+                                @endadmincan
 
-                                @if((!$hasRolePackage && auth('admin')->user()) || ($hasRolePackage && auth('admin')->user() && method_exists(auth('admin')->user(), 'hasPermission') && auth('admin')->user()->hasPermission('permission_manager_list')))
+                                @admincan('permission_manager_list')
                                 @if (Route::has('admin.permissions.index'))
                                 <li class="sidebar-item {{ Route::is('admin.permissions.*') ? 'selected' : '' }}">
                                     <a href="{{ route('admin.permissions.index') }}" class="sidebar-link {{ Route::is('admin.permissions.*') ? 'active' : '' }}">
@@ -169,21 +159,21 @@
                                     </a>
                                 </li>
                                 @endif
-                                @endif
+                                @endadmincan
 
                             </ul>
                         </li>
                         @endif
                         @endif
 
-                        @if((!$hasRolePackage && auth('admin')->user()) || ($hasRolePackage && auth('admin')->user() && method_exists(auth('admin')->user(), 'hasPermission') && auth('admin')->user()->hasPermission('users_manager_list')))
+                        @admincan('users_manager_list')
                         @if (Route::has('admin.users.index'))
                         @php
                         $sidebarRoles = \DB::table('user_roles')
                         ->where('status', 1)
                         ->orderBy('name')
                         ->get();
-                        @endphp
+                        @endadmincan
                         <li class="sidebar-item {{ Route::is('admin.users.*') ? 'selected' : '' }}">
                             <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is('admin.users.*') ? 'active' : '' }}" href="javascript:void(0)">
                                 <i class="fas fa-users"></i>
@@ -203,7 +193,7 @@
                         @endif
                         @endif
 
-                        @if((!$hasRolePackage && auth('admin')->user()) || ($hasRolePackage && auth('admin')->user() && method_exists(auth('admin')->user(), 'hasPermission') && auth('admin')->user()->hasPermission('user_role_list')))
+                        @admincan('user_role_list')
                         @if (Route::has('admin.user_roles.index'))
                         <li class="sidebar-item {{ Route::is('admin.user_roles.*') ? 'selected' : '' }}">
                             <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.user_roles.*') ? 'active' : '' }}"
@@ -213,9 +203,9 @@
                             </a>
                         </li>
                         @endif
-                        @endif
+                        @endadmincan
 
-                        @if((!$hasRolePackage && auth('admin')->user()) || ($hasRolePackage && auth('admin')->user() && method_exists(auth('admin')->user(), 'hasPermission') && auth('admin')->user()->hasPermission('categories_manager_list')))
+                        @admincan('categories_manager_list')
                         @if (Route::has('admin.categories.index'))
                         <li class="sidebar-item {{ Route::is('admin.categories.*') ? 'selected' : '' }}">
                             <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.categories.*') ? 'active' : '' }}"
@@ -225,25 +215,13 @@
                             </a>
                         </li>
                         @endif
-                        @endif
+                        @endadmincan
 
 
-
-                        @if (
-                        (!$hasRolePackage && auth('admin')->user()) ||
-                        (
-                        $hasRolePackage &&
-                        auth('admin')->user() &&
-                        method_exists(auth('admin')->user(), 'hasPermission') &&
-                        (
-                        auth('admin')->user()->hasPermission('pages_manager_list') ||
-                        auth('admin')->user()->hasPermission('emails_manager_list') ||
-                        auth('admin')->user()->hasPermission('faqs_manager_list') ||
-                        auth('admin')->user()->hasPermission('banners_manager_list')
-                        )
-                        )
-                        )
-
+                        @php
+                        $canAccess = admincan('pages_manager_list') || admincan('emails_manager_list') || admincan('faqs_manager_list') || admincan('banners_manager_list');
+                        @endphp
+                        @if($canAccess)
                         @if (Route::has('admin.pages.index') || Route::has('admin.emails.index') || Route::has('admin.faqs.index') || Route::has('admin.banners.index'))
                         @php
                         $activeRoutes = ['admin.pages.*', 'admin.emails.*', 'admin.banners.*', 'admin.faqs.*'];
@@ -254,7 +232,7 @@
                                 <span class="hide-menu">Manage Content</span>
                             </a>
                             <ul aria-expanded="false" class="collapse first-level {{ Route::is($activeRoutes) ? 'in' : '' }}">
-                                @if((!$hasRolePackage && auth('admin')->user()) || ($hasRolePackage && auth('admin')->user() && method_exists(auth('admin')->user(), 'hasPermission') && auth('admin')->user()->hasPermission('pages_manager_list')))
+                                @admincan('pages_manager_list')
                                 @if (Route::has('admin.pages.index'))
                                 <li class="sidebar-item" {{ Route::is('admin.pages.*') ? 'selected' : '' }}>
                                     <a href="{{ route('admin.pages.index') }}" class="sidebar-link {{ Route::is('admin.pages.*') ? 'active' : '' }}">
@@ -263,9 +241,9 @@
                                     </a>
                                 </li>
                                 @endif
-                                @endif
+                                @endadmincan
 
-                                @if((!$hasRolePackage && auth('admin')->user()) || ($hasRolePackage && auth('admin')->user() && method_exists(auth('admin')->user(), 'hasPermission') && auth('admin')->user()->hasPermission('emails_manager_list')))
+                                @admincan('emails_manager_list')
                                 @if (Route::has('admin.emails.index'))
                                 <li class="sidebar-item {{ Route::is('admin.emails.*') ? 'selected' : '' }}">
                                     <a href="{{ route('admin.emails.index') }}" class="sidebar-link {{ Route::is('admin.emails.*') ? 'active' : '' }}">
@@ -274,9 +252,9 @@
                                     </a>
                                 </li>
                                 @endif
-                                @endif
+                                @endadmincan
 
-                                @if((!$hasRolePackage && auth('admin')->user()) || ($hasRolePackage && auth('admin')->user() && method_exists(auth('admin')->user(), 'hasPermission') && auth('admin')->user()->hasPermission('faqs_manager_list')))
+                                @admincan('faqs_manager_list')
                                 @if (Route::has('admin.faqs.index'))
                                 <li class="sidebar-item {{ Route::is('admin.faqs.*') ? 'selected' : '' }}">
                                     <a href="{{ route('admin.faqs.index') }}" class="sidebar-link {{ Route::is('admin.faqs.*') ? 'active' : '' }}">
@@ -285,9 +263,9 @@
                                     </a>
                                 </li>
                                 @endif
-                                @endif
+                                @endadmincan
 
-                                @if((!$hasRolePackage && auth('admin')->user()) || ($hasRolePackage && auth('admin')->user() && method_exists(auth('admin')->user(), 'hasPermission') && auth('admin')->user()->hasPermission('banners_manager_list')))
+                                @admincan('banners_manager_list')
                                 @if (Route::has('admin.banners.index'))
                                 <li class="sidebar-item {{ Route::is('admin.banners.*') ? 'selected' : '' }}">
                                     <a href="{{ route('admin.banners.index') }}" class="sidebar-link {{ Route::is('admin.banners.*') ? 'active' : '' }}">
@@ -296,13 +274,13 @@
                                     </a>
                                 </li>
                                 @endif
-                                @endif
+                                @endadmincan
                             </ul>
                         </li>
                         @endif
                         @endif
 
-                        @if((!$hasRolePackage && auth('admin')->user()) || ($hasRolePackage && auth('admin')->user() && method_exists(auth('admin')->user(), 'hasPermission') && auth('admin')->user()->hasPermission('settings_manager_list')))
+                        @admincan('settings_manager_list')
                         @if (Route::has('admin.settings.index'))
                         <li class="sidebar-item {{ Route::is('admin.settings.*') ? 'selected' : '' }}">
                             <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.settings.*') ? 'active' : '' }}"
@@ -312,7 +290,7 @@
                             </a>
                         </li>
                         @endif
-                        @endif
+                        @endadmincan
 
                     </ul>
                 </nav>
