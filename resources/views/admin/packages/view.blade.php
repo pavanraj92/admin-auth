@@ -7,6 +7,9 @@
 @endsection
 
 @section('content')
+<div id="package-progress-bar-container" style="height: 4px; width: 100%; background: #eee; position: fixed; top: 0; left: 0; z-index: 9999; display: none;">
+    <div id="package-progress-bar" style="height: 100%; width: 0; background: #4caf50; transition: width 0.5s;"></div>
+</div>
 <div class="container-fluid">
     <div class="row">
         @foreach ($packages as $route => $displayName)
@@ -61,8 +64,6 @@
                                     {{ $installed ? 'Uninstall' : 'Install' }}
                                 </button>
                                 @endif
-
-
                             </form>
                         </div>
                     </div>
@@ -76,6 +77,52 @@
 @endsection
 
 <script>
+    let progressBarTimeout = null;
+
+    function startPackageProgressBar() {
+        $('#package-progress-bar-container').show();
+        let bar = $('#package-progress-bar');
+        bar.stop(true, true).css('width', '0%');
+
+        // Animate to 90% over 1.5 seconds (or whatever feels smooth)
+        bar.css({
+            transition: 'width 22s linear',
+            width: '90%'
+        })
+    }
+
+    function finishPackageProgressBar() {
+        let bar = $('#package-progress-bar');
+
+        // Compute real width on screen now
+        const currentWidth = bar[0].getBoundingClientRect().width / bar.parent()[0].getBoundingClientRect().width * 100;
+
+        // Immediately set current width without transition
+        bar.css({
+            transition: 'none',
+            width: `${currentWidth}%`
+        });
+
+        // Force a reflow to apply width instantly
+        bar[0].offsetHeight;
+
+        // Then transition to 100% quickly
+        bar.css({
+            transition: 'width 0.3s linear',
+            width: '100%'
+        });
+
+        setTimeout(() => {
+            $('#package-progress-bar-container').fadeOut(300, function () {
+                bar.css({
+                    transition: 'none',
+                    width: '0%'
+                });
+            });
+        }, 600);
+    }
+
+
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.install-uninstall-btn').forEach(function(button) {
             button.addEventListener('click', function(e) {
@@ -105,7 +152,7 @@
                         allButtons.forEach(btn => btn.disabled = true);
                         const originalText = this.innerHTML;
                         this.innerHTML = `<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Processing...`;
-
+                        startPackageProgressBar(60000);
                         fetch(url, {
                                 method: 'POST',
                                 headers: {
@@ -117,6 +164,7 @@
                             })
                             .then(response => response.json())
                             .then(data => {
+                                finishPackageProgressBar();
                                 if (data.success || data.status === 'success') {
                                     this.innerHTML = `Completed`;
                                     Swal.fire({
@@ -133,6 +181,7 @@
                                 }
                             })
                             .catch((error) => {
+                                finishPackageProgressBar();
                                 console.error('Fetch error:', error);
                                 Swal.fire('Error', 'Something went wrong.', 'error');
                                 allButtons.forEach(btn => btn.disabled = false);
