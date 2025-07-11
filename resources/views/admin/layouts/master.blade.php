@@ -185,7 +185,7 @@
                         ->get();
                         @endphp
                         <li class="sidebar-item {{ Route::is('admin.users.*') ? 'selected' : '' }}">
-                            <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is('admin.users.*') ? 'active' : '' }}" href="javascript:void(0)" aria-expanded="{{ Route::is('admin.users.*') ? 'true' : 'false' }}">
+                            <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is('admin.users.*') ? 'active' : '' }}" href="javascript:void(0)">
                                 <i class="fas fa-users"></i>
                                 <span class="hide-menu">Manage Users</span>
                             </a>
