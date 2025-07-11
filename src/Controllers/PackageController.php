@@ -43,7 +43,7 @@ class PackageController extends Controller
                     $displayName = config("constants.package_display_names.$packageKey", $packageKey);
 
                     Artisan::call('optimize:clear');
-                    $message = "Package '{$displayName}' Uninstalled Successfully.";
+                    $message = "Package {$displayName} Uninstalled Successfully.";
                 } else {
                     $message = "❌Composer failed. Output:\n" . $output;
                     return response()->json([
@@ -88,7 +88,7 @@ class PackageController extends Controller
                     $packageKey = "{$vendor}/{$package}";
                     $displayName = config("constants.package_display_names.$packageKey", $packageKey);
 
-                    $message = "Package '{$displayName}' Installed Successfully.";
+                    $message = "Package {$displayName} Installed Successfully.";
                 } else {
                     $message = "❌Composer failed. Output:\n" . $output;
                     return response()->json([
