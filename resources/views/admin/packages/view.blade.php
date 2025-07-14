@@ -80,17 +80,17 @@
 <script>
     let progressBarTimeout = null;
 
-    function startPackageProgressBar() {
+    function startPackageProgressBar(durationMs) {
         $('#package-progress-bar-container').show();
         let bar = $('#package-progress-bar');
         bar.stop(true, true).css('width', '0%');
 
-        // Animate to 90% over 1.5 seconds (or whatever feels smooth)
         bar.css({
-            transition: 'width 22s linear',
+            transition: `width ${durationMs / 1000}s linear`,
             width: '90%'
-        })
+        });
     }
+
 
     function finishPackageProgressBar() {
         let bar = $('#package-progress-bar');
@@ -130,7 +130,7 @@
                 e.preventDefault();
                 const allButtons = document.querySelectorAll('.install-uninstall-btn');
                 const form = this.closest('form');
-                const action = this.dataset.action;
+                const action = this.dataset.action; // install or uninstall
                 const displayName = this.dataset.name;
                 const url = form.action;
                 const token = form.querySelector('input[name="_token"]').value;
@@ -149,18 +149,29 @@
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Disable all buttons
                         allButtons.forEach(btn => btn.disabled = true);
                         const originalText = this.innerHTML;
                         this.innerHTML = `<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Processing... <span class="processing-percent">1%</span>`;
+
                         let percent = 1;
+                        const targetPercent = 90;
+
+                        // ⬇️ Set duration based on action
+                        const progressDuration = (action === 'install') ? 30000 : 20000; // in ms
+
+                        // ⬇️ Compute increment interval
+                        const intervalTime = progressDuration / (targetPercent - percent);
+
                         this.processingPercentInterval = setInterval(() => {
-                            if (percent < 90) {
+                            if (percent < targetPercent) {
                                 percent++;
                                 this.querySelector('.processing-percent').textContent = percent + '%';
                             }
-                        }, 250); // Adjust speed as needed
-                        startPackageProgressBar(60000);
+                        }, intervalTime);
+
+                        // Start progress bar with same duration
+                        startPackageProgressBar(progressDuration);
+
                         fetch(url, {
                                 method: 'POST',
                                 headers: {
@@ -204,4 +215,5 @@
             });
         });
     });
+
 </script>
