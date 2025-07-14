@@ -9,6 +9,7 @@
 @section('content')
 <div id="package-progress-bar-container" style="height: 4px; width: 100%; background: #eee; position: fixed; top: 0; left: 0; z-index: 9999; display: none;">
     <div id="package-progress-bar" style="height: 100%; width: 0; background: #4caf50; transition: width 0.5s;"></div>
+    <span id="package-progress-percent" style="position:absolute; right:10px; top:0; color:#333; font-weight:bold; display:none;">1%</span>
 </div>
 <div class="container-fluid">
     <div class="row">
@@ -151,7 +152,14 @@
                         // Disable all buttons
                         allButtons.forEach(btn => btn.disabled = true);
                         const originalText = this.innerHTML;
-                        this.innerHTML = `<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Processing...`;
+                        this.innerHTML = `<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Processing... <span class="processing-percent">1%</span>`;
+                        let percent = 1;
+                        this.processingPercentInterval = setInterval(() => {
+                            if (percent < 90) {
+                                percent++;
+                                this.querySelector('.processing-percent').textContent = percent + '%';
+                            }
+                        }, 250); // Adjust speed as needed
                         startPackageProgressBar(60000);
                         fetch(url, {
                                 method: 'POST',
@@ -164,6 +172,8 @@
                             })
                             .then(response => response.json())
                             .then(data => {
+                                clearInterval(this.processingPercentInterval);
+                                this.querySelector('.processing-percent').textContent = '100%';
                                 finishPackageProgressBar();
                                 if (data.success || data.status === 'success') {
                                     this.innerHTML = `Completed`;
@@ -181,6 +191,8 @@
                                 }
                             })
                             .catch((error) => {
+                                clearInterval(this.processingPercentInterval);
+                                this.querySelector('.processing-percent').textContent = '100%';
                                 finishPackageProgressBar();
                                 console.error('Fetch error:', error);
                                 Swal.fire('Error', 'Something went wrong.', 'error');
