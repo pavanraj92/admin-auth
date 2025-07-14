@@ -62,6 +62,7 @@
                                     </div>
                                 </div>
                             </a>
+                            
                             <form class="app-search position-absolute">
                                 <input type="text" class="form-control" placeholder="Search &amp; enter">
                                 <a class="srh-btn">
@@ -125,10 +126,8 @@
                         @endif
                         @endadmincan
 
-                        {{-- @php
-                            $canAccess = admincan('roles_manager_list') || admincan('permission_manager_list');
-                        @endphp
-                        @if ($canAccess) --}}
+
+                        @admincan('roles_manager_list|permission_manager_list')
                         @if (Route::has('admin.roles.index') || Route::has('admin.permissions.index'))
                         @php
                         $activeRoutes = ['admin.roles.*', 'admin.permissions.*'];
@@ -170,7 +169,7 @@
                             </ul>
                         </li>
                         @endif
-                        {{-- @endif --}}
+                        @endadmincan
 
                         @admincan('users_manager_list')
                         @if (Route::has('admin.users.index'))
@@ -227,16 +226,8 @@
                         @endif
                         @endadmincan
 
+                        @admincan('pages_manager_list|emails_manager_list|faqs_manager_list|banners_manager_list')
 
-                        {{--
-                        @php
-                            $canAccess =
-                                admincan('pages_manager_list') ||
-                                admincan('emails_manager_list') ||
-                                admincan('faqs_manager_list') ||
-                                admincan('banners_manager_list');
-                        @endphp
-                        @if ($canAccess) --}}
                         @if (Route::has('admin.pages.index') ||
                         Route::has('admin.emails.index') ||
                         Route::has('admin.faqs.index') ||
@@ -311,7 +302,7 @@
                             </ul>
                         </li>
                         @endif
-                        {{-- @endif --}}
+                        @endadmincan
 
                         @admincan('settings_manager_list')
                         @if (Route::has('admin.settings.index'))
