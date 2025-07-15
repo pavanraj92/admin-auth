@@ -78,142 +78,166 @@
 @endsection
 
 <script>
-    let progressBarTimeout = null;
+let progressBarTimeout = null;
 
-    function startPackageProgressBar(durationMs) {
-        $('#package-progress-bar-container').show();
-        let bar = $('#package-progress-bar');
-        bar.stop(true, true).css('width', '0%');
+function startPackageProgressBar(durationMs) {
+    $('#package-progress-bar-container').show();
+    let bar = $('#package-progress-bar');
+    bar.stop(true, true).css('width', '0%');
 
-        bar.css({
-            transition: `width ${durationMs / 1000}s linear`,
-            width: '90%'
-        });
-    }
+    bar.css({
+        transition: `width ${durationMs / 1000}s linear`,
+        width: '90%'
+    });
+}
 
+function finishPackageProgressBar(fromPercent) {
+    let bar = $('#package-progress-bar');
 
-    function finishPackageProgressBar() {
-        let bar = $('#package-progress-bar');
+    // Start from current width and finish to 100%
+    bar.css({
+        transition: 'none',
+        width: `${fromPercent}%`
+    });
 
-        // Compute real width on screen now
-        const currentWidth = bar[0].getBoundingClientRect().width / bar.parent()[0].getBoundingClientRect().width * 100;
+    // Force reflow
+    bar[0].offsetHeight;
 
-        // Immediately set current width without transition
-        bar.css({
-            transition: 'none',
-            width: `${currentWidth}%`
-        });
+    // Then animate to 100%
+    bar.css({
+        transition: 'width 0.5s linear',
+        width: '100%'
+    });
 
-        // Force a reflow to apply width instantly
-        bar[0].offsetHeight;
-
-        // Then transition to 100% quickly
-        bar.css({
-            transition: 'width 0.3s linear',
-            width: '100%'
-        });
-
-        setTimeout(() => {
-            $('#package-progress-bar-container').fadeOut(300, function () {
-                bar.css({
-                    transition: 'none',
-                    width: '0%'
-                });
+    setTimeout(() => {
+        $('#package-progress-bar-container').fadeOut(300, function () {
+            bar.css({
+                transition: 'none',
+                width: '0%'
             });
-        }, 600);
-    }
+        });
+    }, 700);
+}
 
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.install-uninstall-btn').forEach(function (button) {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
+            const allButtons = document.querySelectorAll('.install-uninstall-btn');
+            const form = this.closest('form');
+            const action = this.dataset.action;
+            const displayName = this.dataset.name;
+            const url = form.action;
+            const token = form.querySelector('input[name="_token"]').value;
 
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.install-uninstall-btn').forEach(function(button) {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                const allButtons = document.querySelectorAll('.install-uninstall-btn');
-                const form = this.closest('form');
-                const action = this.dataset.action; // install or uninstall
-                const displayName = this.dataset.name;
-                const url = form.action;
-                const token = form.querySelector('input[name="_token"]').value;
+            Swal.fire({
+                text: `Are you sure you want to ${action} ${displayName} package?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: `Yes, ${action} it!`,
+                cancelButtonText: 'No, cancel!',
+                customClass: {
+                    confirmButton: 'btn btn-outline-success',
+                    cancelButton: 'btn btn-outline-danger',
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    allButtons.forEach(btn => btn.disabled = true);
+                    const originalText = this.innerHTML;
+                    this.innerHTML = `<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Processing... <span class="processing-percent">1%</span>`;
 
-                Swal.fire({
-                    text: `Are you sure you want to ${action} ${displayName} package?`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: `Yes, ${action} it!`,
-                    cancelButtonText: 'No, cancel!',
-                    customClass: {
-                        confirmButton: 'btn btn-outline-success',
-                        cancelButton: 'btn btn-outline-danger',
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        allButtons.forEach(btn => btn.disabled = true);
-                        const originalText = this.innerHTML;
-                        this.innerHTML = `<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Processing... <span class="processing-percent">1%</span>`;
+                    let percent = 1;
+                    const targetPercent = 90;
 
-                        let percent = 1;
-                        const targetPercent = 90;
+                    const progressDuration = (action === 'install') ? 40000 : 25000; // in ms
+                    const intervalTime = progressDuration / (targetPercent - percent);
 
-                        // ⬇️ Set duration based on action
-                        const progressDuration = (action === 'install') ? 30000 : 20000; // in ms
+                    const btn = this;
 
-                        // ⬇️ Compute increment interval
-                        const intervalTime = progressDuration / (targetPercent - percent);
+                    // First interval: 1 → 90
+                    const firstInterval = setInterval(() => {
+                        if (percent < targetPercent) {
+                            percent++;
+                            btn.querySelector('.processing-percent').textContent = percent + '%';
+                        } else {
+                            clearInterval(firstInterval);
+                        }
+                    }, intervalTime);
 
-                        this.processingPercentInterval = setInterval(() => {
-                            if (percent < targetPercent) {
+                    startPackageProgressBar(progressDuration);
+
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': token,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        clearInterval(firstInterval);
+
+                        // Second interval: from current → 100
+                        const secondInterval = setInterval(() => {
+                            if (percent < 100) {
+                                percent++;
+                                btn.querySelector('.processing-percent').textContent = percent + '%';
+                            } else {
+                                clearInterval(secondInterval);
+                            }
+                        }, 30); // fast
+
+                        finishPackageProgressBar(percent);
+
+                        if (data.success || data.status === 'success') {
+                            setTimeout(() => {
+                                btn.innerHTML = `Completed`;
+                                Swal.fire({
+                                    title: 'Success',
+                                    text: data.message || 'Operation successful.',
+                                    icon: 'success',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => window.location.reload());
+                            }, 700);
+                        } else {
+                            setTimeout(() => {
+                                Swal.fire('Error', data.message || 'Operation failed.', 'error');
+                                allButtons.forEach(btn => btn.disabled = false);
+                                btn.innerHTML = originalText;
+                            }, 700);
+                        }
+                    })
+                    .catch((error) => {
+                        clearInterval(firstInterval);
+
+                        // Fail case: also finish to 100 for UI consistency
+                        const secondInterval = setInterval(() => {
+                            if (percent < 100) {
                                 percent++;
                                 this.querySelector('.processing-percent').textContent = percent + '%';
+                            } else {
+                                clearInterval(secondInterval);
                             }
-                        }, intervalTime);
+                        }, 30);
 
-                        // Start progress bar with same duration
-                        startPackageProgressBar(progressDuration);
+                        finishPackageProgressBar(percent);
 
-                        fetch(url, {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': token,
-                                    'Accept': 'application/json',
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({})
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                clearInterval(this.processingPercentInterval);
-                                this.querySelector('.processing-percent').textContent = '100%';
-                                finishPackageProgressBar();
-                                if (data.success || data.status === 'success') {
-                                    this.innerHTML = `Completed`;
-                                    Swal.fire({
-                                        title: 'Success',
-                                        text: data.message || 'Operation successful.',
-                                        icon: 'success',
-                                        timer: 1500,
-                                        showConfirmButton: false
-                                    }).then(() => window.location.reload());
-                                } else {
-                                    Swal.fire('Error', data.message || 'Operation failed.', 'error');
-                                    allButtons.forEach(btn => btn.disabled = false);
-                                    this.innerHTML = originalText;
-                                }
-                            })
-                            .catch((error) => {
-                                clearInterval(this.processingPercentInterval);
-                                this.querySelector('.processing-percent').textContent = '100%';
-                                finishPackageProgressBar();
-                                console.error('Fetch error:', error);
-                                Swal.fire('Error', 'Something went wrong.', 'error');
-                                allButtons.forEach(btn => btn.disabled = false);
-                                this.innerHTML = originalText;
-                            });
-                    }
-                });
+                        console.error('Fetch error:', error);
+                        setTimeout(() => {
+                            Swal.fire('Error', 'Something went wrong.', 'error');
+                            allButtons.forEach(btn => btn.disabled = false);
+                            this.innerHTML = originalText;
+                        }, 700);
+                    });
+                }
             });
         });
     });
+});
 
 </script>
