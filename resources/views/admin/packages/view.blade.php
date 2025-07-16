@@ -7,7 +7,8 @@
 @endsection
 
 @section('content')
-<div id="package-progress-bar-container" style="height: 4px; width: 100%; background: #eee; position: fixed; top: 0; left: 0; z-index: 9999; display: none;">
+<div id="package-progress-bar-container"
+     style="height: 4px; width: 100%; background: #eee; z-index: 9999; display: none; margin-bottom: 0; position: relative; top: -47px;">
     <div id="package-progress-bar" style="height: 100%; width: 0; background: #4caf50; transition: width 0.5s;"></div>
     <span id="package-progress-percent" style="position:absolute; right:10px; top:0; color:#333; font-weight:bold; display:none;">1%</span>
 </div>
