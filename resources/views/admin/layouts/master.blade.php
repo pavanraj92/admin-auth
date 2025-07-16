@@ -62,7 +62,7 @@
                                     </div>
                                 </div>
                             </a>
-                            
+
                             <form class="app-search position-absolute">
                                 <input type="text" class="form-control" placeholder="Search &amp; enter">
                                 <a class="srh-btn">
@@ -319,12 +319,14 @@
                     </ul>
                 </nav>
             </div>
+            @admincan('package_manager_list')
             <div class="sidebar-bottom-link p-3 mt-auto" style="position: sticky; bottom: 0; background: #222d32;">
                 <a class="sidebar-link d-flex align-items-center" href="{{ route('admin.packages') }}">
                     <i class="fas fa-box mr-2"></i>
                     <span class="hide-menu">Package Manager</span>
                 </a>
             </div>
+            @endadmincan
         </aside>
         <div class="page-wrapper">
             <!-- Bread crumb and right sidebar toggle -->
