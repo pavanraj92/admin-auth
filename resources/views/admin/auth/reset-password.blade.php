@@ -6,6 +6,7 @@
     <link href="{{ asset('backend/assets/libs/chartist/dist/chartist.min.css') }}" rel="stylesheet">
     <link href="{{ asset('backend/dist/css/style.min.css') }}" rel="stylesheet">
     <link href="{{ asset('backend/custom.css') }}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
@@ -31,19 +32,21 @@
                     @enderror
                 </div> --}}
 
-                <div class="mb-3">
+                <div class="mb-3 password-toggle">
                     <label for="password" class="form-label">New Password</label>
                     <input id="password" type="password" class="form-control @error('password') is-invalid @enderror"
                             name="password" required>
+                    <span toggle="#password" class="fa fa-fw fa-eye-slash toggle-password"></span>
                     @error('password')
                         <span class="invalid-feedback">{{ $message }}</span>
                     @enderror
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3 password-toggle">
                     <label for="password-confirm" class="form-label">Confirm Password</label>
                     <input id="password-confirm" type="password" class="form-control"
                             name="password_confirmation" required>
+                    <span toggle="#password-confirm" class="fa fa-fw fa-eye-slash toggle-password"></span>
                     @error('password_confirmation')
                         <span class="invalid-feedback">{{ $message }}</span>
                     @enderror
@@ -59,5 +62,23 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggles = document.querySelectorAll(".toggle-password");
+
+            toggles.forEach(function (toggle) {
+                toggle.addEventListener("click", function () {
+                    const input = document.querySelector(this.getAttribute("toggle"));
+                    const type = input.getAttribute("type") === "password" ? "text" : "password";
+                    input.setAttribute("type", type);
+
+                    // Toggle icon class
+                    this.classList.toggle("fa-eye");
+                    this.classList.toggle("fa-eye-slash");
+                });
+            });
+        });
+    </script>
 </body>
 </html>

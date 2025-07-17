@@ -7,6 +7,8 @@
     <link href="{{ asset('backend/dist/css/style.min.css') }}" rel="stylesheet">
     <link href="{{ asset('backend/custom.css') }}" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
 </head>
 <body class="bg-light">
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
@@ -23,9 +25,10 @@
                     <label for="email" class="form-label">Email</label>
                     <input type="email" id="email" name="email" class="form-control" required autofocus>
                 </div>
-                <div class="mb-3">
+                <div class="mb-3 password-toggle">
                     <label for="password" class="form-label">Password</label>
                     <input type="password" id="password" name="password" class="form-control" required>
+                    <span toggle="#password" class="fa fa-fw fa-eye-slash toggle-password"></span>
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Login</button>
                 <div class="mt-3 text-center">
@@ -48,5 +51,22 @@
             });
         </script>
     @endif
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggles = document.querySelectorAll(".toggle-password");
+
+            toggles.forEach(function (toggle) {
+                toggle.addEventListener("click", function () {
+                    const input = document.querySelector(this.getAttribute("toggle"));
+                    const type = input.getAttribute("type") === "password" ? "text" : "password";
+                    input.setAttribute("type", type);
+
+                    // Toggle icon class
+                    this.classList.toggle("fa-eye");
+                    this.classList.toggle("fa-eye-slash");
+                });
+            });
+        });
+    </script>
 </body>
 </html>
