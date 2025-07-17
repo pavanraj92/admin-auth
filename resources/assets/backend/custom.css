@@ -54,3 +54,15 @@
     background-color: transparent !important;
     box-shadow: none !important;
 }
+
+.password-toggle {
+    position: relative;
+}
+.toggle-password {
+    position: absolute;
+    top: 38px;
+    right: 15px;
+    cursor: pointer;
+    color: #6c757d;
+    z-index: 10;
+}
