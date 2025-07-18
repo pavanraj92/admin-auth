@@ -14,7 +14,7 @@ class ProfileRequest extends FormRequest
         return [                   
             'first_name'   => 'required|string|max:100',
             'last_name'    => 'required|string|max:100',
-            'email'        => 'required|email|unique:admins,email,' . auth('admin')->user()->id . '|regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/',
+            'email'        => 'required|email|max:100|unique:admins,email,' . auth('admin')->user()->id . '|regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/',
             'website_name' => 'required|string|max:100',
         ];
     }
