@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('admins', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name')->nullable();
-            $table->string('last_name')->nullable();
-            $table->string('email')->nullable();
-            $table->string('mobile')->nullable();
+            $table->string('first_name',100)->nullable();
+            $table->string('last_name',100)->nullable();
+            $table->string('email',100)->unique();
+            $table->string('mobile',100)->nullable();
             $table->string('website_name')->nullable();
             $table->string('website_slug')->nullable();
             $table->string('password')->nullable();
