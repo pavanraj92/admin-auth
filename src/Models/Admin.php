@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
+use Kyslik\ColumnSortable\Sortable;
 
 if (!trait_exists(\admin\admin_role_permissions\Traits\HasRoles::class)) {
     trait HasRolesFallback {}
@@ -21,7 +22,7 @@ if (!trait_exists(\admin\admin_role_permissions\Traits\HasRoles::class)) {
 
 class Admin extends Authenticatable
 {
-    use HasFactory, SoftDeletes, HasRolesFallback;
+    use HasFactory, SoftDeletes, HasRolesFallback, Sortable;
 
     /**
      * The attributes that are mass assignable.
@@ -47,6 +48,28 @@ class Admin extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    protected $sortable = [
+        'name' => 'sortableName',
+        'email',
+        'status',
+        'created_at',
+    ];
+
+    public static function sortableName($query, $direction)
+    {
+        return $query->orderByRaw("CONCAT(first_name, ' ', last_name) $direction");
+    }
+
+    public function getNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
+
+    public function getRoleNameAttribute()
+    {
+        return $this->roles->pluck('name')->first(); // or join with comma if multiple roles
+    }
 
     protected static function boot()
     {
