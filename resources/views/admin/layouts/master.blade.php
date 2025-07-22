@@ -165,7 +165,7 @@
                             <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is('admin.users.*') ? 'active' : '' }}"
                                 href="javascript:void(0)">
                                 <i class="fas fa-users"></i>
-                                <span class="hide-menu">Manage Users</span>
+                                <span class="hide-menu">User Manager</span>
                             </a>
                             <ul aria-expanded="{{ Route::is('admin.users.*') ? 'true' : 'false' }}"
                                 class="collapse first-level {{ Route::is('admin.users.*') ? 'in' : '' }}">
