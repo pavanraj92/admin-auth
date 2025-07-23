@@ -44,7 +44,7 @@
                                 @php
                                 $displayName = config('constants.package_display_names.' . $route, $route);
                                 @endphp
-                                @if ($route === 'admin/settings')
+                                @if ($route === 'admin/settings' || $route === 'admin/emails')
                                 @if (!$installed)
                                 <button type="button"
                                     class="btn btn-outline-success install-uninstall-btn"
