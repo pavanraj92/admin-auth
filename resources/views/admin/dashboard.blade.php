@@ -8,10 +8,6 @@ Admin dashboard overview, statistics, and recent sales.
 
 @section('page-title', 'Dashboard')
 
-@section('breadcrumb')
-    <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
-@endsection
-
 @section('content')    
     <div class="container-fluid">
         <div class="row">
