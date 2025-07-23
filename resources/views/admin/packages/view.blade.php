@@ -3,7 +3,7 @@
 @section('title', 'Package Manager')
 @section('page-title', 'Package Manager')
 @section('breadcrumb')
-<li class="breadcrumb-item active" aria-current="page">Manage Packages</li>
+<li class="breadcrumb-item active" aria-current="page">Package Manager</li>
 @endsection
 
 @section('content')

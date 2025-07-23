@@ -297,8 +297,12 @@
                         <div class="d-flex align-items-center justify-content-end">
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item">
-                                        <a href="{{ route('admin.dashboard') }}">Home</a>
+                                    <li class="breadcrumb-item {{ Route::is('admin.dashboard') ? 'active' : '' }}">
+                                        @if(Route::is('admin.dashboard'))
+                                            Dashboard
+                                        @else
+                                            <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+                                        @endif
                                     </li>
                                     @yield('breadcrumb')
                                 </ol>
