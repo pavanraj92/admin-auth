@@ -1,24 +1,74 @@
- .select2-container--default .select2-selection--single {
-    height: 34px;
-    line-height: 1.5;
+.select2-container {
+    width: 100% !important;
 }
-.select2-container--default .select2-selection--single .select2-selection__rendered {
-    line-height: 36px;
+
+.select2-selection {
+    height: 38px !important;
+    /* Match Bootstrap's default input height */
+    padding: 0.375rem 0.75rem !important;
+    /* Match Bootstrap input padding */
+    border: 1px solid #ced4da !important;
+    border-radius: 0.375rem !important;
+    background-color: #fff !important;
+    display: flex !important;
+    align-items: center !important;
 }
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 36px;
+
+/* Fix Select2 dropdown positioning and scrolling issues */
+.select2-dropdown {
+    z-index: 9999 !important;
 }
-.select2-container--default .select2-selection--single .select2-selection__placeholder {
-    line-height: 36px;
-}
+
 .select2-container--default .select2-selection--single .select2-selection__clear {
-    line-height: 36px;
-}     
-.select2-container .select2-selection--single {
-    color: #4F5467;
-    background-color: #fff;
-    border: 1px solid #e9ecef;
-    height: 35px; 
+    align-items: center;
+    display: flex;
+}
+
+.select2-container--default .select2-selection--single {
+    height: 38px !important;
+    line-height: 36px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    padding-left: 0 !important;
+    padding-right: 20px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px !important;
+    right: 1px !important;
+}
+
+/* Prevent body scroll when dropdown is open */
+.select2-container--open {
+    z-index: 9999;
+}
+
+/* Ensure dropdown stays within viewport */
+.select2-dropdown {
+    max-height: 200px !important;
+    overflow-y: auto !important;
+}
+
+/* Custom dropdown styling */
+.select2-dropdown-custom {
+    border: 1px solid #ced4da !important;
+    border-radius: 0.375rem !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.select2-dropdown-custom .select2-results__option {
+    padding: 8px 12px !important;
+}
+
+.select2-dropdown-custom .select2-results__option--highlighted {
+    background-color: #f48120 !important;
+    color: white !important;
+}
+
+.form-check-input:checked {
+    background-color: #f48120;
+    border-color: #f48120;
 }
 
 
