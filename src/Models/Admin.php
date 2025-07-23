@@ -92,7 +92,11 @@ class Admin extends Authenticatable
     {
         if ($name) {
             return $query->where(function ($q) use ($name) {
-                $q->where('first_name', 'like', '%' . $name . '%')
+                // full name filter
+                $q->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", '%' . $name . '%')
+                    ->orWhere('email', 'like', '%' . $name . '%')
+                    ->orWhere('mobile', 'like', '%' . $name . '%')
+                    ->orWhere('first_name', 'like', '%' . $name . '%')
                     ->orWhere('last_name', 'like', '%' . $name . '%');
             });
         }
