@@ -117,7 +117,7 @@
                         <li class="sidebar-item {{ Route::is($activeRoutes) ? 'selected' : '' }}">
                             <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is($activeRoutes) ? 'active' : '' }}"
                                 href="javascript:void(0)" aria-expanded="false">
-                                <i class="fas fa-tags"></i>
+                                <i class="mdi mdi-security"></i>
                                 <span class="hide-menu">Role Permssion Manager</span>
                             </a>
                             <ul aria-expanded="false"
