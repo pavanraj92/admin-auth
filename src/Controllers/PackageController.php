@@ -40,17 +40,25 @@ class PackageController extends Controller
 
             if (is_dir($packagePath)) {
                 // If uninstalling role-permission, also uninstall admins manager
-                if ($package === 'admin_role_permissions' && $vendor === 'admin') {
-                    // Uninstall admins manager first
-                    $dependentPackage = 'admins';
-                    $dependentPath = base_path("vendor/admin/{$dependentPackage}");
+                // if ($package === 'admin_role_permissions' && $vendor === 'admin') {
+                //     // Uninstall admins manager first
+                //     $dependentPackage = 'admins';
+                //     $dependentPath = base_path("vendor/admin/{$dependentPackage}");
 
-                    if (is_dir($dependentPath)) {
-                        $dependentCommand = "composer remove admin/{$dependentPackage}";
-                        ob_start();
-                        passthru($dependentCommand, $dependentExitCode);
-                        ob_end_clean();
-                    }
+                //     if (is_dir($dependentPath)) {
+                //         $dependentCommand = "composer remove admin/{$dependentPackage}";
+                //         ob_start();
+                //         passthru($dependentCommand, $dependentExitCode);
+                //         ob_end_clean();
+                //     }
+                // }
+
+                if ($package === 'admin_role_permissions' && $vendor === 'admin') {
+                    $this->uninstallDependentPackage('admin', 'admins');
+                }
+
+                if ($package === 'users' && $vendor === 'admin') {
+                    $this->uninstallDependentPackage('admin', 'user_roles');
                 }
 
                 $command = "composer remove {$vendor}/{$package}";
@@ -76,31 +84,39 @@ class PackageController extends Controller
                     ], 500);
                 }
             } else {
-                if ($package === 'admin_role_permissions' && $vendor === 'admin') {
-                    // Install dependent package: admins
-                    $dependentPackage = 'admins';
-                    $dependentPath = base_path("vendor/admin/{$dependentPackage}");
+                // if ($package === 'admin_role_permissions' && $vendor === 'admin') {
+                //     // Install dependent package: admins
+                //     $dependentPackage = 'admins';
+                //     $dependentPath = base_path("vendor/admin/{$dependentPackage}");
 
-                    if (!is_dir($dependentPath)) {
-                        $dependentCommand = "composer require admin/{$dependentPackage}:@dev";
-                        ob_start();
-                        passthru($dependentCommand, $dependentExitCode);
-                        ob_end_clean();
+                //     if (!is_dir($dependentPath)) {
+                //         $dependentCommand = "composer require admin/{$dependentPackage}:@dev";
+                //         ob_start();
+                //         passthru($dependentCommand, $dependentExitCode);
+                //         ob_end_clean();
 
-                        if ($dependentExitCode !== 0) {
-                            return response()->json([
-                                'status' => 'error',
-                                'message' => "❌ Failed to install dependency package: admin/{$dependentPackage}."
-                            ], 500);
-                        }
+                //         if ($dependentExitCode !== 0) {
+                //             return response()->json([
+                //                 'status' => 'error',
+                //                 'message' => "❌ Failed to install dependency package: admin/{$dependentPackage}."
+                //             ], 500);
+                //         }
 
-                        // Run migrations and seeder for 'admins'
-                        Artisan::call('optimize:clear');
-                        Artisan::call('migrate', [
-                            '--path' => "vendor/admin/{$dependentPackage}/database/migrations",
-                            '--force' => true,
-                        ]);
-                    }
+                //         // Run migrations and seeder for 'admins'
+                //         Artisan::call('optimize:clear');
+                //         Artisan::call('migrate', [
+                //             '--path' => "vendor/admin/{$dependentPackage}/database/migrations",
+                //             '--force' => true,
+                //         ]);
+                //     }
+                // }
+
+                if ($vendor === 'admin' && $package === 'admin_role_permissions') {
+                    $this->installDependentPackage('admin', 'admins');
+                }
+    
+                if ($vendor === 'admin' && $package === 'users') {
+                    $this->installDependentPackage('admin', 'user_roles');
                 }
 
                 $command = "composer require {$vendor}/{$package}:@dev";
@@ -115,25 +131,20 @@ class PackageController extends Controller
                     ]);
 
                     // Run the seeder
-                    if (is_dir(base_path('vendor/admin/settings'))) {
-                        Artisan::call('db:seed', [
-                            '--class' => 'Admin\Settings\Database\Seeders\\SettingSeeder',
-                            '--force' => true,
-                        ]);
-                    }
-
-                    if (is_dir(base_path('vendor/admin/users'))) {
-                        Artisan::call('db:seed', [
-                            '--class' => 'Admin\Users\Database\Seeders\\SeedUserRolesSeeder',
-                            '--force' => true,
-                        ]);
-                    }
-
-                    if (is_dir(base_path('vendor/admin/admin_role_permissions'))) {
-                        Artisan::call('db:seed', [
-                            '--class' => 'Admin\AdminRolePermissions\Database\Seeders\\AdminRolePermissionDatabaseSeeder',
-                            '--force' => true,
-                        ]);
+                    $seeders = [
+                        'settings' => 'Admin\Settings\Database\Seeders\SettingSeeder',
+                        'users' => 'Admin\Users\Database\Seeders\SeedUserRolesSeeder',
+                        'admin_role_permissions' => 'Admin\AdminRolePermissions\Database\Seeders\AdminRolePermissionDatabaseSeeder',
+                        'emails' => 'Admin\Emails\Database\Seeders\MailDatabaseSeeder',
+                    ];
+ 
+                    foreach ($seeders as $pkg => $seederClass) {
+                        if (is_dir(base_path("vendor/admin/{$pkg}"))) {
+                            Artisan::call('db:seed', [
+                                '--class' => $seederClass,
+                                '--force' => true,
+                            ]);
+                        }
                     }
 
                     $packageKey = "{$vendor}/{$package}";
@@ -231,6 +242,39 @@ class PackageController extends Controller
             \DB::table('migrations')
                 ->where('migration', 'like', '%create_user_roles_table%')
                 ->delete();
+        }
+    }
+
+    private function installDependentPackage($vendor, $package)
+    {
+        $path = base_path("vendor/{$vendor}/{$package}");
+        if (!is_dir($path)) {
+            $command = "composer require {$vendor}/{$package}:@dev";
+            ob_start();
+            passthru($command, $exitCode);
+            ob_end_clean();
+
+            if ($exitCode !== 0) {
+                throw new \Exception("❌ Failed to install dependency package: {$vendor}/{$package}");
+            }
+
+            Artisan::call('optimize:clear');
+            Artisan::call('migrate', [
+                '--path' => "vendor/{$vendor}/{$package}/database/migrations",
+                '--force' => true,
+            ]);
+
+        }
+    }
+
+    private function uninstallDependentPackage($vendor, $package)
+    {
+        $path = base_path("vendor/{$vendor}/{$package}");
+        if (is_dir($path)) {
+            $command = "composer remove {$vendor}/{$package}";
+            ob_start();
+            passthru($command, $exitCode);
+            ob_end_clean();
         }
     }
 }
