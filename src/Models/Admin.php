@@ -36,7 +36,8 @@ class Admin extends Authenticatable
         'password',
         'mobile',
         'website_name',
-        'website_slug'
+        'website_slug',
+        'industry'
     ];
 
     /**

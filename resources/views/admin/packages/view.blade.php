@@ -7,6 +7,10 @@
 @endsection
 
 @section('content')
+<div id="page-overlay"
+     style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 99999; cursor: not-allowed;">
+</div>
 <div id="package-progress-bar-container"
      style="height: 4px; width: 100%; background: #eee; z-index: 9999; display: none; margin-bottom: 0; position: relative; top: -47px;">
     <div id="package-progress-bar" style="height: 100%; width: 0; background: #4caf50; transition: width 0.5s;"></div>
@@ -146,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }).then((result) => {
                 if (result.isConfirmed) {
                     allButtons.forEach(btn => btn.disabled = true);
+                    document.getElementById('page-overlay').style.display = 'block';
                     const originalText = this.innerHTML;
                     this.innerHTML = `<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Processing... <span class="processing-percent">1%</span>`;
 
@@ -196,6 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         if (data.success || data.status === 'success') {
                             setTimeout(() => {
+                                document.getElementById('page-overlay').style.display = 'none';
                                 btn.innerHTML = `Completed`;
                                 Swal.fire({
                                     title: 'Success',
@@ -207,6 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             }, 700);
                         } else {
                             setTimeout(() => {
+                                document.getElementById('page-overlay').style.display = 'none';
                                 Swal.fire('Error', data.message || 'Operation failed.', 'error');
                                 allButtons.forEach(btn => btn.disabled = false);
                                 btn.innerHTML = originalText;
@@ -230,6 +237,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         console.error('Fetch error:', error);
                         setTimeout(() => {
+                            document.getElementById('page-overlay').style.display = 'none';
                             Swal.fire('Error', 'Something went wrong.', 'error');
                             allButtons.forEach(btn => btn.disabled = false);
                             this.innerHTML = originalText;

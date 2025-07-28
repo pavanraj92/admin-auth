@@ -161,14 +161,26 @@
                         ->orderBy('name')
                         ->get();
                         @endphp
-                        <li class="sidebar-item {{ Route::is('admin.users.*') ? 'selected' : '' }}">
-                            <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is('admin.users.*') ? 'active' : '' }}"
+                        <li class="sidebar-item {{ Route::is('admin.users.*', 'admin.user_roles.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is('admin.users.*', 'admin.user_roles.*') ? 'active' : '' }}"
                                 href="javascript:void(0)">
                                 <i class="fas fa-users"></i>
                                 <span class="hide-menu">User Manager</span>
                             </a>
                             <ul aria-expanded="{{ Route::is('admin.users.*') ? 'true' : 'false' }}"
-                                class="collapse first-level {{ Route::is('admin.users.*') ? 'in' : '' }}">
+                                class="collapse first-level {{ Route::is('admin.users.*', 'admin.user_roles.*') ? 'in' : '' }}">
+                                @admincan('user_role_list')
+                                @if (Route::has('admin.user_roles.index'))
+                                <li class="sidebar-item"
+                                    {{ Route::is('admin.user_roles.*') ? 'selected' : '' }}>
+                                    <a href="{{ route('admin.user_roles.index') }}"
+                                        class="sidebar-link {{ Route::is('admin.user_roles.*') ? 'active' : '' }}">
+                                        <i class="fas fa-user-tag"></i>
+                                        <span class="hide-menu">User Roles Manager</span>
+                                    </a>
+                                </li>
+                                @endif
+                                @endadmincan
                                 @foreach ($sidebarRoles as $role)
                                 <li
                                     class="sidebar-item {{ request('type') === $role->slug ? 'selected' : '' }}">
@@ -180,18 +192,6 @@
                                 </li>
                                 @endforeach
                             </ul>
-                        </li>
-                        @endif
-                        @endadmincan
-
-                        @admincan('user_role_list')
-                        @if (Route::has('admin.user_roles.index'))
-                        <li class="sidebar-item {{ Route::is('admin.user_roles.*') ? 'selected' : '' }}">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.user_roles.*') ? 'active' : '' }}"
-                                href="{{ route('admin.user_roles.index') }}" aria-expanded="false">
-                                <i class="fas fa-user-tag"></i>
-                                <span class="hide-menu">User Role Manager</span>
-                            </a>
                         </li>
                         @endif
                         @endadmincan
