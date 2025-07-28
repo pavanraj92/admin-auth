@@ -8,13 +8,21 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class PackageController extends Controller
 {
     public function viewpackages()
     {
         try {
-            $packages = config('constants.package_display_names');
+            $industry = DB::table('settings')->where('slug', 'industry')->value('config_value') ?? 'ecommerce';
+
+            // Get packages allowed for this industry
+            $industryPackages = config("constants.industry_packages.$industry", []);
+            $allPackages = config('constants.package_display_names');
+    
+            // Show only those packages which are allowed
+            $packages = array_intersect_key($allPackages, array_flip($industryPackages));
             return view('admin::admin.packages.view', compact('packages'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
