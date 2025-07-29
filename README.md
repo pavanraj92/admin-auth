@@ -2,6 +2,8 @@
 
 This package provides authentication features for the admin section of your application.
 
+---
+
 ## Features
 
 - Secure admin login/logout
@@ -10,9 +12,18 @@ This package provides authentication features for the admin section of your appl
 - Middleware protection for admin routes
 - Session management
 
-## Need to update `composer.json` file
+---
 
-Add the following to your `composer.json` to use the package from a local path:
+## Requirements
+
+- PHP >=8.2
+- Laravel Framework >= 12.x
+
+---
+
+## Installation
+
+### 1. Add Git Repository to `composer.json`
 
 ```json
 "repositories": [
@@ -23,25 +34,21 @@ Add the following to your `composer.json` to use the package from a local path:
 ]
 ```
 
-## Installation
+### 2. Require the package via Composer
+    ```bash
+    composer require admin/admin_auth:@dev
+    ```
 
-```bash
-composer require admin/admin_auth
-````
-
-## Usage    
-
-1. Publish the config and migration files:
-   ```bash
-   php artisan admin_auth:publish --force
-   composer dump-autoload
-   php artisan migrate
-   ```
+### 3. Publish assets
+    ```bash
+    php artisan admin_auth:publish --force
+    ```
+---
 
 2. Protect your admin routes using the provided middleware:
    ```php
    Route::middleware(['admin.auth'])->group(function () {
-       // Admin routes here
+       // Admin auth routes here
    });
    ```
 
@@ -67,11 +74,9 @@ Also, update your `config/auth.php` file to add the `admin` guard and provider:
         'model' => admin\admin_auth\Models\Admin::class,
     ],
 ],
-
-## Customization
-
-You can customize views, routes, and permissions by editing the configuration file.
+---
 
 ## License
 
-This package is open-sourced software licensed under the [MIT license](LICENSE).
+This package is open-sourced software licensed under the MIT license.
+
