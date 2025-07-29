@@ -260,6 +260,16 @@
                         @endif
                         @endadmincan
 
+                        @admincan('enquiry_manager_list')
+                        <li class="sidebar-item {{ Route::is('admin.enquiries.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link waves-effect waves-dark {{ Route::is('admin.enquiries.*') ? 'active' : '' }}"
+                                href="{{ route('admin.enquiries.index') }}" aria-expanded="false">
+                                <i class="fas fa-phone"></i>
+                                <span class="hide-menu">Enquiry Manager</span>
+                            </a>
+                        </li>
+                        @endadmincan
+
                         @admincan('settings_manager_list')
                         @if (Route::has('admin.settings.index'))
                         <li class="sidebar-item {{ Route::is('admin.settings.*') ? 'selected' : '' }}">
