@@ -261,6 +261,8 @@
                         @endadmincan
 
                         @admincan('enquiry_manager_list')
+                        {{-- Enquiry Manager --}}
+                        @if (Route::has('admin.enquiries.index'))
                         <li class="sidebar-item {{ Route::is('admin.enquiries.*') ? 'selected' : '' }}">
                             <a class="sidebar-link waves-effect waves-dark {{ Route::is('admin.enquiries.*') ? 'active' : '' }}"
                                 href="{{ route('admin.enquiries.index') }}" aria-expanded="false">
@@ -268,6 +270,9 @@
                                 <span class="hide-menu">Enquiry Manager</span>
                             </a>
                         </li>
+                        @endif
+                        @endadmincan
+                        
                         {{-- Brand Manager --}}
                         @admincan('brands_manager_list')
                         @if (Route::has('admin.brands.index'))
