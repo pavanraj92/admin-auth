@@ -279,7 +279,7 @@
                         <li class="sidebar-item {{ Route::is('admin.brands.*') ? 'selected' : '' }}">
                             <a href="{{ route('admin.brands.index') }}"
                                 class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.brands.*') ? 'active' : '' }}">
-                                <i class="fas fa-tags"></i>
+                                <i class="fas fa-shopping-bag"></i>
                                 <span class="hide-menu">Brand Manager</span>
                             </a>
                         </li>
