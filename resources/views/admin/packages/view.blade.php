@@ -17,8 +17,14 @@
     <span id="package-progress-percent" style="position:absolute; right:10px; top:0; color:#333; font-weight:bold; display:none;">1%</span>
 </div>
 <div class="container-fluid">
-    <div class="row">
-        @foreach ($packages as $route => $displayName)
+    <!-- Common Packages Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="text-primary mb-3" style="font-size: 1.5rem; font-weight: 600;">
+                <i class="fas fa-cogs me-3"></i>Common Packages
+            </h4>
+        </div>
+        @foreach ($commonPackageList as $route => $displayName)
         @php
         $info = config('constants.package_info.' . $route);
         [$vendor, $package] = explode('/', $route);
@@ -78,6 +84,63 @@
         </div>
         @endforeach
     </div>
+
+    <!-- Industry-Specific Packages Section -->
+    @if(!empty($industryPackageList))
+    <div class="row">
+        <div class="col-12">
+            <h4 class="text-success mb-3" style="font-size: 1.5rem; font-weight: 600;">
+                <i class="{{ config('constants.industry_icons.' . $industry, 'fas fa-industry') }} me-3"></i>{{ config('constants.industryAryList.' . $industry, $industry) }} Packages
+            </h4>
+            <p class="text-muted mb-3">
+                The {{ config('constants.industryAryList.' . $industry, $industry) }} package provides essential features for building {{ strtolower(config('constants.industryAryList.' . $industry, $industry)) }} applications.
+            </p>
+        </div>
+        @foreach ($industryPackageList as $route => $displayName)
+        @php
+        $info = config('constants.package_info.' . $route);
+        [$vendor, $package] = explode('/', $route);
+        $installed = is_dir(base_path("vendor/$vendor/$package"));
+        @endphp
+        <div class="col-md-3 mb-4">
+            <div class="card position-relative">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 mb-3" style="min-height: 110px;">
+                            <h5 class="card-title font-weight-bold">
+                                {{ $displayName }}
+                                <span
+                                    class="badge badge-pill badge-{{ $installed ? 'success' : 'danger' }} float-right p-1">
+                                    {{ $installed ? 'Installed' : 'Not Installed' }}
+                                </span>
+                            </h5>
+                            <p class="card-text"
+                                style="max-height: 100px; overflow-y: auto; text-overflow: ellipsis;">
+                                {{ isset($info['description']) && $info['description'] ? $info['description'] : 'No description available.' }}
+                            </p>
+                        </div>
+                        <div class="col-md-12 text-right">
+                            <form method="POST"
+                                action="{{ route('admin.packages.toggle', ['vendor' => $vendor, 'package' => $package]) }}">
+                                @csrf
+                                @php
+                                $displayName = config('constants.package_display_names.' . $route, $route);
+                                @endphp
+                                <button type="button"
+                                    class="btn btn-outline-{{ $installed ? 'danger' : 'success' }} install-uninstall-btn"
+                                    data-package="{{ $route }}" data-name="{{ $displayName }}"
+                                    data-action="{{ $installed ? 'uninstall' : 'install' }}">
+                                    {{ $installed ? 'Uninstall' : 'Install' }}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+    @endif
 </div>
 
 @endsection
