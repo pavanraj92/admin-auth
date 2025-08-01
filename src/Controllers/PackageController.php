@@ -20,7 +20,9 @@ class PackageController extends Controller
             // Get packages allowed for this industry
             $industryPackages = config("constants.industry_packages.$industry", []);
             $allPackages = config('constants.package_display_names');
-    
+            //array push in the $allPackages array
+            $industryPackages[count($industryPackages)] = 'admin/settings'; 
+
             // Show only those packages which are allowed
             $packages = array_intersect_key($allPackages, array_flip($industryPackages));
             return view('admin::admin.packages.view', compact('packages'));
