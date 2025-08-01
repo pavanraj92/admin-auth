@@ -8,7 +8,12 @@
     <meta name="description" content="@yield('meta_description', 'This is admin panel')">
     <meta name="author" content="">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="../../assets/images/favicon.png">
+    @if (config('GET.main_favicon'))
+        <link rel="icon" type="image/png" sizes="16x16"
+            href="{{ asset('storage/' . config('GET.main_favicon')) }}">
+    @else
+        <link rel="icon" type="image/png" sizes="16x16" href="../../assets/images/favicon.png">
+    @endif
     <title>@yield('title', 'Admin Panel')</title>
     <link href="{{ asset('backend/assets/libs/chartist/dist/chartist.min.css') }}" rel="stylesheet">
     <link href="{{ asset('backend/dist/css/style.min.css') }}" rel="stylesheet">
@@ -41,7 +46,7 @@
                     <div class="navbar-brand">
                         <a href="{{ route('admin.dashboard') }}" class="logo d-flex align-items-center">
                             <b class="logo-icon text-white fs-4 fw-bold">
-                                {{ auth('admin')->user()->website_name ?? 'Website' }}
+                                <img src="{{ asset('storage/'.config('GET.main_logo')) }}" alt="Logo" height="30">
                             </b>
                         </a>
                     </div>
@@ -169,7 +174,7 @@
                             </a>
                             <ul aria-expanded="{{ Route::is('admin.users.*') ? 'true' : 'false' }}"
                                 class="collapse first-level {{ Route::is('admin.users.*', 'admin.user_roles.*') ? 'in' : '' }}">
-                                @admincan('user_role_list')
+                                @admincan('user_roles_list')
                                 @if (Route::has('admin.user_roles.index'))
                                 <li class="sidebar-item"
                                     {{ Route::is('admin.user_roles.*') ? 'selected' : '' }}>
@@ -299,18 +304,56 @@
                         @endif
                         @endadmincan
 
-                        @admincan('settings_manager_list')
-                        @if (Route::has('admin.settings.index'))
+                          {{-- Rating Manager --}}
+                          @admincan('ratings_manager_list')
+                          @if (Route::has('admin.ratings.index'))
+                          <li class="sidebar-item {{ Route::is('admin.ratings.*') ? 'selected' : '' }}">
+                              <a href="{{ route('admin.ratings.index') }}"
+                                  class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.ratings.*') ? 'active' : '' }}">
+                                  <i class="fas fa-star"></i>
+                                  <span class="hide-menu">Rating Manager</span>
+                              </a>
+                          </li>
+                          @endif
+                          @endadmincan
+
+                        {{-- Setting Manager --}}
+                        @admincan('settings_manager')
                         <li class="sidebar-item {{ Route::is('admin.settings.*') ? 'selected' : '' }}">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.settings.*') ? 'active' : '' }}"
-                                href="{{ route('admin.settings.index') }}" aria-expanded="false">
+                            <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is('admin.settings.*') ? 'active' : '' }}"
+                                href="javascript:void(0)">
                                 <i class="fas fa-cog"></i>
                                 <span class="hide-menu">Setting Manager</span>
                             </a>
+                            <ul aria-expanded="{{ Route::is('admin.settings.*') ? 'true' : 'false' }}"
+                                class="collapse first-level {{ Route::is('admin.settings.*') ? 'in' : '' }}">
+                                @admincan('settings_manager_list')
+                                @if (Route::has('admin.settings.index'))
+                                    <li class="sidebar-item"
+                                        {{ (Route::is('admin.settings.*') && !Route::is('admin.settings.getlogos')) ? 'selected' : '' }}>
+                                        <a href="{{ route('admin.settings.index') }}"
+                                            class="sidebar-link {{ (Route::is('admin.settings.*') && !Route::is('admin.settings.getlogos')) ? 'active' : '' }}">
+                                            <i class="fas fa-user-tag"></i>
+                                            <span class="hide-menu">General Settings Manager</span>
+                                        </a>
+                                    </li>
+                                @endif
+                                @endadmincan
+                                @admincan('logo_favicon_manager_view')
+                                @if (Route::has('admin.settings.getlogos'))
+                                <li class="sidebar-item"
+                                    {{ Route::is('admin.settings.getlogos') ? 'selected' : '' }}>
+                                    <a href="{{ route('admin.settings.getlogos') }}"
+                                        class="sidebar-link {{ Route::is('admin.settings.getlogos') ? 'active' : '' }}">
+                                        <i class="fas fa-user-tag"></i>
+                                        <span class="hide-menu">Logo/Favicon Manager</span>
+                                    </a>
+                                </li>
+                                @endif
+                                @endadmincan
+                            </ul>
                         </li>
-                        @endif
                         @endadmincan
-
                     </ul>
                 </nav>
             </div>
