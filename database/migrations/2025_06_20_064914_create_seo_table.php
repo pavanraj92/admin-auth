@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admin_password_resets');
+        Schema::dropIfExists('seo_meta');
     }
 };
