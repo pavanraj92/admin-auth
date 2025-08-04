@@ -23,6 +23,7 @@ return new class extends Migration
             $table->boolean('is_installed')->default(false); // track installation status
             $table->boolean('is_auto_install')->default(false); // whether the package is auto-install
             $table->timestamp('installed_at')->nullable(); // when the package was installed
+            $table->softDeletes();
             $table->timestamps();
             
             // Indexes for better performance
