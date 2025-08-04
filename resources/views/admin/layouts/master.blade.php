@@ -9,10 +9,10 @@
     <meta name="author" content="">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @if (config('GET.main_favicon'))
-        <link rel="icon" type="image/png" sizes="16x16"
-            href="{{ asset('storage/' . config('GET.main_favicon')) }}">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="{{ asset('storage/' . config('GET.main_favicon')) }}">
     @else
-        <link rel="icon" type="image/png" sizes="16x16" href="../../assets/images/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../assets/images/favicon.png">
     @endif
     <title>@yield('title', 'Admin Panel')</title>
     <link href="{{ asset('backend/assets/libs/chartist/dist/chartist.min.css') }}" rel="stylesheet">
@@ -277,7 +277,7 @@
                         </li>
                         @endif
                         @endadmincan
-                        
+
                         {{-- Brand Manager --}}
                         @admincan('brands_manager_list')
                         @if (Route::has('admin.brands.index'))
@@ -304,18 +304,31 @@
                         @endif
                         @endadmincan
 
-                          {{-- Rating Manager --}}
-                          @admincan('ratings_manager_list')
-                          @if (Route::has('admin.ratings.index'))
-                          <li class="sidebar-item {{ Route::is('admin.ratings.*') ? 'selected' : '' }}">
-                              <a href="{{ route('admin.ratings.index') }}"
-                                  class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.ratings.*') ? 'active' : '' }}">
-                                  <i class="fas fa-star"></i>
-                                  <span class="hide-menu">Rating Manager</span>
-                              </a>
-                          </li>
-                          @endif
-                          @endadmincan
+                        {{-- Rating Manager --}}
+                        @admincan('ratings_manager_list')
+                        @if (Route::has('admin.ratings.index'))
+                        <li class="sidebar-item {{ Route::is('admin.ratings.*') ? 'selected' : '' }}">
+                            <a href="{{ route('admin.ratings.index') }}"
+                                class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.ratings.*') ? 'active' : '' }}">
+                                <i class="fas fa-star"></i>
+                                <span class="hide-menu">Rating Manager</span>
+                            </a>
+                        </li>
+                        @endif
+                        @endadmincan
+
+                        {{-- Product Manager --}}
+                        @admincan('products_manager_list')
+                        @if (Route::has('admin.products.index'))
+                        <li class="sidebar-item {{ Route::is('admin.products.*') ? 'selected' : '' }}">
+                            <a href="{{ route('admin.products.index') }}"
+                                class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.products.*') ? 'active' : '' }}">
+                                <i class="fas fa-box-open"></i>
+                                <span class="hide-menu">Product Manager</span>
+                            </a>
+                        </li>
+                        @endif
+                        @endadmincan
 
                         {{-- Setting Manager --}}
                         @admincan('settings_manager')
@@ -329,14 +342,14 @@
                                 class="collapse first-level {{ Route::is('admin.settings.*') ? 'in' : '' }}">
                                 @admincan('settings_manager_list')
                                 @if (Route::has('admin.settings.index'))
-                                    <li class="sidebar-item"
-                                        {{ (Route::is('admin.settings.*') && !Route::is('admin.settings.getlogos')) ? 'selected' : '' }}>
-                                        <a href="{{ route('admin.settings.index') }}"
-                                            class="sidebar-link {{ (Route::is('admin.settings.*') && !Route::is('admin.settings.getlogos')) ? 'active' : '' }}">
-                                            <i class="fas fa-user-tag"></i>
-                                            <span class="hide-menu">General Settings Manager</span>
-                                        </a>
-                                    </li>
+                                <li class="sidebar-item"
+                                    {{ (Route::is('admin.settings.*') && !Route::is('admin.settings.getlogos')) ? 'selected' : '' }}>
+                                    <a href="{{ route('admin.settings.index') }}"
+                                        class="sidebar-link {{ (Route::is('admin.settings.*') && !Route::is('admin.settings.getlogos')) ? 'active' : '' }}">
+                                        <i class="fas fa-user-tag"></i>
+                                        <span class="hide-menu">General Settings Manager</span>
+                                    </a>
+                                </li>
                                 @endif
                                 @endadmincan
                                 @admincan('logo_favicon_manager_view')
@@ -381,9 +394,9 @@
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item {{ Route::is('admin.dashboard') ? 'active' : '' }}">
                                         @if(Route::is('admin.dashboard'))
-                                            Dashboard
+                                        Dashboard
                                         @else
-                                            <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+                                        <a href="{{ route('admin.dashboard') }}">Dashboard</a>
                                         @endif
                                     </li>
                                     @yield('breadcrumb')
