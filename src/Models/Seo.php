@@ -4,12 +4,14 @@ namespace admin\admin_auth\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
+// use Illuminate\Database\Eloquent\SoftDeletes;
 use Kyslik\ColumnSortable\Sortable;
 
 class Seo extends Model
 {
-    use HasFactory, SoftDeletes, Sortable;
+    use HasFactory, Sortable;
+
+    protected $table = 'seo_meta';
 
     /**
      * The attributes that are mass assignable.
