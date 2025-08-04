@@ -24,11 +24,10 @@
                 <i class="fas fa-cogs me-3"></i>Common Packages
             </h4>
         </div>
-        @foreach ($commonPackageList as $route => $displayName)
+        @foreach ($commonPackages as $package)
         @php
-        $info = config('constants.package_info.' . $route);
-        [$vendor, $package] = explode('/', $route);
-        $installed = is_dir(base_path("vendor/$vendor/$package"));
+        [$vendor, $packageName] = explode('/', $package->package_name);
+        $installed = $package->is_installed;
         @endphp
         <div class="col-md-3 mb-4">
             <div class="card position-relative">
@@ -36,7 +35,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-3" style="min-height: 110px;">
                             <h5 class="card-title font-weight-bold">
-                                {{ $displayName }}
+                                {{ $package->display_name }}
                                 <span
                                     class="badge badge-pill badge-{{ $installed ? 'success' : 'danger' }} float-right p-1">
                                     {{ $installed ? 'Installed' : 'Not Installed' }}
@@ -44,21 +43,18 @@
                             </h5>
                             <p class="card-text"
                                 style="max-height: 100px; overflow-y: auto; text-overflow: ellipsis;">
-                                {{ isset($info['description']) && $info['description'] ? $info['description'] : 'No description available.' }}
+                                {{ $package->description ?: 'No description available.' }}
                             </p>
                         </div>
                         <div class="col-md-12 text-right">
                             <form method="POST"
-                                action="{{ route('admin.packages.toggle', ['vendor' => $vendor, 'package' => $package]) }}">
+                                action="{{ route('admin.packages.toggle', ['vendor' => $vendor, 'package' => $packageName]) }}">
                                 @csrf
-                                @php
-                                $displayName = config('constants.package_display_names.' . $route, $route);
-                                @endphp
-                                @if ($route === 'admin/settings')
+                                @if ($package->package_name === 'admin/settings' || $package->package_name === 'admin/admin_auth')
                                 @if (!$installed)
                                 <button type="button"
                                     class="btn btn-outline-success install-uninstall-btn"
-                                    data-package="{{ $route }}" data-name="{{ $displayName }}"
+                                    data-package="{{ $package->package_name }}" data-name="{{ $package->display_name }}"
                                     data-action="install">
                                     Install
                                 </button>
@@ -71,7 +67,7 @@
                                 @else
                                 <button type="button"
                                     class="btn btn-outline-{{ $installed ? 'danger' : 'success' }} install-uninstall-btn"
-                                    data-package="{{ $route }}" data-name="{{ $displayName }}"
+                                    data-package="{{ $package->package_name }}" data-name="{{ $package->display_name }}"
                                     data-action="{{ $installed ? 'uninstall' : 'install' }}">
                                     {{ $installed ? 'Uninstall' : 'Install' }}
                                 </button>
@@ -86,7 +82,7 @@
     </div>
 
     <!-- Industry-Specific Packages Section -->
-    @if(!empty($industryPackageList))
+    @if($industryPackages->count() > 0)
     <div class="row">
         <div class="col-12">
             <h4 class="text-success mb-3" style="font-size: 1.5rem; font-weight: 600;">
@@ -96,11 +92,10 @@
                 The {{ config('constants.industryAryList.' . $industry, $industry) }} package provides essential features for building {{ strtolower(config('constants.industryAryList.' . $industry, $industry)) }} applications.
             </p>
         </div>
-        @foreach ($industryPackageList as $route => $displayName)
+        @foreach ($industryPackages as $package)
         @php
-        $info = config('constants.package_info.' . $route);
-        [$vendor, $package] = explode('/', $route);
-        $installed = is_dir(base_path("vendor/$vendor/$package"));
+        [$vendor, $packageName] = explode('/', $package->package_name);
+        $installed = $package->is_installed;
         @endphp
         <div class="col-md-3 mb-4">
             <div class="card position-relative">
@@ -108,7 +103,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-3" style="min-height: 110px;">
                             <h5 class="card-title font-weight-bold">
-                                {{ $displayName }}
+                                {{ $package->display_name }}
                                 <span
                                     class="badge badge-pill badge-{{ $installed ? 'success' : 'danger' }} float-right p-1">
                                     {{ $installed ? 'Installed' : 'Not Installed' }}
@@ -116,19 +111,16 @@
                             </h5>
                             <p class="card-text"
                                 style="max-height: 100px; overflow-y: auto; text-overflow: ellipsis;">
-                                {{ isset($info['description']) && $info['description'] ? $info['description'] : 'No description available.' }}
+                                {{ $package->description ?: 'No description available.' }}
                             </p>
                         </div>
                         <div class="col-md-12 text-right">
                             <form method="POST"
-                                action="{{ route('admin.packages.toggle', ['vendor' => $vendor, 'package' => $package]) }}">
+                                action="{{ route('admin.packages.toggle', ['vendor' => $vendor, 'package' => $packageName]) }}">
                                 @csrf
-                                @php
-                                $displayName = config('constants.package_display_names.' . $route, $route);
-                                @endphp
                                 <button type="button"
                                     class="btn btn-outline-{{ $installed ? 'danger' : 'success' }} install-uninstall-btn"
-                                    data-package="{{ $route }}" data-name="{{ $displayName }}"
+                                    data-package="{{ $package->package_name }}" data-name="{{ $package->display_name }}"
                                     data-action="{{ $installed ? 'uninstall' : 'install' }}">
                                     {{ $installed ? 'Uninstall' : 'Install' }}
                                 </button>

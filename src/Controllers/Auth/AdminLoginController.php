@@ -19,8 +19,9 @@ class AdminLoginController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
+        $remember = $request->has('remember');
 
-        if (Auth::guard('admin')->attempt($credentials)) {
+        if (Auth::guard('admin')->attempt($credentials, $remember)) {
             return redirect()->intended(route('admin.dashboard'));
         }
 

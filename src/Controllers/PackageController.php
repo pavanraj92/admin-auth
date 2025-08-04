@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use admin\admin_auth\Models\Package;
 
 class PackageController extends Controller
 {
@@ -17,19 +18,16 @@ class PackageController extends Controller
         try {
             $industry = DB::table('settings')->where('slug', 'industry')->value('config_value') ?? 'ecommerce';
 
-            // Get common packages and industry-specific packages
-            $commonPackages = config('constants.common_packages', []);
-            $industryPackages = config("constants.industry_packages.$industry", []);
-            $allPackages = config('constants.package_display_names');
+            // Get packages from database instead of config
+            $commonPackages = Package::where('package_type', 'common')
+                                   ->orWhere('package_type', 'auto_install')
+                                   ->get();
+            
+            $industryPackages = Package::where('package_type', 'industry')
+                                     ->where('industry', $industry)
+                                     ->get();
 
-            // Add settings to common packages
-            $commonPackages[] = 'admin/settings';
-
-            // Filter packages for each section
-            $commonPackageList = array_intersect_key($allPackages, array_flip($commonPackages));
-            $industryPackageList = array_intersect_key($allPackages, array_flip($industryPackages));
-
-            return view('admin::admin.packages.view', compact('commonPackageList', 'industryPackageList', 'industry'));
+            return view('admin::admin.packages.view', compact('commonPackages', 'industryPackages', 'industry'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -75,6 +73,10 @@ class PackageController extends Controller
                 if ($exitCode === 0) {
                     // Remove published files
                     $this->removePublishedFiles($vendor, $package);
+                    
+                    // Update package status in database
+                    $this->updatePackageStatus($vendor, $package, false);
+                    
                     $packageKey = "{$vendor}/{$package}";
                     $displayName = config("constants.package_display_names.$packageKey", $packageKey);
 
@@ -159,6 +161,9 @@ class PackageController extends Controller
 
                     $packageKey = "{$vendor}/{$package}";
                     $displayName = config("constants.package_display_names.$packageKey", $packageKey);
+
+                    // Update package status in database
+                    $this->updatePackageStatus($vendor, $package, true);
 
                     $message = "Package {$displayName} Installed Successfully.";
                 } else {
@@ -311,6 +316,10 @@ class PackageController extends Controller
                 '--path' => "vendor/{$vendor}/{$package}/database/migrations",
                 '--force' => true,
             ]);
+
+            // Update package status in database
+            $this->updatePackageStatus($vendor, $package, true);
+
         }
     }
 
@@ -322,6 +331,62 @@ class PackageController extends Controller
             ob_start();
             passthru($command, $exitCode);
             ob_end_clean();
+            
+            // Update package status in database
+            $this->updatePackageStatus($vendor, $package, false);
         }
+    }
+
+    /**
+     * Update package installation status in the packages table
+     */
+    private function updatePackageStatus($vendor, $package, $isInstalled = true)
+    {
+        try {
+            $packageName = "{$vendor}/{$package}";
+            $packageRecord = Package::where('package_name', $packageName)->first();
+
+            if ($packageRecord) {
+                $packageRecord->update([
+                    'is_installed' => $isInstalled,
+                    'installed_at' => $isInstalled ? now() : null,
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Log error but don't fail the installation process
+            \Log::error("Failed to update package status for {$packageName}: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get all installed packages from the packages table
+     */
+    public function getInstalledPackages()
+    {
+        return Package::installed()->active()->get();
+    }
+
+    /**
+     * Get all available packages (both installed and not installed)
+     */
+    public function getAllPackages()
+    {
+        return Package::active()->get();
+    }
+
+    /**
+     * Get packages by type (common or industry)
+     */
+    public function getPackagesByType($type)
+    {
+        return Package::active()->where('package_type', $type)->get();
+    }
+
+    /**
+     * Get packages for specific industry
+     */
+    public function getPackagesForIndustry($industry)
+    {
+        return Package::active()->forIndustry($industry)->get();
     }
 }
