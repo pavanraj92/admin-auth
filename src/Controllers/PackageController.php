@@ -120,9 +120,13 @@ class PackageController extends Controller
                 if ($vendor === 'admin' && $package === 'admin_role_permissions') {
                     $this->installDependentPackage('admin', 'admins');
                 }
-    
+
                 if ($vendor === 'admin' && $package === 'users') {
                     $this->installDependentPackage('admin', 'user_roles');
+                }
+
+                if ($vendor === 'admin' && $package === 'products') {
+                    $this->installDependentPackage('admin', ['brands', 'categories', 'tags']);
                 }
 
                 $command = "composer require {$vendor}/{$package}:@dev";
@@ -143,7 +147,7 @@ class PackageController extends Controller
                         'admin_role_permissions' => 'Admin\AdminRolePermissions\Database\Seeders\AdminRolePermissionDatabaseSeeder',
                         'emails' => 'Admin\Emails\Database\Seeders\MailDatabaseSeeder',
                     ];
- 
+
                     foreach ($seeders as $pkg => $seederClass) {
                         if (is_dir(base_path("vendor/admin/{$pkg}"))) {
                             Artisan::call('db:seed', [
@@ -231,6 +235,44 @@ class PackageController extends Controller
                 ->delete();
         }
 
+        if ($package === 'products') {
+            // Drop tables
+            Schema::dropIfExists('products');
+            Schema::dropIfExists('product_images');
+            Schema::dropIfExists('product_category');
+            Schema::dropIfExists('product_prices');
+            Schema::dropIfExists('product_inventory');
+            Schema::dropIfExists('product_shipping');
+            Schema::dropIfExists('product_tag');
+
+            // Remove migration records
+            $migrationNames = [
+                'create_products',
+                'create_product_images',
+                'create_product_category',
+                'create_product_prices',
+                'create_product_inventory',
+                'create_product_shipping',
+                'create_product_tag'
+            ];
+
+            foreach ($migrationNames as $migration) {
+                \DB::table('migrations')
+                    ->where('migration', 'like', '%' . $migration . '%')
+                    ->delete();
+            }
+        } else {
+            if (Schema::hasTable($package)) {
+                if ($package != 'admins' && Schema::hasTable('admins')) {
+                    Schema::drop($package);
+                }
+            }
+
+            \DB::table('migrations')
+                ->where('migration', 'like', '%create_' . $package . '_table%')
+                ->delete();
+        }
+
 
         // If package is 'users', also drop user_roles table
         if ($package === 'users' && Schema::hasTable('user_roles')) {
@@ -269,7 +311,6 @@ class PackageController extends Controller
                 '--path' => "vendor/{$vendor}/{$package}/database/migrations",
                 '--force' => true,
             ]);
-
         }
     }
 
