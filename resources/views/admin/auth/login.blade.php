@@ -18,7 +18,7 @@
 </head>
 <body class="bg-light">
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
-        <div class="card shadow-sm p-4" style="min-width: 350px;">
+        <div class="card shadow-sm p-4 admin-login" style="min-width: 350px;">
             <h2 class="mb-4 text-center">Admin Login</h2>
             <form method="POST" action="{{ route('admin.login') }}">
                 @csrf
@@ -35,6 +35,12 @@
                     <label for="password" class="form-label">Password</label>
                     <input type="password" id="password" name="password" class="form-control" required>
                     <span toggle="#password" class="fa fa-fw fa-eye-slash toggle-password"></span>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                    <label class="form-check-label" for="remember">
+                        Remember Me
+                    </label>
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Login</button>
                 <div class="mt-3 text-center">
