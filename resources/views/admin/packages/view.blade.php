@@ -9,7 +9,7 @@
 @section('content')
 <div id="page-overlay"
      style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 99999; cursor: not-allowed;">
+            z-index: 99999;  background:rgba(0,0,0,0.3); cursor: not-allowed;">
 </div>
 <div id="package-progress-bar-container"
      style="height: 4px; width: 100%; background: #eee; z-index: 9999; display: none; margin-bottom: 0; position: relative; top: -47px;">
