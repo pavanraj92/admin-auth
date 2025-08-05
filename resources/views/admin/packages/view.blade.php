@@ -21,7 +21,7 @@
     <div class="row mb-4">
         <div class="col-12">
             <h4 class="text-primary mb-3" style="font-size: 1.5rem; font-weight: 600;">
-                <i class="fas fa-cogs me-3"></i>Common Packages
+                <i class="fas fa-cogs me-3"></i> Common Packages
             </h4>
         </div>
         @foreach ($commonPackages as $package)
@@ -86,7 +86,7 @@
     <div class="row">
         <div class="col-12">
             <h4 class="text-success mb-3" style="font-size: 1.5rem; font-weight: 600;">
-                <i class="{{ config('constants.industry_icons.' . $industry, 'fas fa-industry') }} me-3"></i>{{ config('constants.industryAryList.' . $industry, $industry) }} Packages
+                <i class="{{ config('constants.industry_icons.' . $industry, 'fas fa-industry') }} me-3"></i> {{ config('constants.industryAryList.' . $industry, $industry) }} Packages
             </h4>
             <p class="text-muted mb-3">
                 The {{ config('constants.industryAryList.' . $industry, $industry) }} package provides essential features for building {{ strtolower(config('constants.industryAryList.' . $industry, $industry)) }} applications.
@@ -136,172 +136,173 @@
 </div>
 
 @endsection
-
+@push('scripts')
 <script>
-let progressBarTimeout = null;
+    let progressBarTimeout = null;
 
-function startPackageProgressBar(durationMs) {
-    $('#package-progress-bar-container').show();
-    let bar = $('#package-progress-bar');
-    bar.stop(true, true).css('width', '0%');
+    function startPackageProgressBar(durationMs) {
+        $('#package-progress-bar-container').show();
+        let bar = $('#package-progress-bar');
+        bar.stop(true, true).css('width', '0%');
 
-    bar.css({
-        transition: `width ${durationMs / 1000}s linear`,
-        width: '90%'
-    });
-}
-
-function finishPackageProgressBar(fromPercent) {
-    let bar = $('#package-progress-bar');
-
-    // Start from current width and finish to 100%
-    bar.css({
-        transition: 'none',
-        width: `${fromPercent}%`
-    });
-
-    // Force reflow
-    bar[0].offsetHeight;
-
-    // Then animate to 100%
-    bar.css({
-        transition: 'width 0.5s linear',
-        width: '100%'
-    });
-
-    setTimeout(() => {
-        $('#package-progress-bar-container').fadeOut(300, function () {
-            bar.css({
-                transition: 'none',
-                width: '0%'
-            });
+        bar.css({
+            transition: `width ${durationMs / 1000}s linear`,
+            width: '90%'
         });
-    }, 700);
-}
+    }
 
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.install-uninstall-btn').forEach(function (button) {
-        button.addEventListener('click', function (e) {
-            e.preventDefault();
-            const allButtons = document.querySelectorAll('.install-uninstall-btn');
-            const form = this.closest('form');
-            const action = this.dataset.action;
-            const displayName = this.dataset.name;
-            const url = form.action;
-            const token = form.querySelector('input[name="_token"]').value;
+    function finishPackageProgressBar(fromPercent) {
+        let bar = $('#package-progress-bar');
 
-            Swal.fire({
-                text: `Are you sure you want to ${action} ${displayName} package?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: `Yes, ${action} it!`,
-                cancelButtonText: 'No, cancel!',
-                customClass: {
-                    confirmButton: 'btn btn-outline-success',
-                    cancelButton: 'btn btn-outline-danger',
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    allButtons.forEach(btn => btn.disabled = true);
-                    document.getElementById('page-overlay').style.display = 'block';
-                    const originalText = this.innerHTML;
-                    this.innerHTML = `<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Processing... <span class="processing-percent">1%</span>`;
+        // Start from current width and finish to 100%
+        bar.css({
+            transition: 'none',
+            width: `${fromPercent}%`
+        });
 
-                    let percent = 1;
-                    const targetPercent = 90;
+        // Force reflow
+        bar[0].offsetHeight;
 
-                    const progressDuration = (action === 'install') ? 40000 : 25000; // in ms
-                    const intervalTime = progressDuration / (targetPercent - percent);
+        // Then animate to 100%
+        bar.css({
+            transition: 'width 0.5s linear',
+            width: '100%'
+        });
 
-                    const btn = this;
+        setTimeout(() => {
+            $('#package-progress-bar-container').fadeOut(300, function () {
+                bar.css({
+                    transition: 'none',
+                    width: '0%'
+                });
+            });
+        }, 700);
+    }
 
-                    // First interval: 1 → 90
-                    const firstInterval = setInterval(() => {
-                        if (percent < targetPercent) {
-                            percent++;
-                            btn.querySelector('.processing-percent').textContent = percent + '%';
-                        } else {
-                            clearInterval(firstInterval);
-                        }
-                    }, intervalTime);
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.install-uninstall-btn').forEach(function (button) {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                const allButtons = document.querySelectorAll('.install-uninstall-btn');
+                const form = this.closest('form');
+                const action = this.dataset.action;
+                const displayName = this.dataset.name;
+                const url = form.action;
+                const token = form.querySelector('input[name="_token"]').value;
 
-                    startPackageProgressBar(progressDuration);
+                Swal.fire({
+                    text: `Are you sure you want to ${action} ${displayName} package?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: `Yes, ${action} it!`,
+                    cancelButtonText: 'No, cancel!',
+                    customClass: {
+                        confirmButton: 'btn btn-outline-success',
+                        cancelButton: 'btn btn-outline-danger',
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        allButtons.forEach(btn => btn.disabled = true);
+                        document.getElementById('page-overlay').style.display = 'block';
+                        const originalText = this.innerHTML;
+                        this.innerHTML = `<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Processing... <span class="processing-percent">1%</span>`;
 
-                    fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': token,
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({})
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        clearInterval(firstInterval);
+                        let percent = 1;
+                        const targetPercent = 90;
 
-                        // Second interval: from current → 100
-                        const secondInterval = setInterval(() => {
-                            if (percent < 100) {
+                        const progressDuration = (action === 'install') ? 40000 : 25000; // in ms
+                        const intervalTime = progressDuration / (targetPercent - percent);
+
+                        const btn = this;
+
+                        // First interval: 1 → 90
+                        const firstInterval = setInterval(() => {
+                            if (percent < targetPercent) {
                                 percent++;
                                 btn.querySelector('.processing-percent').textContent = percent + '%';
                             } else {
-                                clearInterval(secondInterval);
+                                clearInterval(firstInterval);
                             }
-                        }, 30); // fast
+                        }, intervalTime);
 
-                        finishPackageProgressBar(percent);
+                        startPackageProgressBar(progressDuration);
 
-                        if (data.success || data.status === 'success') {
-                            setTimeout(() => {
-                                document.getElementById('page-overlay').style.display = 'none';
-                                btn.innerHTML = `Completed`;
-                                Swal.fire({
-                                    title: 'Success',
-                                    text: data.message || 'Operation successful.',
-                                    icon: 'success',
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                }).then(() => window.location.reload());
-                            }, 700);
-                        } else {
-                            setTimeout(() => {
-                                document.getElementById('page-overlay').style.display = 'none';
-                                Swal.fire('Error', data.message || 'Operation failed.', 'error');
-                                allButtons.forEach(btn => btn.disabled = false);
-                                btn.innerHTML = originalText;
-                            }, 700);
-                        }
-                    })
-                    .catch((error) => {
-                        clearInterval(firstInterval);
+                        fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': token,
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({})
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            clearInterval(firstInterval);
 
-                        // Fail case: also finish to 100 for UI consistency
-                        const secondInterval = setInterval(() => {
-                            if (percent < 100) {
-                                percent++;
-                                this.querySelector('.processing-percent').textContent = percent + '%';
+                            // Second interval: from current → 100
+                            const secondInterval = setInterval(() => {
+                                if (percent < 100) {
+                                    percent++;
+                                    btn.querySelector('.processing-percent').textContent = percent + '%';
+                                } else {
+                                    clearInterval(secondInterval);
+                                }
+                            }, 30); // fast
+
+                            finishPackageProgressBar(percent);
+
+                            if (data.success || data.status === 'success') {
+                                setTimeout(() => {
+                                    document.getElementById('page-overlay').style.display = 'none';
+                                    btn.innerHTML = `Completed`;
+                                    Swal.fire({
+                                        title: 'Success',
+                                        text: data.message || 'Operation successful.',
+                                        icon: 'success',
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    }).then(() => window.location.reload());
+                                }, 700);
                             } else {
-                                clearInterval(secondInterval);
+                                setTimeout(() => {
+                                    document.getElementById('page-overlay').style.display = 'none';
+                                    Swal.fire('Error', data.message || 'Operation failed.', 'error');
+                                    allButtons.forEach(btn => btn.disabled = false);
+                                    btn.innerHTML = originalText;
+                                }, 700);
                             }
-                        }, 30);
+                        })
+                        .catch((error) => {
+                            clearInterval(firstInterval);
 
-                        finishPackageProgressBar(percent);
+                            // Fail case: also finish to 100 for UI consistency
+                            const secondInterval = setInterval(() => {
+                                if (percent < 100) {
+                                    percent++;
+                                    this.querySelector('.processing-percent').textContent = percent + '%';
+                                } else {
+                                    clearInterval(secondInterval);
+                                }
+                            }, 30);
 
-                        console.error('Fetch error:', error);
-                        setTimeout(() => {
-                            document.getElementById('page-overlay').style.display = 'none';
-                            Swal.fire('Error', 'Something went wrong.', 'error');
-                            allButtons.forEach(btn => btn.disabled = false);
-                            this.innerHTML = originalText;
-                        }, 700);
-                    });
-                }
+                            finishPackageProgressBar(percent);
+
+                            console.error('Fetch error:', error);
+                            setTimeout(() => {
+                                document.getElementById('page-overlay').style.display = 'none';
+                                Swal.fire('Error', 'Something went wrong.', 'error');
+                                allButtons.forEach(btn => btn.disabled = false);
+                                this.innerHTML = originalText;
+                            }, 700);
+                        });
+                    }
+                });
             });
         });
     });
-});
 
 </script>
+@endpush
