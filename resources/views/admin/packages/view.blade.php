@@ -7,6 +7,15 @@
 @endsection
 
 @section('content')
+@php
+    // Use config list if available, otherwise fallback to these three packages
+    $protected = config('constants.protected_packages', [
+        'admin/settings',
+        'admin/admin_auth',
+        'admin/product_orders',
+    ]);
+@endphp
+
 <div id="page-overlay"
      style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 99999;  background:rgba(0,0,0,0.3); cursor: not-allowed;">
@@ -18,7 +27,7 @@
 </div>
 <div class="container-fluid">
     <!-- Common Packages Section -->
-    <div class="row mb-4">
+    <div class="row mb-2">
         <div class="col-12">
             <h4 class="text-primary mb-3" style="font-size: 1.5rem; font-weight: 600;">
                 <i class="fas fa-cogs me-3"></i> Common Packages
@@ -29,7 +38,7 @@
         [$vendor, $packageName] = explode('/', $package->package_name);
         $installed = $package->is_installed;
         @endphp
-        <div class="col-md-3 mb-4">
+        <div class="col-md-3 mb-2">
             <div class="card position-relative">
                 <div class="card-body">
                     <div class="row">
@@ -50,27 +59,27 @@
                             <form method="POST"
                                 action="{{ route('admin.packages.toggle', ['vendor' => $vendor, 'package' => $packageName]) }}">
                                 @csrf
-                                @if ($package->package_name === 'admin/settings' || $package->package_name === 'admin/admin_auth')
-                                @if (!$installed)
-                                <button type="button"
-                                    class="btn btn-outline-success install-uninstall-btn"
-                                    data-package="{{ $package->package_name }}" data-name="{{ $package->display_name }}"
-                                    data-action="install">
-                                    Install
-                                </button>
+                                @if (in_array($package->package_name, $protected))
+                                    {{-- Hide button for protected packages (show install only when not installed) --}}
+                                    @if (! $installed)
+                                        <button type="button"
+                                            class="btn btn-outline-success install-uninstall-btn"
+                                            data-package="{{ $package->package_name }}" data-name="{{ $package->display_name }}"
+                                            data-action="install">
+                                            Install
+                                        </button>
+                                    @else
+                                        <div style="visibility: hidden;">
+                                            <button type="button" class="btn btn-outline-secondary">Placeholder</button>
+                                        </div>
+                                    @endif
                                 @else
-                                {{-- Do nothing OR show an invisible placeholder if needed --}}
-                                <div style="visibility: hidden;">
-                                    <button type="button" class="btn btn-outline-secondary">Placeholder</button>
-                                </div>
-                                @endif
-                                @else
-                                <button type="button"
-                                    class="btn btn-outline-{{ $installed ? 'danger' : 'success' }} install-uninstall-btn"
-                                    data-package="{{ $package->package_name }}" data-name="{{ $package->display_name }}"
-                                    data-action="{{ $installed ? 'uninstall' : 'install' }}">
-                                    {{ $installed ? 'Uninstall' : 'Install' }}
-                                </button>
+                                    <button type="button"
+                                        class="btn btn-outline-{{ $installed ? 'danger' : 'success' }} install-uninstall-btn"
+                                        data-package="{{ $package->package_name }}" data-name="{{ $package->display_name }}"
+                                        data-action="{{ $installed ? 'uninstall' : 'install' }}">
+                                        {{ $installed ? 'Uninstall' : 'Install' }}
+                                    </button>
                                 @endif
                             </form>
                         </div>
@@ -97,7 +106,7 @@
         [$vendor, $packageName] = explode('/', $package->package_name);
         $installed = $package->is_installed;
         @endphp
-        <div class="col-md-3 mb-4">
+        <div class="col-md-3 mb-2">
             <div class="card position-relative">
                 <div class="card-body">
                     <div class="row">
@@ -118,12 +127,28 @@
                             <form method="POST"
                                 action="{{ route('admin.packages.toggle', ['vendor' => $vendor, 'package' => $packageName]) }}">
                                 @csrf
-                                <button type="button"
-                                    class="btn btn-outline-{{ $installed ? 'danger' : 'success' }} install-uninstall-btn"
-                                    data-package="{{ $package->package_name }}" data-name="{{ $package->display_name }}"
-                                    data-action="{{ $installed ? 'uninstall' : 'install' }}">
-                                    {{ $installed ? 'Uninstall' : 'Install' }}
-                                </button>
+                                @if (in_array($package->package_name, $protected))
+                                    {{-- Hide button for protected packages (show install only when not installed) --}}
+                                    @if (! $installed)
+                                        <button type="button"
+                                            class="btn btn-outline-success install-uninstall-btn"
+                                            data-package="{{ $package->package_name }}" data-name="{{ $package->display_name }}"
+                                            data-action="install">
+                                            Install
+                                        </button>
+                                    @else
+                                        <div style="visibility: hidden;">
+                                            <button type="button" class="btn btn-outline-secondary">Placeholder</button>
+                                        </div>
+                                    @endif
+                                @else
+                                    <button type="button"
+                                        class="btn btn-outline-{{ $installed ? 'danger' : 'success' }} install-uninstall-btn"
+                                        data-package="{{ $package->package_name }}" data-name="{{ $package->display_name }}"
+                                        data-action="{{ $installed ? 'uninstall' : 'install' }}">
+                                        {{ $installed ? 'Uninstall' : 'Install' }}
+                                    </button>
+                                @endif
                             </form>
                         </div>
                     </div>

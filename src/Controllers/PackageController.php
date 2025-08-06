@@ -65,6 +65,10 @@ class PackageController extends Controller
                     $this->uninstallDependentPackage('admin', 'user_roles');
                 }
 
+                if ($package === 'products' && $vendor === 'admin') {
+                    $this->uninstallDependentPackage('admin', ['brands', 'categories', 'tags', 'product_orders']);
+                }
+
                 $command = "composer remove {$vendor}/{$package}";
                 ob_start();
                 passthru($command, $exitCode);
@@ -128,7 +132,7 @@ class PackageController extends Controller
                 }
 
                 if ($vendor === 'admin' && $package === 'products') {
-                    $this->installDependentPackage('admin', ['brands', 'categories', 'tags']);
+                    $this->installDependentPackage('admin', ['brands', 'categories', 'tags', 'product_orders']);
                 }
 
                 $command = "composer require {$vendor}/{$package}:@dev";
@@ -189,6 +193,9 @@ class PackageController extends Controller
         }
     }
 
+    /**
+     * Remove published files and database artifacts for a package.
+     */
     protected function removePublishedFiles($vendor, $package)
     {
         $singular = Str::singular($package);
@@ -204,96 +211,59 @@ class PackageController extends Controller
 
         foreach ($paths as $path) {
             if (file_exists($path)) {
-                is_dir($path) ? \File::deleteDirectory($path) : \File::delete($path);
+                is_dir($path) ? File::deleteDirectory($path) : File::delete($path);
             }
         }
 
-        if ($package === 'admin_role_permissions') {
-            // Drop tables
-            Schema::dropIfExists('role_admin');
-            Schema::dropIfExists('permission_role');
-            Schema::dropIfExists('permissions');
-            Schema::dropIfExists('roles');
-
-            // Remove migration records
-            $migrationNames = [
-                'create_roles_table',
-                'create_permissions_table',
-                'create_permission_role_table',
-                'create_role_admin_table',
-            ];
-
-            foreach ($migrationNames as $migration) {
-                \DB::table('migrations')
-                    ->where('migration', 'like', '%' . $migration . '%')
-                    ->delete();
-            }
-        } else {
-            if (Schema::hasTable($package)) {
-                if ($package != 'admins' && Schema::hasTable('admins')) {
-                    Schema::drop($package);
-                }
-            }
-
-            \DB::table('migrations')
-                ->where('migration', 'like', '%create_' . $package . '_table%')
-                ->delete();
+        // Package-specific table and migration cleanup
+        switch ($package) {
+            case 'admin_role_permissions':
+                $tables = ['role_admin', 'permission_role', 'permissions', 'roles'];
+                $migrations = [
+                    'create_roles_table',
+                    'create_permissions_table',
+                    'create_permission_role_table',
+                    'create_role_admin_table',
+                ];
+                break;
+            case 'products':
+                $tables = [
+                    'products', 'product_images', 'product_category',
+                    'product_prices', 'product_inventory', 'product_shipping', 'product_tag'
+                ];
+                $migrations = [
+                    'create_products',
+                    'create_product_images',
+                    'create_product_category',
+                    'create_product_prices',
+                    'create_product_inventory',
+                    'create_product_shipping',
+                    'create_product_tag'
+                ];
+                break;
+            case 'users':
+                $tables = [$package, 'user_roles'];
+                $migrations = ['create_' . $package . '_table', 'create_user_roles_table'];
+                break;
+            case 'product_orders':
+                $tables = ['orders', 'order_items'];
+                $migrations = ['create_orders_table', 'create_order_items_table'];
+                break;
+            default:
+                $tables = [$package];
+                $migrations = ['create_' . $package . '_table'];
+                break;
         }
 
-        if ($package === 'products') {
-            // Drop tables
-            Schema::dropIfExists('products');
-            Schema::dropIfExists('product_images');
-            Schema::dropIfExists('product_category');
-            Schema::dropIfExists('product_prices');
-            Schema::dropIfExists('product_inventory');
-            Schema::dropIfExists('product_shipping');
-            Schema::dropIfExists('product_tag');
-
-            // Remove migration records
-            $migrationNames = [
-                'create_products',
-                'create_product_images',
-                'create_product_category',
-                'create_product_prices',
-                'create_product_inventory',
-                'create_product_shipping',
-                'create_product_tag'
-            ];
-
-            foreach ($migrationNames as $migration) {
-                \DB::table('migrations')
-                    ->where('migration', 'like', '%' . $migration . '%')
-                    ->delete();
+        foreach ($tables as $table) {
+            if (Schema::hasTable($table)) {
+                Schema::dropIfExists($table);
             }
-        } else {
-            if (Schema::hasTable($package)) {
-                if ($package != 'admins' && Schema::hasTable('admins')) {
-                    Schema::drop($package);
-                }
-            }
-
-            \DB::table('migrations')
-                ->where('migration', 'like', '%create_' . $package . '_table%')
-                ->delete();
         }
 
-
-        // If package is 'users', also drop user_roles table
-        if ($package === 'users' && Schema::hasTable('user_roles')) {
-            Schema::drop('user_roles');
-        }
-
-        if ($package != 'admins') {
-            \DB::table('migrations')
-                ->where('migration', 'like', '%create_' . $package . '_table%')
-                ->delete();
-        }
-
-        // Also remove user_roles migration record if applicable
-        if ($package === 'users') {
-            \DB::table('migrations')
-                ->where('migration', 'like', '%create_user_roles_table%')
+        foreach ($migrations as $migration) {
+            DB::table('migrations')
+                ->where('migration', 'like', '%' . $migration . '%')
                 ->delete();
         }
     }
