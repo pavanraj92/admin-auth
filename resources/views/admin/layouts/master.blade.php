@@ -213,6 +213,32 @@
                         @endif
                         @endadmincan
 
+                        {{-- Course Manager --}}
+                        @admincan('courses_manager_list')
+                        @if (Route::has('admin.courses.index'))
+                        <li class="sidebar-item {{ Route::is('admin.courses.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.courses.*') ? 'active' : '' }}"
+                                href="{{ route('admin.courses.index') }}" aria-expanded="false">
+                                <i class="fas fa-book"></i>
+                                <span class="hide-menu">Course Manager</span>
+                            </a>
+                        </li>
+                        @endif
+                        @endadmincan
+
+                        {{-- Lecture Manager --}}
+                        @admincan('lectures_manager_list')
+                        @if (Route::has('admin.lectures.index'))
+                        <li class="sidebar-item {{ Route::is('admin.lectures.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.lectures.*') ? 'active' : '' }}"
+                                href="{{ route('admin.lectures.index') }}" aria-expanded="false">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <span class="hide-menu">Lecture Manager</span>
+                            </a>
+                        </li>
+                        @endif
+                        @endadmincan
+
                         {{-- CMS Pages Manager --}}
                         @admincan('pages_manager_list')
                         @if (Route::has('admin.pages.index'))
