@@ -356,6 +356,22 @@
                         @endif
                         @endadmincan
 
+                        
+                        {{-- Product Manager --}}
+                        @admincan('product_orders_manager_list')
+                        @if (
+                            \DB::table('packages')->where('package_name', 'admin/products')->exists() && Route::has('admin.orders.index')
+                        )
+                        <li class="sidebar-item {{ Route::is('admin.orders.*') ? 'selected' : '' }}">
+                            <a href="{{ route('admin.orders.index') }}"
+                                class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.orders.*') ? 'active' : '' }}">
+                                <i class="fas fa-shopping-cart"></i>	
+                                <span class="hide-menu">Order Manager</span>
+                            </a>
+                        </li>
+                        @endif
+                        @endadmincan
+
                         {{-- Setting Manager --}}
                         @admincan('settings_manager')
                         <li class="sidebar-item {{ Route::is('admin.settings.*') ? 'selected' : '' }}">
