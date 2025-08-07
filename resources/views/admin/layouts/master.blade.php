@@ -355,7 +355,6 @@
                         </li>
                         @endif
                         @endadmincan
-
                         
                         {{-- Product Manager --}}
                         @admincan('product_orders_manager_list')
@@ -367,6 +366,19 @@
                                 class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.orders.*') ? 'active' : '' }}">
                                 <i class="fas fa-shopping-cart"></i>	
                                 <span class="hide-menu">Order Manager</span>
+                            </a>
+                        </li>
+                        @endif
+                        @endadmincan
+
+                        {{-- Certificate Manager --}}
+                        @admincan('certificates_manager_list')
+                        @if (Route::has('admin.certificates.index'))
+                        <li class="sidebar-item {{ Route::is('admin.certificates.*') ? 'selected' : '' }}">
+                            <a href="{{ route('admin.certificates.index') }}"
+                                class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.certificates.*') ? 'active' : '' }}">
+                                <i class="fas fa-certificate"></i>
+                                <span class="hide-menu">Certificate Manager</span>
                             </a>
                         </li>
                         @endif
