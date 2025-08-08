@@ -424,6 +424,19 @@
                             </li>
                         @endadmincan
 
+                        {{-- Product Coupons --}}
+                        @admincan('product_coupons_manager_list')
+                            @if (Route::has('admin.coupons.index'))
+                                <li class="sidebar-item {{ Route::is('admin.coupons.*') ? 'selected' : '' }}">
+                                    <a href="{{ route('admin.coupons.index') }}"
+                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.coupons.*') ? 'active' : '' }}">
+                                        <i class="fas fa-tags"></i>
+                                        <span class="hide-menu">Coupons Manager</span>
+                                    </a>
+                                </li>
+                            @endif
+                        @endadmincan
+
                         {{-- Product Import Manager --}}
                         {{-- Setting Manager --}}
                         @admincan('settings_manager')
