@@ -359,7 +359,7 @@
                         
                         {{-- Product Manager --}}
                         @admincan('product_orders_manager_list')
-                            @if (\DB::table('packages')->where('package_name', 'admin/products')->exists() && Route::has('admin.orders.index'))
+                            @if (Route::has('admin.orders.index'))
                                 <li class="sidebar-item {{ Route::is('admin.orders.*') ? 'selected' : '' }}">
                                     <a href="{{ route('admin.orders.index') }}"
                                         class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.orders.*') ? 'active' : '' }}">
@@ -389,7 +389,7 @@
                                 class="sidebar-item {{ Route::is('admin.shipping_methods.*') || Route::is('admin.shipping_rates.*') ? 'selected' : '' }}">
                                 <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is('admin.shipping_methods.*') || Route::is('admin.shipping_rates.*') ? 'active' : '' }}"
                                     href="javascript:void(0)">
-                                    <i class="fas fa-cog"></i>
+                                    <i class="fas fa-truck"></i>
                                     <span class="hide-menu">Shipping Charges Manager</span>
                                 </a>
                                 <ul aria-expanded="{{ Route::is('admin.shipping_methods.*') || Route::is('admin.shipping_rates.*') ? 'true' : 'false' }}"
@@ -401,7 +401,7 @@
                                                 class="sidebar-item {{ Route::is('admin.shipping_methods.*') ? 'selected' : '' }}">
                                                 <a href="{{ route('admin.shipping_methods.index') }}"
                                                     class="sidebar-link {{ Route::is('admin.shipping_methods.*') ? 'active' : '' }}">
-                                                    <i class="fas fa-user-tag"></i>
+                                                    <i class="fas fa-box-open"></i>
                                                     <span class="hide-menu">Shipping Methods Manager</span>
                                                 </a>
                                             </li>
@@ -414,7 +414,7 @@
                                                 class="sidebar-item {{ Route::is('admin.shipping_rates.*') ? 'selected' : '' }}">
                                                 <a href="{{ route('admin.shipping_rates.index') }}"
                                                     class="sidebar-link {{ Route::is('admin.shipping_rates.*') ? 'active' : '' }}">
-                                                    <i class="fas fa-user-tag"></i>
+                                                    <i class="fas fa-box-open"></i>
                                                     <span class="hide-menu">Shipping Rates Manager</span>
                                                 </a>
                                             </li>
@@ -437,7 +437,70 @@
                             @endif
                         @endadmincan
 
-                        {{-- Product Import Manager --}}
+                        {{-- Quiz Manager --}}
+                        @admincan('quizzes_manager_list')
+                        @if (Route::has('admin.quizzes.index'))
+                        <li class="sidebar-item {{ Route::is('admin.quizzes.*') ? 'selected' : '' }}">
+                            <a href="{{ route('admin.quizzes.index') }}"
+                                class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.quizzes.*') ? 'active' : '' }}">
+                                <i class="fas fa-question-circle"></i>
+                                <span class="hide-menu">Quiz Manager</span>
+                            </a>
+                        </li>
+                        @endif
+                        @endadmincan 
+                        
+                        {{-- Transaction Manager --}}
+                        @admincan('transactions_manager_list')
+                            @if (Route::has('admin.transactions.index'))
+                                <li class="sidebar-item {{ Route::is('admin.transactions.*') ? 'selected' : '' }}">
+                                    <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.transactions.*') ? 'active' : '' }}"
+                                        href="{{ route('admin.transactions.index') }}" aria-expanded="false">
+                                        <i class="fas fa-exchange-alt"></i>
+                                        <span class="hide-menu">Transaction Manager</span>
+                                    </a>
+                                </li>
+                            @endif
+                        @endadmincan
+
+                        {{-- Course Purchases Manager --}}
+                        @admincan('course_purchases_manager_list')
+                        @if (Route::has('admin.course-purchases.index'))
+                        <li class="sidebar-item {{ Route::is('admin.course-purchases.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.course-purchases.*') ? 'active' : '' }}"
+                                href="{{ route('admin.course-purchases.index') }}" aria-expanded="false">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span class="hide-menu">Purchase Manager</span>
+                            </a>
+                        </li>
+                        @endif
+                        @endadmincan
+
+                        @admincan('return_refunds_manager_list')
+                        @if (Route::has('admin.return_refunds.index'))
+                        <li class="sidebar-item {{ Route::is('admin.return_refunds.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.return_refunds.*') ? 'active' : '' }}"
+                                href="{{ route('admin.return_refunds.index') }}" aria-expanded="false">
+                               <i class="fas fa-money-check-dollar"></i>
+                                <span class="hide-menu">Return Refund Manager</span>
+                            </a>
+                        </li>
+                        @endif
+                        @endadmincan
+
+                        @admincan('reports_manager_list')
+                        {{-- Report Manager --}}
+                        @if (Route::has('admin.reports.index'))
+                        <li class="sidebar-item {{ Route::is('admin.reports.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.reports.*') ? 'active' : '' }}"
+                                href="{{ route('admin.reports.index') }}" aria-expanded="false">
+                                <i class="fas fa-chart-line"></i>
+                                <span class="hide-menu">Report Manager</span>
+                            </a>
+                        </li>
+                        @endif
+                        @endadmincan
+
                         {{-- Setting Manager --}}
                         @admincan('settings_manager')
                             <li class="sidebar-item {{ Route::is('admin.settings.*') ? 'selected' : '' }}">
