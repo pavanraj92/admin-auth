@@ -66,7 +66,7 @@ class PackageController extends Controller
                 }
 
                 if ($package === 'products' && $vendor === 'admin') {
-                    $this->uninstallDependentPackage('admin', ['brands', 'categories', 'tags', 'product_orders']);
+                    $this->uninstallDependentPackage('admin', ['brands', 'categories', 'tags']);
                 }
 
                 $command = "composer remove {$vendor}/{$package}";
@@ -132,7 +132,7 @@ class PackageController extends Controller
                 }
 
                 if ($vendor === 'admin' && $package === 'products') {
-                    $this->installDependentPackage('admin', ['brands', 'categories', 'tags', 'product_orders']);
+                    $this->installDependentPackage('admin', ['brands', 'categories', 'tags']);
                 }
 
                 $command = "composer require {$vendor}/{$package}:@dev";
@@ -152,6 +152,7 @@ class PackageController extends Controller
                         'users' => 'Admin\Users\Database\Seeders\SeedUserRolesSeeder',
                         'admin_role_permissions' => 'Admin\AdminRolePermissions\Database\Seeders\AdminRolePermissionDatabaseSeeder',
                         'emails' => 'Admin\Emails\Database\Seeders\MailDatabaseSeeder',
+                        'shipping_charges' => 'Admin\ShippingCharges\Database\Seeders\ShippingZoneSeeder',
                     ];
 
                     foreach ($seeders as $pkg => $seederClass) {
@@ -229,7 +230,7 @@ class PackageController extends Controller
             case 'products':
                 $tables = [
                     'products', 'product_images', 'product_category',
-                    'product_prices', 'product_inventory', 'product_shipping', 'product_tag'
+                    'product_prices', 'product_inventory', 'product_shipping', 'product_tag', 'orders', 'order_items'
                 ];
                 $migrations = [
                     'create_products',
@@ -238,16 +239,14 @@ class PackageController extends Controller
                     'create_product_prices',
                     'create_product_inventory',
                     'create_product_shipping',
-                    'create_product_tag'
+                    'create_product_tag',
+                    'create_orders_table',
+                    'create_order_items_table'
                 ];
                 break;
             case 'users':
                 $tables = [$package, 'user_roles'];
                 $migrations = ['create_' . $package . '_table', 'create_user_roles_table'];
-                break;
-            case 'product_orders':
-                $tables = ['orders', 'order_items'];
-                $migrations = ['create_orders_table', 'create_order_items_table'];
                 break;
             default:
                 $tables = [$package];
