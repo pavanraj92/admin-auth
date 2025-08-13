@@ -20,12 +20,12 @@ class PackageController extends Controller
 
             // Get packages from database instead of config
             $commonPackages = Package::where('package_type', 'common')
-                                   ->orWhere('package_type', 'auto_install')
-                                   ->get();
-            
+                ->orWhere('package_type', 'auto_install')
+                ->get();
+
             $industryPackages = Package::where('package_type', 'industry')
-                                     ->where('industry', $industry)
-                                     ->get();
+                ->where('industry', $industry)
+                ->get();
 
             return view('admin::admin.packages.view', compact('commonPackages', 'industryPackages', 'industry'));
         } catch (\Exception $e) {
@@ -43,20 +43,6 @@ class PackageController extends Controller
             chdir(base_path());
 
             if (is_dir($packagePath)) {
-                // If uninstalling role-permission, also uninstall admins manager
-                // if ($package === 'admin_role_permissions' && $vendor === 'admin') {
-                //     // Uninstall admins manager first
-                //     $dependentPackage = 'admins';
-                //     $dependentPath = base_path("vendor/admin/{$dependentPackage}");
-
-                //     if (is_dir($dependentPath)) {
-                //         $dependentCommand = "composer remove admin/{$dependentPackage}";
-                //         ob_start();
-                //         passthru($dependentCommand, $dependentExitCode);
-                //         ob_end_clean();
-                //     }
-                // }
-
                 if ($package === 'admin_role_permissions' && $vendor === 'admin') {
                     $this->uninstallDependentPackage('admin', 'admins');
                 }
@@ -66,7 +52,15 @@ class PackageController extends Controller
                 }
 
                 if ($package === 'products' && $vendor === 'admin') {
-                    $this->uninstallDependentPackage('admin', ['brands', 'categories', 'tags']);
+                    $this->uninstallDependentPackage('admin', ['brands', 'categories', 'tags', 'wishlists']);
+                }
+
+                if ($package === 'courses' && $vendor === 'admin') {
+                    $this->uninstallDependentPackage('admin', ['users', 'categories', 'tags', 'wishlists']);
+                }
+
+                if ($package === 'coupons' && $vendor === 'admin') {
+                    $this->uninstallDependentPackage('admin', ['courses']);
                 }
 
                 $command = "composer remove {$vendor}/{$package}";
@@ -77,10 +71,10 @@ class PackageController extends Controller
                 if ($exitCode === 0) {
                     // Remove published files
                     $this->removePublishedFiles($vendor, $package);
-                    
+
                     // Update package status in database
                     $this->updatePackageStatus($vendor, $package, false);
-                    
+
                     $packageKey = "{$vendor}/{$package}";
                     $displayName = config("constants.package_display_names.$packageKey", $packageKey);
 
@@ -96,33 +90,6 @@ class PackageController extends Controller
                     ], 500);
                 }
             } else {
-                // if ($package === 'admin_role_permissions' && $vendor === 'admin') {
-                //     // Install dependent package: admins
-                //     $dependentPackage = 'admins';
-                //     $dependentPath = base_path("vendor/admin/{$dependentPackage}");
-
-                //     if (!is_dir($dependentPath)) {
-                //         $dependentCommand = "composer require admin/{$dependentPackage}:@dev";
-                //         ob_start();
-                //         passthru($dependentCommand, $dependentExitCode);
-                //         ob_end_clean();
-
-                //         if ($dependentExitCode !== 0) {
-                //             return response()->json([
-                //                 'status' => 'error',
-                //                 'message' => "❌ Failed to install dependency package: admin/{$dependentPackage}."
-                //             ], 500);
-                //         }
-
-                //         // Run migrations and seeder for 'admins'
-                //         Artisan::call('optimize:clear');
-                //         Artisan::call('migrate', [
-                //             '--path' => "vendor/admin/{$dependentPackage}/database/migrations",
-                //             '--force' => true,
-                //         ]);
-                //     }
-                // }
-
                 if ($vendor === 'admin' && $package === 'admin_role_permissions') {
                     $this->installDependentPackage('admin', 'admins');
                 }
@@ -132,7 +99,15 @@ class PackageController extends Controller
                 }
 
                 if ($vendor === 'admin' && $package === 'products') {
-                    $this->installDependentPackage('admin', ['brands', 'categories', 'tags']);
+                    $this->installDependentPackage('admin', ['brands', 'categories', 'tags', 'wishlists']);
+                }
+
+                if ($vendor === 'admin' && $package === 'courses') {
+                    $this->installDependentPackage('admin', ['users', 'categories', 'tags', 'wishlists']);
+                }
+
+                if ($vendor === 'admin' && $package === 'coupons') {
+                    $this->installDependentPackage('admin', ['courses']);
                 }
 
                 $command = "composer require {$vendor}/{$package}:@dev";
@@ -229,8 +204,15 @@ class PackageController extends Controller
                 break;
             case 'products':
                 $tables = [
-                    'products', 'product_images', 'product_categories',
-                    'product_prices', 'product_inventories', 'product_shippings', 'product_tags', 'orders', 'order_items'
+                    'products',
+                    'product_images',
+                    'product_categories',
+                    'product_prices',
+                    'product_inventories',
+                    'product_shippings',
+                    'product_tags',
+                    'orders',
+                    'order_items'
                 ];
                 $migrations = [
                     'create_products',
@@ -247,6 +229,27 @@ class PackageController extends Controller
             case 'users':
                 $tables = [$package, 'user_roles'];
                 $migrations = ['create_' . $package . '_table', 'create_user_roles_table'];
+                break;
+            case 'courses':
+                $tables = ['course_category', 'course_purchases', 'course_sections', 'course_tag', 'transactions', 'lectures', 'courses'];
+                $migrations = [
+                    'create_courses_table',
+                    'create_course_category_table',
+                    'create_course_tag_table',
+                    'create_course_sections_table',
+                    'create_lectures_table',
+                    'create_course_purchases_table',
+                    'create_transactions_table'
+                ];
+                break;
+            case 'coupons':
+                $tables = ['coupon_category', 'coupon_course', 'coupon_product', 'coupons'];
+                $migrations = [
+                    'create_coupons_table',
+                    'create_coupon_category_table',
+                    'create_coupon_course_table',
+                    'create_coupon_product_table',
+                ];
                 break;
             default:
                 $tables = [$package];
@@ -288,7 +291,6 @@ class PackageController extends Controller
 
             // Update package status in database
             $this->updatePackageStatus($vendor, $package, true);
-
         }
     }
 
@@ -300,7 +302,7 @@ class PackageController extends Controller
             ob_start();
             passthru($command, $exitCode);
             ob_end_clean();
-            
+
             // Update package status in database
             $this->updatePackageStatus($vendor, $package, false);
         }
