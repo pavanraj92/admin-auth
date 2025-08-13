@@ -52,6 +52,7 @@ $(document).ready(function() {
         var currentElement = $(this);        
         var id = $(this).data('id');
         var url = $(this).data('url');
+        var redirectUrl = $(this).data("redirect");
         var method = $(this).data('method') || 'POST'; // Default to POST if method is not specified
         var text = $(this).data('text') || "You won't be able to revert this!"; // Default text if not specified
 
@@ -79,7 +80,11 @@ $(document).ready(function() {
                   currentElement.closest("tr").remove();
                   toastr.success(response.message);
                   setTimeout(function () {
-                    location.reload();
+                      if (redirectUrl) {
+                        window.location.href = redirectUrl;
+                      } else {
+                        location.reload();
+                      }
                   }, 1000);
                 } else {
                   toastr.error(response.message);
