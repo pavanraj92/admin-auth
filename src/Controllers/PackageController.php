@@ -229,17 +229,17 @@ class PackageController extends Controller
                 break;
             case 'products':
                 $tables = [
-                    'products', 'product_images', 'product_category',
-                    'product_prices', 'product_inventory', 'product_shipping', 'product_tag', 'orders', 'order_items'
+                    'products', 'product_images', 'product_categories',
+                    'product_prices', 'product_inventories', 'product_shippings', 'product_tags', 'orders', 'order_items'
                 ];
                 $migrations = [
                     'create_products',
                     'create_product_images',
-                    'create_product_category',
+                    'create_product_categories',
                     'create_product_prices',
-                    'create_product_inventory',
-                    'create_product_shipping',
-                    'create_product_tag',
+                    'create_product_inventories',
+                    'create_product_shippings',
+                    'create_product_tags',
                     'create_orders_table',
                     'create_order_items_table'
                 ];
