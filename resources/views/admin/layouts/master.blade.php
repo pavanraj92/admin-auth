@@ -431,7 +431,7 @@
                                     <a href="{{ route('admin.coupons.index') }}"
                                         class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.coupons.*') ? 'active' : '' }}">
                                         <i class="fas fa-tags"></i>
-                                        <span class="hide-menu">Coupons Manager</span>
+                                        <span class="hide-menu">Coupon Manager</span>
                                     </a>
                                 </li>
                             @endif
@@ -476,6 +476,20 @@
                         @endif
                         @endadmincan
 
+                        {{-- Wishlist Manager --}}
+                        @admincan('wishlists_manager_list')
+                        @if (Route::has('admin.wishlists.index'))
+                        <li class="sidebar-item {{ Route::is('admin.wishlists.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.wishlists.*') ? 'active' : '' }}"
+                                href="{{ route('admin.wishlists.index') }}" aria-expanded="false">
+                                <i class="fas fa-heart"></i>
+                                <span class="hide-menu">Wishlist Manager</span>
+                            </a>
+                        </li>
+                        @endif
+                        @endadmincan
+
+                        {{-- Return Refund Manager --}}
                         @admincan('return_refunds_manager_list')
                         @if (Route::has('admin.return_refunds.index'))
                         <li class="sidebar-item {{ Route::is('admin.return_refunds.*') ? 'selected' : '' }}">
