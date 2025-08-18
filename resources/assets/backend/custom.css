@@ -40,9 +40,9 @@
 }
 
 /* Prevent body scroll when dropdown is open */
-.select2-container--open {
+/* .select2-container--open {
     z-index: 9999;
-}
+} */
 
 /* Ensure dropdown stays within viewport */
 .select2-dropdown {
