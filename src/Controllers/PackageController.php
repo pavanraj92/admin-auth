@@ -57,7 +57,7 @@ class PackageController extends Controller
                 }
 
                 if ($package === 'courses' && $vendor === 'admin') {
-                    $this->uninstallDependentPackage('admin', ['users', 'categories', 'tags', 'wishlists', 'quizzes']);
+                    $this->uninstallDependentPackage('admin', ['categories', 'quizzes', 'ratings', 'tags', 'users', 'wishlists']);
                 }
 
                 if ($package === 'coupons' && $vendor === 'admin') {
@@ -242,7 +242,7 @@ class PackageController extends Controller
                 $migrations = ['create_' . $package . '_table', 'create_user_roles_table'];
                 break;
             case 'courses':
-                $tables = ['course_category', 'course_purchases', 'course_sections', 'course_tag', 'transactions', 'lectures', 'courses', 'quizzes', 'quiz_questions', 'quiz_answers'];
+                $tables = ['course_category', 'course_purchases', 'course_sections', 'course_tag', 'transactions', 'lectures', 'courses', 'quizzes', 'quiz_questions', 'quiz_answers', 'ratings', 'wishlists'];
                 $migrations = [
                     'create_courses_table',
                     'create_course_category_table',
@@ -254,7 +254,8 @@ class PackageController extends Controller
                     'create_quizzes_table',
                     'create_quiz_questions_table',
                     'create_quiz_answers_table',
-
+                    'create_ratings_table',
+                    'create_wishlists_table'
                 ];
                 break;
             case 'coupons':
