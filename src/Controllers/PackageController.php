@@ -43,7 +43,7 @@ class PackageController extends Controller
             chdir(base_path());
 
             if (is_dir($packagePath)) {
-                
+
                 if ($package === 'admin_role_permissions' && $vendor === 'admin') {
                     $this->uninstallDependentPackage('admin', 'admins');
                 }
@@ -57,7 +57,7 @@ class PackageController extends Controller
                 }
 
                 if ($package === 'courses' && $vendor === 'admin') {
-                    $this->uninstallDependentPackage('admin', ['users', 'categories', 'tags', 'wishlists']);
+                    $this->uninstallDependentPackage('admin', ['users', 'categories', 'tags', 'wishlists', 'quizzes']);
                 }
 
                 if ($package === 'coupons' && $vendor === 'admin') {
@@ -104,7 +104,7 @@ class PackageController extends Controller
                 }
 
                 if ($vendor === 'admin' && $package === 'courses') {
-                    $this->installDependentPackage('admin', ['users', 'categories', 'tags', 'wishlists']);
+                    $this->installDependentPackage('admin', ['users', 'categories', 'tags', 'wishlists', 'quizzes']);
                 }
 
                 if ($vendor === 'admin' && $package === 'coupons') {
@@ -242,7 +242,7 @@ class PackageController extends Controller
                 $migrations = ['create_' . $package . '_table', 'create_user_roles_table'];
                 break;
             case 'courses':
-                $tables = ['course_category', 'course_purchases', 'course_sections', 'course_tag', 'transactions', 'lectures', 'courses'];
+                $tables = ['course_category', 'course_purchases', 'course_sections', 'course_tag', 'transactions', 'lectures', 'courses', 'quizzes', 'quiz_questions', 'quiz_answers'];
                 $migrations = [
                     'create_courses_table',
                     'create_course_category_table',
@@ -250,7 +250,11 @@ class PackageController extends Controller
                     'create_course_sections_table',
                     'create_lectures_table',
                     'create_course_purchases_table',
-                    'create_transactions_table'
+                    'create_transactions_table',
+                    'create_quizzes_table',
+                    'create_quiz_questions_table',
+                    'create_quiz_answers_table',
+
                 ];
                 break;
             case 'coupons':
@@ -283,7 +287,7 @@ class PackageController extends Controller
 
     private function installDependentPackage($vendor, $packages)
     {
-         $packages = (array) $packages; // cast to array always
+        $packages = (array) $packages; // cast to array always
 
         foreach ($packages as $package) {
             $path = base_path("vendor/{$vendor}/{$package}");
