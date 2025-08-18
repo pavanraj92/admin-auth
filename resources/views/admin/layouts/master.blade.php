@@ -385,6 +385,7 @@
 
                         {{-- Shipping Charges Manager --}}
                         @admincan('shipping_charges_manager')
+                        @if (Route::has('admin.shipping_rates.index') || Route::has('admin.shipping_methods.index'))
                             <li
                                 class="sidebar-item {{ Route::is('admin.shipping_methods.*') || Route::is('admin.shipping_rates.*') ? 'selected' : '' }}">
                                 <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is('admin.shipping_methods.*') || Route::is('admin.shipping_rates.*') ? 'active' : '' }}"
@@ -422,6 +423,7 @@
                                     @endadmincan
                                 </ul>
                             </li>
+                        @endif
                         @endadmincan
 
                         {{-- Product Coupons --}}
