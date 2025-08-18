@@ -43,6 +43,7 @@ class PackageController extends Controller
             chdir(base_path());
 
             if (is_dir($packagePath)) {
+                
                 if ($package === 'admin_role_permissions' && $vendor === 'admin') {
                     $this->uninstallDependentPackage('admin', 'admins');
                 }
@@ -52,7 +53,7 @@ class PackageController extends Controller
                 }
 
                 if ($package === 'products' && $vendor === 'admin') {
-                    $this->uninstallDependentPackage('admin', ['brands', 'categories', 'tags', 'wishlists']);
+                    $this->uninstallDependentPackage('admin', ['wishlists', 'ratings']);
                 }
 
                 if ($package === 'courses' && $vendor === 'admin') {
@@ -99,7 +100,7 @@ class PackageController extends Controller
                 }
 
                 if ($vendor === 'admin' && $package === 'products') {
-                    $this->installDependentPackage('admin', ['brands', 'categories', 'tags', 'wishlists']);
+                    $this->installDependentPackage('admin', ['brands', 'categories', 'tags', 'wishlists', 'ratings', 'users']);
                 }
 
                 if ($vendor === 'admin' && $package === 'courses') {
@@ -204,26 +205,36 @@ class PackageController extends Controller
                 break;
             case 'products':
                 $tables = [
-                    'products',
                     'product_images',
                     'product_categories',
                     'product_prices',
                     'product_inventories',
                     'product_shippings',
                     'product_tags',
+                    'order_addresses',
+                    'return_refund_requests',
+                    'transactions',
+                    'products',
+                    'order_items',
                     'orders',
-                    'order_items'
+                    'ratings',
+                    'wishlists'
                 ];
                 $migrations = [
-                    'create_products',
                     'create_product_images',
                     'create_product_categories',
                     'create_product_prices',
                     'create_product_inventories',
                     'create_product_shippings',
                     'create_product_tags',
+                    'create_order_items_table',
+                    'create_shipping_addresses',
+                    'create_return_refund_requests',
+                    'transactions',
+                    'create_products',
                     'create_orders_table',
-                    'create_order_items_table'
+                    'create_ratings_table',
+                    'create_wishlists_table'
                 ];
                 break;
             case 'users':
@@ -270,41 +281,55 @@ class PackageController extends Controller
         }
     }
 
-    private function installDependentPackage($vendor, $package)
+    private function installDependentPackage($vendor, $packages)
     {
-        $path = base_path("vendor/{$vendor}/{$package}");
-        if (!is_dir($path)) {
-            $command = "composer require {$vendor}/{$package}:@dev";
-            ob_start();
-            passthru($command, $exitCode);
-            ob_end_clean();
+         $packages = (array) $packages; // cast to array always
 
-            if ($exitCode !== 0) {
-                throw new \Exception("❌ Failed to install dependency package: {$vendor}/{$package}");
+        foreach ($packages as $package) {
+            $path = base_path("vendor/{$vendor}/{$package}");
+
+            if (!is_dir($path)) {
+                $command = "composer require {$vendor}/{$package}:@dev";
+                ob_start();
+                passthru($command, $exitCode);
+                ob_end_clean();
+
+                if ($exitCode !== 0) {
+                    throw new \Exception("❌ Failed to install dependency package: {$vendor}/{$package}");
+                }
+
+                Artisan::call('optimize:clear');
+                Artisan::call('migrate', [
+                    '--path' => "vendor/{$vendor}/{$package}/database/migrations",
+                    '--force' => true,
+                ]);
+
+                $this->updatePackageStatus($vendor, $package, true);
+
+                // 🔁 Check if this package has its own dependencies
+                if (isset($this->dependencies[$package])) {
+                    $this->installDependentPackage($vendor, $this->dependencies[$package]);
+                }
             }
-
-            Artisan::call('optimize:clear');
-            Artisan::call('migrate', [
-                '--path' => "vendor/{$vendor}/{$package}/database/migrations",
-                '--force' => true,
-            ]);
-
-            // Update package status in database
-            $this->updatePackageStatus($vendor, $package, true);
         }
     }
 
-    private function uninstallDependentPackage($vendor, $package)
+    private function uninstallDependentPackage($vendor, $packages)
     {
-        $path = base_path("vendor/{$vendor}/{$package}");
-        if (is_dir($path)) {
-            $command = "composer remove {$vendor}/{$package}";
-            ob_start();
-            passthru($command, $exitCode);
-            ob_end_clean();
+        $packages = (array) $packages; // always convert to array
 
-            // Update package status in database
-            $this->updatePackageStatus($vendor, $package, false);
+        foreach ($packages as $package) {
+            $path = base_path("vendor/{$vendor}/{$package}");
+
+            if (is_dir($path)) {
+                $command = "composer remove {$vendor}/{$package}";
+                ob_start();
+                passthru($command, $exitCode);
+                ob_end_clean();
+
+                // Update package status in database
+                $this->updatePackageStatus($vendor, $package, false);
+            }
         }
     }
 
