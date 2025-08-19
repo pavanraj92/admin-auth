@@ -53,11 +53,11 @@ class PackageController extends Controller
                 }
 
                 if ($package === 'products' && $vendor === 'admin') {
-                    $this->uninstallDependentPackage('admin', ['wishlists', 'ratings']);
+                    $this->uninstallDependentPackage('admin', ['wishlists', 'ratings', 'tags']);
                 }
 
                 if ($package === 'courses' && $vendor === 'admin') {
-                    $this->uninstallDependentPackage('admin', ['categories', 'quizzes', 'ratings', 'tags', 'users', 'wishlists']);
+                    $this->uninstallDependentPackage('admin', ['quizzes', 'ratings', 'tags', 'wishlists']);
                 }
 
                 if ($package === 'coupons' && $vendor === 'admin') {
@@ -100,11 +100,11 @@ class PackageController extends Controller
                 }
 
                 if ($vendor === 'admin' && $package === 'products') {
-                    $this->installDependentPackage('admin', ['brands', 'categories', 'tags', 'wishlists', 'ratings', 'users']);
+                    $this->installDependentPackage('admin', ['brands', 'categories', 'tags', 'wishlists', 'ratings', 'users', 'user_roles']);
                 }
 
                 if ($vendor === 'admin' && $package === 'courses') {
-                    $this->installDependentPackage('admin', ['users', 'categories', 'tags', 'wishlists', 'quizzes']);
+                    $this->installDependentPackage('admin', ['users', 'user_roles', 'categories', 'tags', 'wishlists', 'quizzes']);
                 }
 
                 if ($vendor === 'admin' && $package === 'coupons') {
