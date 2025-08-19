@@ -10,7 +10,7 @@
     @php
         // Use config list if available, otherwise fallback to these three packages
         $protected = config('constants.protected_packages', ['admin/settings', 'admin/admin_auth']);
-        $restrictedForProduct = ['tags', 'categories', 'products', 'users', 'brands'];
+        $restrictedForProduct = ['categories', 'products', 'users', 'brands'];
         $restrictedForCourse = ['tags', 'categories', 'courses', 'users'];
     @endphp
 
@@ -75,7 +75,7 @@
                                         @elseif (
                                             ($industry === 'ecommerce' && in_array($packageName, $restrictedForProduct)) ||
                                                 ($industry === 'education' && in_array($packageName, $restrictedForCourse)))
-                                            {{-- For ecommerce industry: hide uninstall, allow install if not installed --}}
+                                            {{-- Restricted package: allow install, block uninstall --}}
                                             @if (!$installed)
                                                 <button type="button" class="btn btn-outline-success install-uninstall-btn"
                                                     data-package="{{ $package->package_name }}"
@@ -83,6 +83,7 @@
                                                     Install
                                                 </button>
                                             @else
+                                                {{-- Installed → do not show uninstall --}}
                                                 <div style="visibility: hidden;">
                                                     <button type="button"
                                                         class="btn btn-outline-secondary">Placeholder</button>
@@ -164,7 +165,7 @@
                                             @elseif (
                                                 ($industry === 'ecommerce' && in_array($packageName, $restrictedForProduct)) ||
                                                     ($industry === 'education' && in_array($packageName, $restrictedForCourse)))
-                                                {{-- Industry is "ecommerce" and package is restricted → show only install if not installed --}}
+                                                {{-- Restricted package: allow install, block uninstall --}}
                                                 @if (!$installed)
                                                     <button type="button"
                                                         class="btn btn-outline-success install-uninstall-btn"
@@ -173,6 +174,7 @@
                                                         Install
                                                     </button>
                                                 @else
+                                                    {{-- Installed → do not show uninstall --}}
                                                     <div style="visibility: hidden;">
                                                         <button type="button"
                                                             class="btn btn-outline-secondary">Placeholder</button>

@@ -27,7 +27,7 @@
     /* Match Bootstrap's default input height */
     padding: 0.375rem 0.75rem !important;
     /* Match Bootstrap input padding */
-    border: 1px solid #ced4da !important;
+    border: 1px solid #e9ecef !important;
     background-color: #fff !important;
     display: flex !important;
     align-items: center !important;
@@ -87,6 +87,17 @@
 .select2-dropdown-custom {
     border: 1px solid #e9ecef !important;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Prevent double scrollbar in results */
+.select2-results {
+    max-height: 250px !important;
+    overflow-y: auto !important;
+}
+
+.select2-results__options {
+    max-height: 250px !important;
+    overflow-y: auto !important;
 }
 
 .select2-dropdown-custom .select2-results__option {
