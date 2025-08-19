@@ -37,7 +37,8 @@ class Admin extends Authenticatable
         'mobile',
         'website_name',
         'website_slug',
-        'industry'
+        'industry',
+        'status'
     ];
 
     /**
@@ -70,6 +71,11 @@ class Admin extends Authenticatable
     public function getRoleNameAttribute()
     {
         return $this->roles->pluck('name')->first(); // or join with comma if multiple roles
+    }
+
+    public function getRoleAttribute()
+    {
+        return $this->roles->pluck('name')->implode(', ');
     }
 
     protected static function boot()

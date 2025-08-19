@@ -135,7 +135,7 @@
                                                     <a href="{{ route('admin.roles.index') }}"
                                                         class="sidebar-link {{ Route::is('admin.roles.*') ? 'active' : '' }}">
                                                         <i class="fas fa-circle"></i>
-                                                        <span class="hide-menu">Roles Manager</span>
+                                                        <span class="hide-menu">Role Manager</span>
                                                     </a>
                                                 </li>
                                             @endif
@@ -148,7 +148,7 @@
                                                     <a href="{{ route('admin.permissions.index') }}"
                                                         class="sidebar-link {{ Route::is('admin.permissions.*') ? 'active' : '' }}">
                                                         <i class="fas fa-circle"></i>
-                                                        <span class="hide-menu">Permissions Manager</span>
+                                                        <span class="hide-menu">Permission Manager</span>
                                                     </a>
                                                 </li>
                                             @endif
@@ -165,6 +165,7 @@
                                     $sidebarRoles = \DB::table('user_roles')
                                         ->where('status', 1)
                                         ->orderBy('name')
+                                        ->whereNull('deleted_at')
                                         ->get();
                                 @endphp
                                 <li
