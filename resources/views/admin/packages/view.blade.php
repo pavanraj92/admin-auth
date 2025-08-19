@@ -10,7 +10,7 @@
     @php
         // Use config list if available, otherwise fallback to these three packages
         $protected = config('constants.protected_packages', ['admin/settings', 'admin/admin_auth']);
-        $restrictedForProduct = ['categories', 'products', 'users', 'brands'];
+        $restrictedForProduct = ['categories', 'products', 'users', 'brands','tags'];
         $restrictedForCourse = ['tags', 'categories', 'courses', 'users'];
     @endphp
 
