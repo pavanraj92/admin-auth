@@ -92,17 +92,17 @@ class PackageController extends Controller
                 }
             } else {
                 // Dependency map for package installation
-                $dependencyMap = [
-                    'admin/admin_role_permissions' => ['admin/admins'],
-                    'admin/products' => ['admin/brands', 'admin/categories', 'admin/tags', 'admin/users', 'admin/wishlists', 'admin/ratings'],
-                    'admin/courses' => ['admin/categories', 'admin/quizzes',  'admin/ratings', 'admin/tags', 'admin/users', 'admin/wishlists'],
-                    'admin/users' => ['admin/user_roles'],
+                 $dependencyMap = [
+                    'admin/admin_role_permissions' => ['admins'],
+                    'admin/products' => ['brands', 'categories', 'tags', 'users'],
+                    'admin/courses' => ['categories', 'quizzes', 'tags', 'users'],
+                    'admin/users' => ['user_roles'],
                 ];
 
                 $packageKey = "{$vendor}/{$package}";
 
                 // Handle coupon package dependencies based on industry
-                if ($packageKey === 'admin/coupons') {
+                if (in_array($packageKey, ['admin/coupons', 'admin/wishlists', 'admin/ratings'])) {
                     $industry = DB::table('settings')->where('slug', 'industry')->value('config_value') ?? 'ecommerce';
                     if ($industry === 'ecommerce') {
                         $this->installDependentPackage('admin', 'products');
