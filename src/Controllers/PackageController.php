@@ -252,8 +252,8 @@ class PackageController extends Controller
                     'create_course_purchases_table',
                     'create_transactions_table',
                     'create_quizzes_table',
-                    'create_quiz_questions_table',
                     'create_quiz_answers_table',
+                    'create_quiz_questions_table',
                     'create_ratings_table',
                     'create_wishlists_table'
                 ];
