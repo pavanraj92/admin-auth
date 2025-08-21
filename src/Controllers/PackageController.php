@@ -38,11 +38,12 @@ class PackageController extends Controller
     {
         try {
             $packagePath = base_path("vendor/{$vendor}/{$package}");
+            $isPackageInstalled = Package::where(['vendor' => $vendor, 'name' => $package, 'is_installed' => 1])->exists();
 
             set_time_limit(0);
             chdir(base_path());
 
-            if (is_dir($packagePath)) {
+            if (!empty($isPackageInstalled)) {
 
                 if ($package === 'admin_role_permissions' && $vendor === 'admin') {
                     $this->uninstallDependentPackage('admin', 'admins');
@@ -271,6 +272,14 @@ class PackageController extends Controller
                     'create_coupon_category_table',
                     'create_coupon_course_table',
                     'create_coupon_product_table',
+                ];
+                break;
+            case 'quizzes':
+                $tables = ['quiz_answers', 'quiz_questions', 'quizzes'];
+                $migrations = [
+                    'create_quiz_answers_table',
+                    'create_quiz_questions_table',
+                    'create_quizzes_table',
                 ];
                 break;
             default:
