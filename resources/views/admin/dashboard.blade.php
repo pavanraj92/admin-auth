@@ -10,7 +10,7 @@ Admin dashboard overview, statistics, and recent sales.
 
 @section('content')    
     <div class="container-fluid">
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
@@ -113,7 +113,8 @@ Admin dashboard overview, statistics, and recent sales.
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
+        <h4>Welcome to admin dashboard</h4>
     </div>
     <!-- End Container fluid  -->
 @endsection
