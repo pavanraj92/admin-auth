@@ -242,7 +242,7 @@ class PackageController extends Controller
                 $migrations = ['create_' . $package . '_table', 'create_user_roles_table'];
                 break;
             case 'courses':
-                $tables = ['course_category', 'course_purchases', 'course_sections', 'course_tag', 'transactions', 'lectures', 'courses', 'quizzes', 'quiz_questions', 'quiz_answers', 'ratings', 'wishlists'];
+                $tables = ['course_category', 'course_purchases', 'course_sections', 'course_tag', 'transactions', 'lectures', 'courses', 'quiz_answers', 'quiz_questions', 'quizzes', 'ratings', 'wishlists'];
                 $migrations = [
                     'create_courses_table',
                     'create_course_category_table',
@@ -251,9 +251,9 @@ class PackageController extends Controller
                     'create_lectures_table',
                     'create_course_purchases_table',
                     'create_transactions_table',
-                    'create_quizzes_table',
                     'create_quiz_answers_table',
                     'create_quiz_questions_table',
+                    'create_quizzes_table',
                     'create_ratings_table',
                     'create_wishlists_table'
                 ];
