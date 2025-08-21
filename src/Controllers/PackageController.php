@@ -60,9 +60,9 @@ class PackageController extends Controller
                     $this->uninstallDependentPackage('admin', ['quizzes', 'ratings', 'tags', 'wishlists']);
                 }
 
-                if ($package === 'coupons' && $vendor === 'admin') {
-                    $this->uninstallDependentPackage('admin', ['courses']);
-                }
+                // if ($package === 'coupons' && $vendor === 'admin') {
+                //     $this->uninstallDependentPackage('admin', ['courses']);
+                // }
 
                 $command = "composer remove {$vendor}/{$package}";
                 ob_start();
@@ -91,24 +91,30 @@ class PackageController extends Controller
                     ], 500);
                 }
             } else {
-                if ($vendor === 'admin' && $package === 'admin_role_permissions') {
-                    $this->installDependentPackage('admin', 'admins');
+                // Dependency map for package installation
+                $dependencyMap = [
+                    'admin/admin_role_permissions' => ['admin/admins'],
+                    'admin/products' => ['admin/brands', 'admin/categories', 'admin/tags', 'admin/users', 'admin/wishlists', 'admin/ratings'],
+                    'admin/courses' => ['admin/categories', 'admin/quizzes',  'admin/ratings', 'admin/tags', 'admin/users', 'admin/wishlists'],
+                    'admin/users' => ['admin/user_roles'],
+                ];
+
+                $packageKey = "{$vendor}/{$package}";
+
+                // Handle coupon package dependencies based on industry
+                if ($packageKey === 'admin/coupons') {
+                    $industry = DB::table('settings')->where('slug', 'industry')->value('config_value') ?? 'ecommerce';
+                    if ($industry === 'ecommerce') {
+                        $this->installDependentPackage('admin', 'products');
+                    }
+                    if ($industry === 'education') {
+                        $this->installDependentPackage('admin', 'courses');
+                    }
                 }
 
-                if ($vendor === 'admin' && $package === 'users') {
-                    $this->installDependentPackage('admin', 'user_roles');
-                }
-
-                if ($vendor === 'admin' && $package === 'products') {
-                    $this->installDependentPackage('admin', ['brands', 'categories', 'tags', 'wishlists', 'ratings', 'users', 'user_roles']);
-                }
-
-                if ($vendor === 'admin' && $package === 'courses') {
-                    $this->installDependentPackage('admin', ['users', 'user_roles', 'categories', 'tags', 'wishlists', 'quizzes']);
-                }
-
-                if ($vendor === 'admin' && $package === 'coupons') {
-                    $this->installDependentPackage('admin', ['courses']);
+                // Install dependencies from the map
+                if (isset($dependencyMap[$packageKey])) {
+                    $this->installDependentPackage('admin', $dependencyMap[$packageKey]);
                 }
 
                 $command = "composer require {$vendor}/{$package}:@dev";
