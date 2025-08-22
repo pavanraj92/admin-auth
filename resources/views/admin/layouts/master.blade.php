@@ -177,7 +177,7 @@
                                     </a>
                                     <ul aria-expanded="{{ Route::is('admin.users.*') ? 'true' : 'false' }}"
                                         class="collapse first-level {{ Route::is('admin.users.*', 'admin.user_roles.*') ? 'in' : '' }}">
-                                        @admincan('user_roles_list')
+                                        @admincan('user_roles_manager_list')
                                             @if (Route::has('admin.user_roles.index'))
                                                 <li class="sidebar-item"
                                                     {{ Route::is('admin.user_roles.*') ? 'selected' : '' }}>
