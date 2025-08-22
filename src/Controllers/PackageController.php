@@ -122,8 +122,8 @@ class PackageController extends Controller
                     $deps = $dependencyMap[$packageKey];
                     if (is_array($deps) && isset($deps[$industry])) {
                         $deps = $deps[$industry];
+                        $this->installDependentPackage($vendor, $deps);
                     }
-                    $this->installDependentPackage($vendor, $deps);
                 }
 
                 $command = "composer require {$vendor}/{$package}:@dev";
@@ -319,7 +319,7 @@ class PackageController extends Controller
 
     private function installDependentPackage($vendor, $packages)
     {
-        $packages = (array) $packages; // cast to array always
+       $packages = collect($packages)->flatten()->unique()->toArray();
 
         foreach ($packages as $package) {
             $path = base_path("vendor/{$vendor}/{$package}");
