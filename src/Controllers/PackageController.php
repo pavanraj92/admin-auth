@@ -122,8 +122,8 @@ class PackageController extends Controller
                     $deps = $dependencyMap[$packageKey];
                     if (is_array($deps) && isset($deps[$industry])) {
                         $deps = $deps[$industry];
+                        $this->installDependentPackage($vendor, $deps);
                     }
-                    $this->installDependentPackage($vendor, $deps);
                 }
 
                 $command = "composer require {$vendor}/{$package}:@dev";
@@ -290,6 +290,14 @@ class PackageController extends Controller
                     'create_quizzes_table',
                 ];
                 break;
+            case 'quizzes':
+                $tables = ['quiz_answers', 'quiz_questions', 'quizzes'];
+                $migrations = [
+                    'create_quiz_answers_table',
+                    'create_quiz_questions_table',
+                    'create_quizzes_table',
+                ];
+                break;
             default:
                 $tables = [$package];
                 $migrations = ['create_' . $package . '_table'];
@@ -311,7 +319,7 @@ class PackageController extends Controller
 
     private function installDependentPackage($vendor, $packages)
     {
-        $packages = (array) $packages; // cast to array always
+       $packages = collect($packages)->flatten()->unique()->toArray();
 
         foreach ($packages as $package) {
             $path = base_path("vendor/{$vendor}/{$package}");
