@@ -36,6 +36,7 @@ class PackageController extends Controller
 
     public function installUninstallPackage(Request $request, $vendor, $package)
     {
+
         try {
             $packagePath = base_path("vendor/{$vendor}/{$package}");
             $isPackageInstalled = Package::where(['vendor' => $vendor, 'name' => $package, 'is_installed' => 1])->exists();
@@ -92,30 +93,37 @@ class PackageController extends Controller
                     ], 500);
                 }
             } else {
-                // Dependency map for package installation
-                 $dependencyMap = [
-                    'admin/admin_role_permissions' => ['admins'],
-                    'admin/products' => ['brands', 'categories', 'tags', 'users'],
-                    'admin/courses' => ['categories', 'quizzes', 'tags', 'users'],
-                    'admin/users' => ['user_roles'],
-                ];
 
+                $dependencyMap = [
+                    'admin/admin_role_permissions' => ['admins'],
+                    'admin/products' => ['users',  'user_roles', 'brands', 'categories', 'tags'],
+                    'admin/courses' => ['users',  'user_roles', 'categories', 'tags'],
+                    'admin/users' => ['user_roles'],
+                    'admin/quizzes' => ['users', 'user_roles', 'categories', 'tags', 'courses'],
+                    'admin/coupons' => [
+                        'ecommerce' => ['users', 'user_roles', 'categories', 'tags', 'brands', 'products'],
+                        'education' => ['users', 'user_roles', 'categories', 'tags', 'courses'],
+                    ],
+                    'admin/wishlists' => [
+                        'ecommerce' => ['users', 'user_roles', 'categories', 'tags', 'brands', 'products'],
+                        'education' => ['users', 'user_roles', 'categories', 'tags', 'courses'],
+                    ],
+                    'admin/ratings' => [
+                        'ecommerce' => ['users', 'user_roles', 'categories', 'tags', 'brands', 'products'],
+                        'education' => ['users', 'user_roles', 'categories', 'tags', 'courses'],
+                    ],
+                ];
                 $packageKey = "{$vendor}/{$package}";
 
                 // Handle coupon package dependencies based on industry
-                if (in_array($packageKey, ['admin/coupons', 'admin/wishlists', 'admin/ratings'])) {
-                    $industry = DB::table('settings')->where('slug', 'industry')->value('config_value') ?? 'ecommerce';
-                    if ($industry === 'ecommerce') {
-                        $this->installDependentPackage('admin', 'products');
-                    }
-                    if ($industry === 'education') {
-                        $this->installDependentPackage('admin', 'courses');
-                    }
-                }
+                $industry = config('GET.industry'); // or however you detect industry
 
-                // Install dependencies from the map
                 if (isset($dependencyMap[$packageKey])) {
-                    $this->installDependentPackage('admin', $dependencyMap[$packageKey]);
+                    $deps = $dependencyMap[$packageKey];
+                    if (is_array($deps) && isset($deps[$industry])) {
+                        $deps = $deps[$industry];
+                    }
+                    $this->installDependentPackage($vendor, $deps);
                 }
 
                 $command = "composer require {$vendor}/{$package}:@dev";
@@ -268,10 +276,10 @@ class PackageController extends Controller
             case 'coupons':
                 $tables = ['coupon_category', 'coupon_course', 'coupon_product', 'coupons'];
                 $migrations = [
-                    'create_coupons_table',
                     'create_coupon_category_table',
                     'create_coupon_course_table',
                     'create_coupon_product_table',
+                    'create_coupons_table',
                 ];
                 break;
             case 'quizzes':
