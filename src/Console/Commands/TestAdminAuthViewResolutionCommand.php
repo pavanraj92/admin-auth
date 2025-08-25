@@ -1,6 +1,6 @@
 <?php
 
-namespace admin\admin_auth\Console;
+namespace admin\admin_auth\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\View;
