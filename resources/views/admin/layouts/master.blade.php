@@ -333,19 +333,6 @@
                             @endif
                         @endadmincan
 
-                        {{-- Rating Manager --}}
-                        @admincan('ratings_manager_list')
-                            @if (Route::has('admin.ratings.index'))
-                                <li class="sidebar-item {{ Route::is('admin.ratings.*') ? 'selected' : '' }}">
-                                    <a href="{{ route('admin.ratings.index') }}"
-                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.ratings.*') ? 'active' : '' }}">
-                                        <i class="fas fa-star"></i>
-                                        <span class="hide-menu">Rating Manager</span>
-                                    </a>
-                                </li>
-                            @endif
-                        @endadmincan
-
                         {{-- Product Manager --}}
                         @admincan('products_manager_list')
                             @if (Route::has('admin.products.index'))
@@ -480,6 +467,19 @@
                         @endif
                         @endadmincan
 
+                        {{-- Rating Manager --}}
+                        @admincan('ratings_manager_list')
+                            @if (Route::has('admin.ratings.index'))
+                                <li class="sidebar-item {{ Route::is('admin.ratings.*') ? 'selected' : '' }}">
+                                    <a href="{{ route('admin.ratings.index') }}"
+                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.ratings.*') ? 'active' : '' }}">
+                                        <i class="fas fa-star"></i>
+                                        <span class="hide-menu">Rating Manager</span>
+                                    </a>
+                                </li>
+                            @endif
+                        @endadmincan
+                        
                         {{-- Wishlist Manager --}}
                         @admincan('wishlists_manager_list')
                         @if (Route::has('admin.wishlists.index'))
