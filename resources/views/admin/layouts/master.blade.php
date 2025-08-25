@@ -242,71 +242,6 @@
                             @endif
                         @endadmincan
 
-                        {{-- CMS Pages Manager --}}
-                        @admincan('pages_manager_list')
-                            @if (Route::has('admin.pages.index'))
-                                <li class="sidebar-item {{ Route::is('admin.pages.*') ? 'selected' : '' }}">
-                                    <a href="{{ route('admin.pages.index') }}"
-                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.pages.*') ? 'active' : '' }}">
-                                        <i class="fas fa-file-alt"></i>
-                                        <span class="hide-menu">CMS Pages Manager</span>
-                                    </a>
-                                </li>
-                            @endif
-                        @endadmincan
-
-                        {{-- Email Template Manager --}}
-                        @admincan('emails_manager_list')
-                            @if (Route::has('admin.emails.index'))
-                                <li class="sidebar-item {{ Route::is('admin.emails.*') ? 'selected' : '' }}">
-                                    <a href="{{ route('admin.emails.index') }}"
-                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.emails.*') ? 'active' : '' }}">
-                                        <i class="fas fa-envelope"></i>
-                                        <span class="hide-menu">Email Template Manager</span>
-                                    </a>
-                                </li>
-                            @endif
-                        @endadmincan
-
-                        {{-- Faq Manager --}}
-                        @admincan('faqs_manager_list')
-                            @if (Route::has('admin.faqs.index'))
-                                <li class="sidebar-item {{ Route::is('admin.faqs.*') ? 'selected' : '' }}">
-                                    <a href="{{ route('admin.faqs.index') }}"
-                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.faqs.*') ? 'active' : '' }}">
-                                        <i class="fas fa-question-circle"></i>
-                                        <span class="hide-menu">Faq Manager</span>
-                                    </a>
-                                </li>
-                            @endif
-                        @endadmincan
-
-                        {{-- Banner Manager --}}
-                        @admincan('banners_manager_list')
-                            @if (Route::has('admin.banners.index'))
-                                <li class="sidebar-item {{ Route::is('admin.banners.*') ? 'selected' : '' }}">
-                                    <a href="{{ route('admin.banners.index') }}"
-                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.banners.*') ? 'active' : '' }}">
-                                        <i class="fas fa-image"></i>
-                                        <span class="hide-menu">Banner Manager</span>
-                                    </a>
-                                </li>
-                            @endif
-                        @endadmincan
-
-                        @admincan('enquiry_manager_list')
-                            {{-- Enquiry Manager --}}
-                            @if (Route::has('admin.enquiries.index'))
-                                <li class="sidebar-item {{ Route::is('admin.enquiries.*') ? 'selected' : '' }}">
-                                    <a class="sidebar-link waves-effect waves-dark {{ Route::is('admin.enquiries.*') ? 'active' : '' }}"
-                                        href="{{ route('admin.enquiries.index') }}" aria-expanded="false">
-                                        <i class="fas fa-phone"></i>
-                                        <span class="hide-menu">Enquiry Manager</span>
-                                    </a>
-                                </li>
-                            @endif
-                        @endadmincan
-
                         {{-- Brand Manager --}}
                         @admincan('brands_manager_list')
                             @if (Route::has('admin.brands.index'))
@@ -479,7 +414,7 @@
                                 </li>
                             @endif
                         @endadmincan
-                        
+
                         {{-- Wishlist Manager --}}
                         @admincan('wishlists_manager_list')
                         @if (Route::has('admin.wishlists.index'))
@@ -506,8 +441,8 @@
                         @endif
                         @endadmincan
 
-                        @admincan('reports_manager_list')
                         {{-- Report Manager --}}
+                        @admincan('reports_manager_list')
                         @if (Route::has('admin.reports.index'))
                         <li class="sidebar-item {{ Route::is('admin.reports.*') ? 'selected' : '' }}">
                             <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.reports.*') ? 'active' : '' }}"
@@ -517,6 +452,71 @@
                             </a>
                         </li>
                         @endif
+                        @endadmincan
+
+                         {{-- CMS Pages Manager --}}
+                        @admincan('pages_manager_list')
+                            @if (Route::has('admin.pages.index'))
+                                <li class="sidebar-item {{ Route::is('admin.pages.*') ? 'selected' : '' }}">
+                                    <a href="{{ route('admin.pages.index') }}"
+                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.pages.*') ? 'active' : '' }}">
+                                        <i class="fas fa-file-alt"></i>
+                                        <span class="hide-menu">CMS Pages Manager</span>
+                                    </a>
+                                </li>
+                            @endif
+                        @endadmincan
+
+                        {{-- Email Template Manager --}}
+                        @admincan('emails_manager_list')
+                            @if (Route::has('admin.emails.index'))
+                                <li class="sidebar-item {{ Route::is('admin.emails.*') ? 'selected' : '' }}">
+                                    <a href="{{ route('admin.emails.index') }}"
+                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.emails.*') ? 'active' : '' }}">
+                                        <i class="fas fa-envelope"></i>
+                                        <span class="hide-menu">Email Template Manager</span>
+                                    </a>
+                                </li>
+                            @endif
+                        @endadmincan
+
+                        {{-- Faq Manager --}}
+                        @admincan('faqs_manager_list')
+                            @if (Route::has('admin.faqs.index'))
+                                <li class="sidebar-item {{ Route::is('admin.faqs.*') ? 'selected' : '' }}">
+                                    <a href="{{ route('admin.faqs.index') }}"
+                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.faqs.*') ? 'active' : '' }}">
+                                        <i class="fas fa-question-circle"></i>
+                                        <span class="hide-menu">Faq Manager</span>
+                                    </a>
+                                </li>
+                            @endif
+                        @endadmincan
+
+                        {{-- Banner Manager --}}
+                        @admincan('banners_manager_list')
+                            @if (Route::has('admin.banners.index'))
+                                <li class="sidebar-item {{ Route::is('admin.banners.*') ? 'selected' : '' }}">
+                                    <a href="{{ route('admin.banners.index') }}"
+                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.banners.*') ? 'active' : '' }}">
+                                        <i class="fas fa-image"></i>
+                                        <span class="hide-menu">Banner Manager</span>
+                                    </a>
+                                </li>
+                            @endif
+                        @endadmincan
+
+                        @admincan('enquiry_manager_list')
+                            {{-- Enquiry Manager --}}
+                            @if (Route::has('admin.enquiries.index'))
+                                <li class="sidebar-item {{ Route::is('admin.enquiries.*') ? 'selected' : '' }}">
+                                    <a class="sidebar-link waves-effect waves-dark {{ Route::is('admin.enquiries.*') ? 'active' : '' }}"
+                                        href="{{ route('admin.enquiries.index') }}" aria-expanded="false">
+                                        <i class="fas fa-phone"></i>
+                                        <span class="hide-menu">Enquiry Manager</span>
+                                    </a>
+                                </li>
+                            @endif
                         @endadmincan
 
                         {{-- Setting Manager --}}
