@@ -10,8 +10,8 @@
     @php
         // Use config list if available, otherwise fallback to these three packages
         $protected = config('constants.protected_packages', ['admin/settings', 'admin/admin_auth']);
-        $restrictedForProduct = ['categories', 'products', 'users', 'brands','tags'];
-        $restrictedForCourse = ['tags', 'categories', 'courses', 'users'];
+        $restrictedForProduct = ['categories', 'products', 'users', 'brands'];
+        $restrictedForCourse = ['categories', 'courses', 'users'];
     @endphp
 
     <div id="page-overlay"
