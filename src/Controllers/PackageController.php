@@ -55,11 +55,11 @@ class PackageController extends Controller
                 }
 
                 if ($package === 'products' && $vendor === 'admin') {
-                    $this->uninstallDependentPackage('admin', ['wishlists', 'ratings', 'tags']);
+                    $this->uninstallDependentPackage('admin', ['wishlists', 'ratings']);
                 }
 
                 if ($package === 'courses' && $vendor === 'admin') {
-                    $this->uninstallDependentPackage('admin', ['quizzes', 'ratings', 'tags', 'wishlists']);
+                    $this->uninstallDependentPackage('admin', ['quizzes', 'ratings', 'wishlists']);
                 }
 
                 // if ($package === 'coupons' && $vendor === 'admin') {
@@ -96,8 +96,8 @@ class PackageController extends Controller
 
                 $dependencyMap = [
                     'admin/admin_role_permissions' => ['admins'],
-                    'admin/products' => ['users',  'user_roles', 'brands', 'categories', 'tags'],
-                    'admin/courses' => ['users',  'user_roles', 'categories', 'tags'],
+                    'admin/products' => ['users',  'user_roles', 'brands', 'categories'],
+                    'admin/courses' => ['users',  'user_roles', 'categories'],
                     'admin/users' => ['user_roles'],
                     'admin/quizzes' => ['users', 'user_roles', 'categories', 'tags', 'courses'],
                     'admin/coupons' => [
@@ -111,6 +111,10 @@ class PackageController extends Controller
                     'admin/ratings' => [
                         'ecommerce' => ['users', 'user_roles', 'categories', 'tags', 'brands', 'products'],
                         'education' => ['users', 'user_roles', 'categories', 'tags', 'courses'],
+                    ],
+                    'admin/tags' => [
+                        'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products'],
+                        'education' => ['users', 'user_roles', 'categories', 'courses'],
                     ],
                 ];
                 $packageKey = "{$vendor}/{$package}";
@@ -225,7 +229,6 @@ class PackageController extends Controller
                     'product_prices',
                     'product_inventories',
                     'product_shippings',
-                    'product_tags',
                     'order_addresses',
                     'return_refund_requests',
                     'transactions',
@@ -241,7 +244,6 @@ class PackageController extends Controller
                     'create_product_prices',
                     'create_product_inventories',
                     'create_product_shippings',
-                    'create_product_tags',
                     'create_order_items_table',
                     'create_shipping_addresses',
                     'create_return_refund_requests',
@@ -257,11 +259,10 @@ class PackageController extends Controller
                 $migrations = ['create_' . $package . '_table', 'create_user_roles_table'];
                 break;
             case 'courses':
-                $tables = ['course_category', 'course_purchases', 'course_sections', 'course_tag', 'transactions', 'lectures', 'courses', 'quiz_answers', 'quiz_questions', 'quizzes', 'ratings', 'wishlists'];
+                $tables = ['course_category', 'course_purchases', 'course_sections', 'transactions', 'lectures', 'courses', 'quiz_answers', 'quiz_questions', 'quizzes', 'ratings', 'wishlists'];
                 $migrations = [
                     'create_courses_table',
                     'create_course_category_table',
-                    'create_course_tag_table',
                     'create_course_sections_table',
                     'create_lectures_table',
                     'create_course_purchases_table',
@@ -298,6 +299,18 @@ class PackageController extends Controller
                     'create_quizzes_table',
                 ];
                 break;
+            case 'tags':
+                $industry = DB::table('settings')->where('slug', 'industry')->value('config_value') ?? 'ecommerce';
+                if ($industry == 'education') {
+                    $tables = ['course_tag','tags'];
+                } else {
+                    $tables = ['product_tags','tags'];
+                }
+                $migrations = [
+                    'create_course_product_tag_table',
+                    'create_tags_table',
+                ];
+                break;
             default:
                 $tables = [$package];
                 $migrations = ['create_' . $package . '_table'];
@@ -319,7 +332,7 @@ class PackageController extends Controller
 
     private function installDependentPackage($vendor, $packages)
     {
-       $packages = collect($packages)->flatten()->unique()->toArray();
+        $packages = collect($packages)->flatten()->unique()->toArray();
 
         foreach ($packages as $package) {
             $path = base_path("vendor/{$vendor}/{$package}");
