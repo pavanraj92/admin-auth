@@ -100,6 +100,9 @@ class PackageController extends Controller
                     'admin/courses' => ['users',  'user_roles', 'categories'],
                     'admin/users' => ['user_roles'],
                     'admin/quizzes' => ['users', 'user_roles', 'categories', 'tags', 'courses'],
+                    'admin/product_transactions' => ['users', 'user_roles', 'categories', 'brands', 'products'],
+                    'admin/product_reports' => ['users', 'user_roles', 'categories', 'brands', 'products'],
+                    'admin/product_return_refunds' => ['users', 'user_roles', 'categories', 'brands', 'products'],
                     'admin/coupons' => [
                         'ecommerce' => ['users', 'user_roles', 'categories', 'tags', 'brands', 'products'],
                         'education' => ['users', 'user_roles', 'categories', 'tags', 'courses'],
