@@ -216,6 +216,19 @@
                             @endif
                         @endadmincan
 
+                        {{-- Tag Manager --}}
+                        @admincan('tags_manager_list')
+                            @if (Route::has('admin.tags.index'))
+                                <li class="sidebar-item {{ Route::is('admin.tags.*') ? 'selected' : '' }}">
+                                    <a href="{{ route('admin.tags.index') }}"
+                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.tags.*') ? 'active' : '' }}">
+                                        <i class="fas fa-tags"></i>
+                                        <span class="hide-menu">Tag Manager</span>
+                                    </a>
+                                </li>
+                            @endif
+                        @endadmincan
+
                         {{-- Course Manager --}}
                         @admincan('courses_manager_list')
                             @if (Route::has('admin.courses.index'))
@@ -253,20 +266,7 @@
                                     </a>
                                 </li>
                             @endif
-                        @endadmincan
-
-                        {{-- Tag Manager --}}
-                        @admincan('tags_manager_list')
-                            @if (Route::has('admin.tags.index'))
-                                <li class="sidebar-item {{ Route::is('admin.tags.*') ? 'selected' : '' }}">
-                                    <a href="{{ route('admin.tags.index') }}"
-                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.tags.*') ? 'active' : '' }}">
-                                        <i class="fas fa-tags"></i>
-                                        <span class="hide-menu">Tag Manager</span>
-                                    </a>
-                                </li>
-                            @endif
-                        @endadmincan
+                        @endadmincan                        
 
                         {{-- Product Manager --}}
                         @admincan('products_manager_list')
