@@ -311,6 +311,18 @@ class PackageController extends Controller
                     'create_tags_table',
                 ];
                 break;
+            case 'product_transactions':
+                $tables = ['transactions'];
+                $migrations = [
+                    'create_transactions_table',
+                ];
+                break;
+            case 'product_return_refunds':
+                $tables = ['return_refund_requests'];
+                $migrations = [
+                    'create_return_refund_requests_table',
+                ];
+                break;
             default:
                 $tables = [$package];
                 $migrations = ['create_' . $package . '_table'];
