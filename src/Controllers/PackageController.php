@@ -103,6 +103,8 @@ class PackageController extends Controller
                     'admin/product_transactions' => ['users', 'user_roles', 'categories', 'brands', 'products'],
                     'admin/product_reports' => ['users', 'user_roles', 'categories', 'brands', 'products'],
                     'admin/product_return_refunds' => ['users', 'user_roles', 'categories', 'brands', 'products'],
+                    'admin/course_reports' => ['users', 'user_roles', 'categories', 'courses'],
+                    'admin/course_transactions' => ['users', 'user_roles', 'categories', 'courses'],
                     'admin/coupons' => [
                         'ecommerce' => ['users', 'user_roles', 'categories', 'tags', 'brands', 'products'],
                         'education' => ['users', 'user_roles', 'categories', 'tags', 'courses'],
@@ -294,20 +296,12 @@ class PackageController extends Controller
                     'create_quizzes_table',
                 ];
                 break;
-            case 'quizzes':
-                $tables = ['quiz_answers', 'quiz_questions', 'quizzes'];
-                $migrations = [
-                    'create_quiz_answers_table',
-                    'create_quiz_questions_table',
-                    'create_quizzes_table',
-                ];
-                break;
             case 'tags':
                 $industry = DB::table('settings')->where('slug', 'industry')->value('config_value') ?? 'ecommerce';
                 if ($industry == 'education') {
-                    $tables = ['course_tag','tags'];
+                    $tables = ['course_tag', 'tags'];
                 } else {
-                    $tables = ['product_tags','tags'];
+                    $tables = ['product_tags', 'tags'];
                 }
                 $migrations = [
                     'create_course_product_tag_table',
@@ -324,6 +318,13 @@ class PackageController extends Controller
                 $tables = ['return_refund_requests'];
                 $migrations = [
                     'create_return_refund_requests_table',
+                ];
+                break;
+            case 'course_transactions':
+                $tables = ['transactions', 'course_purchases'];
+                $migrations = [
+                    'create_transactions_table',
+                    'create_course_purchases_table',
                 ];
                 break;
             default:
