@@ -108,18 +108,22 @@ class PackageController extends Controller
                     'admin/course_transactions' => ['users', 'user_roles', 'categories', 'courses'],
                     'admin/commissions' => ['categories'],
                     'admin/coupons' => [
-                        'ecommerce' => ['users', 'user_roles', 'categories', 'tags', 'brands', 'products'],
-                        'education' => ['users', 'user_roles', 'categories', 'tags', 'courses'],
+                        'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products'],
+                        'education' => ['users', 'user_roles', 'categories', 'courses'],
                     ],
                     'admin/wishlists' => [
-                        'ecommerce' => ['users', 'user_roles', 'categories', 'tags', 'brands', 'products'],
-                        'education' => ['users', 'user_roles', 'categories', 'tags', 'courses'],
+                        'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products'],
+                        'education' => ['users', 'user_roles', 'categories', 'courses'],
                     ],
                     'admin/ratings' => [
-                        'ecommerce' => ['users', 'user_roles', 'categories', 'tags', 'brands', 'products'],
-                        'education' => ['users', 'user_roles', 'categories', 'tags', 'courses'],
+                        'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products'],
+                        'education' => ['users', 'user_roles', 'categories', 'courses'],
                     ],
                     'admin/tags' => [
+                        'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products'],
+                        'education' => ['users', 'user_roles', 'categories', 'courses'],
+                    ],
+                    'admin/commissions' => [
                         'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products'],
                         'education' => ['users', 'user_roles', 'categories', 'courses'],
                     ],
@@ -282,11 +286,28 @@ class PackageController extends Controller
                 ];
                 break;
             case 'coupons':
+                // Drop the columns added by the old migration if they exist
+                if (Schema::hasTable('orders')) {
+                    Schema::table('orders', function ($table) {
+                        if (Schema::hasColumn('orders', 'coupon_id')) {
+                            $table->dropForeign(['coupon_id']);
+                            $table->dropColumn(['coupon_id', 'discount_value']);
+                        }
+                    });
+                }else if (Schema::hasTable('course_purchases')) {
+                    Schema::table('course_purchases', function ($table) {
+                        if (Schema::hasColumn('course_purchases', 'coupon_id')) {
+                            $table->dropForeign(['coupon_id']);
+                            $table->dropColumn(['coupon_id', 'discount_value']);
+                        }
+                    });
+                }
                 $tables = ['coupon_category', 'coupon_course', 'coupon_product', 'coupons'];
                 $migrations = [
                     'create_coupon_category_table',
                     'create_coupon_course_table',
                     'create_coupon_product_table',
+                    'add_discount_fields_to_orders_table',
                     'create_coupons_table',
                 ];
                 break;
@@ -327,6 +348,30 @@ class PackageController extends Controller
                 $migrations = [
                     'create_transactions_table',
                     'create_course_purchases_table',
+                ];
+                break;
+            case 'commissions':
+                // Drop the columns added by the old migration if they exist
+                if (Schema::hasTable('orders')) {
+                    Schema::table('orders', function ($table) {
+                        if (Schema::hasColumn('orders', 'commission_id')) {
+                            $table->dropForeign(['commission_id']);
+                            $table->dropColumn(['commission_id', 'commission_type', 'commission_value']);
+                        }
+                    });
+                }else if (Schema::hasTable('course_purchases')) {
+                    Schema::table('course_purchases', function ($table) {
+                        if (Schema::hasColumn('course_purchases', 'commission_id')) {
+                            $table->dropForeign(['commission_id']);
+                            $table->dropColumn(['commission_id', 'commission_type', 'commission_value']);
+                        }
+                    });
+                }
+                $tables = ['commission_category', 'commissions'];
+                $migrations = [
+                    'add_commission_fields_to_orders_table',
+                    'create_commission_category_table',
+                    'create_commissions_table',
                 ];
                 break;
             default:
