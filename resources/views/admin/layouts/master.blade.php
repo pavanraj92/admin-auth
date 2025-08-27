@@ -9,10 +9,10 @@
     <meta name="author" content="">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @if (config('GET.main_favicon'))
-        <link rel="icon" type="image/png" sizes="16x16"
-            href="{{ asset('storage/' . config('GET.main_favicon')) }}">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="{{ asset('storage/' . config('GET.main_favicon')) }}">
     @else
-        <link rel="icon" type="image/png" sizes="16x16" href="../../assets/images/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../assets/images/favicon.png">
     @endif
     <title>@yield('title', 'Admin Panel')</title>
     <link href="{{ asset('backend/assets/libs/chartist/dist/chartist.min.css') }}" rel="stylesheet">
@@ -94,204 +94,204 @@
                 <nav class="sidebar-nav">
                     <ul id="sidebarnav">
                         @admincan('dashboard')
-                            <li class="sidebar-item">
-                                <a class="sidebar-link waves-effect waves-dark sidebar-link"
-                                    href="{{ route('admin.dashboard') }}" aria-expanded="false">
-                                    <i class="mdi mdi-av-timer"></i>
-                                    <span class="hide-menu">Dashboard</span>
-                                </a>
-                            </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                                href="{{ route('admin.dashboard') }}" aria-expanded="false">
+                                <i class="mdi mdi-av-timer"></i>
+                                <span class="hide-menu">Dashboard</span>
+                            </a>
+                        </li>
                         @endadmincan
 
                         @admincan('admin_manager_list')
-                            @if (Route::has('admin.admins.index'))
-                                <li class="sidebar-item {{ Route::is('admin.admins.*') ? 'selected' : '' }}">
-                                    <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.admins.*') ? 'active' : '' }}"
-                                        href="{{ route('admin.admins.index') }}" aria-expanded="false">
-                                        <i class="fas fa-users"></i>
-                                        <span class="hide-menu">Admin Manager</span>
-                                    </a>
-                                </li>
-                            @endif
+                        @if (Route::has('admin.admins.index'))
+                        <li class="sidebar-item {{ Route::is('admin.admins.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.admins.*') ? 'active' : '' }}"
+                                href="{{ route('admin.admins.index') }}" aria-expanded="false">
+                                <i class="fas fa-users"></i>
+                                <span class="hide-menu">Admin Manager</span>
+                            </a>
+                        </li>
+                        @endif
                         @endadmincan
 
 
                         @admincan('roles_manager_list|permission_manager_list')
-                            @if (Route::has('admin.roles.index') || Route::has('admin.permissions.index'))
-                                @php
-                                    $activeRoutes = ['admin.roles.*', 'admin.permissions.*'];
-                                @endphp
-                                <li class="sidebar-item {{ Route::is($activeRoutes) ? 'selected' : '' }}">
-                                    <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is($activeRoutes) ? 'active' : '' }}"
-                                        href="javascript:void(0)" aria-expanded="false">
-                                        <i class="mdi mdi-security"></i>
-                                        <span class="hide-menu">Role Permssion Manager</span>
+                        @if (Route::has('admin.roles.index') || Route::has('admin.permissions.index'))
+                        @php
+                        $activeRoutes = ['admin.roles.*', 'admin.permissions.*'];
+                        @endphp
+                        <li class="sidebar-item {{ Route::is($activeRoutes) ? 'selected' : '' }}">
+                            <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is($activeRoutes) ? 'active' : '' }}"
+                                href="javascript:void(0)" aria-expanded="false">
+                                <i class="mdi mdi-security"></i>
+                                <span class="hide-menu">Role Permssion Manager</span>
+                            </a>
+                            <ul aria-expanded="false"
+                                class="collapse first-level {{ Route::is($activeRoutes) ? 'in' : '' }}">
+                                @admincan('roles_manager_list')
+                                @if (Route::has('admin.roles.index'))
+                                <li class="sidebar-item" {{ Route::is('admin.roles.*') ? 'selected' : '' }}>
+                                    <a href="{{ route('admin.roles.index') }}"
+                                        class="sidebar-link {{ Route::is('admin.roles.*') ? 'active' : '' }}">
+                                        <i class="fas fa-circle"></i>
+                                        <span class="hide-menu">Role Manager</span>
                                     </a>
-                                    <ul aria-expanded="false"
-                                        class="collapse first-level {{ Route::is($activeRoutes) ? 'in' : '' }}">
-                                        @admincan('roles_manager_list')
-                                            @if (Route::has('admin.roles.index'))
-                                                <li class="sidebar-item" {{ Route::is('admin.roles.*') ? 'selected' : '' }}>
-                                                    <a href="{{ route('admin.roles.index') }}"
-                                                        class="sidebar-link {{ Route::is('admin.roles.*') ? 'active' : '' }}">
-                                                        <i class="fas fa-circle"></i>
-                                                        <span class="hide-menu">Role Manager</span>
-                                                    </a>
-                                                </li>
-                                            @endif
-                                        @endadmincan
-
-                                        @admincan('permission_manager_list')
-                                            @if (Route::has('admin.permissions.index'))
-                                                <li
-                                                    class="sidebar-item {{ Route::is('admin.permissions.*') ? 'selected' : '' }}">
-                                                    <a href="{{ route('admin.permissions.index') }}"
-                                                        class="sidebar-link {{ Route::is('admin.permissions.*') ? 'active' : '' }}">
-                                                        <i class="fas fa-circle"></i>
-                                                        <span class="hide-menu">Permission Manager</span>
-                                                    </a>
-                                                </li>
-                                            @endif
-                                        @endadmincan
-
-                                    </ul>
                                 </li>
-                            @endif
+                                @endif
+                                @endadmincan
+
+                                @admincan('permission_manager_list')
+                                @if (Route::has('admin.permissions.index'))
+                                <li
+                                    class="sidebar-item {{ Route::is('admin.permissions.*') ? 'selected' : '' }}">
+                                    <a href="{{ route('admin.permissions.index') }}"
+                                        class="sidebar-link {{ Route::is('admin.permissions.*') ? 'active' : '' }}">
+                                        <i class="fas fa-circle"></i>
+                                        <span class="hide-menu">Permission Manager</span>
+                                    </a>
+                                </li>
+                                @endif
+                                @endadmincan
+
+                            </ul>
+                        </li>
+                        @endif
                         @endadmincan
 
                         @admincan('users_manager_list')
-                            @if (Route::has('admin.users.index'))
-                                @php
-                                    $sidebarRoles = \DB::table('user_roles')
-                                        ->where('status', 1)
-                                        ->orderBy('name')
-                                        ->whereNull('deleted_at')
-                                        ->get();
-                                @endphp
-                                <li
-                                    class="sidebar-item {{ Route::is('admin.users.*', 'admin.user_roles.*') ? 'selected' : '' }}">
-                                    <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is('admin.users.*', 'admin.user_roles.*') ? 'active' : '' }}"
-                                        href="javascript:void(0)">
-                                        <i class="fas fa-users"></i>
-                                        <span class="hide-menu">User Manager</span>
+                        @if (Route::has('admin.users.index'))
+                        @php
+                        $sidebarRoles = \DB::table('user_roles')
+                        ->where('status', 1)
+                        ->orderBy('name')
+                        ->whereNull('deleted_at')
+                        ->get();
+                        @endphp
+                        <li
+                            class="sidebar-item {{ Route::is('admin.users.*', 'admin.user_roles.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is('admin.users.*', 'admin.user_roles.*') ? 'active' : '' }}"
+                                href="javascript:void(0)">
+                                <i class="fas fa-users"></i>
+                                <span class="hide-menu">User Manager</span>
+                            </a>
+                            <ul aria-expanded="{{ Route::is('admin.users.*') ? 'true' : 'false' }}"
+                                class="collapse first-level {{ Route::is('admin.users.*', 'admin.user_roles.*') ? 'in' : '' }}">
+                                @admincan('user_roles_manager_list')
+                                @if (Route::has('admin.user_roles.index'))
+                                <li class="sidebar-item"
+                                    {{ Route::is('admin.user_roles.*') ? 'selected' : '' }}>
+                                    <a href="{{ route('admin.user_roles.index') }}"
+                                        class="sidebar-link {{ Route::is('admin.user_roles.*') ? 'active' : '' }}">
+                                        <i class="fas fa-user-tag"></i>
+                                        <span class="hide-menu">User Roles Manager</span>
                                     </a>
-                                    <ul aria-expanded="{{ Route::is('admin.users.*') ? 'true' : 'false' }}"
-                                        class="collapse first-level {{ Route::is('admin.users.*', 'admin.user_roles.*') ? 'in' : '' }}">
-                                        @admincan('user_roles_manager_list')
-                                            @if (Route::has('admin.user_roles.index'))
-                                                <li class="sidebar-item"
-                                                    {{ Route::is('admin.user_roles.*') ? 'selected' : '' }}>
-                                                    <a href="{{ route('admin.user_roles.index') }}"
-                                                        class="sidebar-link {{ Route::is('admin.user_roles.*') ? 'active' : '' }}">
-                                                        <i class="fas fa-user-tag"></i>
-                                                        <span class="hide-menu">User Roles Manager</span>
-                                                    </a>
-                                                </li>
-                                            @endif
-                                        @endadmincan
-                                        @foreach ($sidebarRoles as $role)
-                                            <li
-                                                class="sidebar-item {{ request('type') === $role->slug ? 'selected' : '' }}">
-                                                <a href="{{ route('admin.users.index', ['type' => $role->slug]) }}"
-                                                    class="sidebar-link {{ request('type') === $role->slug ? 'active' : '' }}">
-                                                    <i class="fas fa-circle"></i>
-                                                    <span class="hide-menu">{{ $role->name }} Manager</span>
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
                                 </li>
-                            @endif
+                                @endif
+                                @endadmincan
+                                @foreach ($sidebarRoles as $role)
+                                <li
+                                    class="sidebar-item {{ request('type') === $role->slug ? 'selected' : '' }}">
+                                    <a href="{{ route('admin.users.index', ['type' => $role->slug]) }}"
+                                        class="sidebar-link {{ request('type') === $role->slug ? 'active' : '' }}">
+                                        <i class="fas fa-circle"></i>
+                                        <span class="hide-menu">{{ $role->name }} Manager</span>
+                                    </a>
+                                </li>
+                                @endforeach
+                            </ul>
+                        </li>
+                        @endif
                         @endadmincan
 
                         @admincan('categories_manager_list')
-                            @if (Route::has('admin.categories.index'))
-                                <li class="sidebar-item {{ Route::is('admin.categories.*') ? 'selected' : '' }}">
-                                    <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.categories.*') ? 'active' : '' }}"
-                                        href="{{ route('admin.categories.index') }}" aria-expanded="false">
-                                        <i class="fas fa-th-large"></i>
-                                        <span class="hide-menu">Category Manager</span>
-                                    </a>
-                                </li>
-                            @endif
+                        @if (Route::has('admin.categories.index'))
+                        <li class="sidebar-item {{ Route::is('admin.categories.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.categories.*') ? 'active' : '' }}"
+                                href="{{ route('admin.categories.index') }}" aria-expanded="false">
+                                <i class="fas fa-th-large"></i>
+                                <span class="hide-menu">Category Manager</span>
+                            </a>
+                        </li>
+                        @endif
                         @endadmincan
 
                         {{-- Tag Manager --}}
                         @admincan('tags_manager_list')
-                            @if (Route::has('admin.tags.index'))
-                                <li class="sidebar-item {{ Route::is('admin.tags.*') ? 'selected' : '' }}">
-                                    <a href="{{ route('admin.tags.index') }}"
-                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.tags.*') ? 'active' : '' }}">
-                                        <i class="fas fa-tags"></i>
-                                        <span class="hide-menu">Tag Manager</span>
-                                    </a>
-                                </li>
-                            @endif
+                        @if (Route::has('admin.tags.index'))
+                        <li class="sidebar-item {{ Route::is('admin.tags.*') ? 'selected' : '' }}">
+                            <a href="{{ route('admin.tags.index') }}"
+                                class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.tags.*') ? 'active' : '' }}">
+                                <i class="fas fa-tags"></i>
+                                <span class="hide-menu">Tag Manager</span>
+                            </a>
+                        </li>
+                        @endif
                         @endadmincan
 
                         {{-- Course Manager --}}
                         @admincan('courses_manager_list')
-                            @if (Route::has('admin.courses.index'))
-                                <li class="sidebar-item {{ Route::is('admin.courses.*') ? 'selected' : '' }}">
-                                    <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.courses.*') ? 'active' : '' }}"
-                                        href="{{ route('admin.courses.index') }}" aria-expanded="false">
-                                        <i class="fas fa-book"></i>
-                                        <span class="hide-menu">Course Manager</span>
-                                    </a>
-                                </li>
-                            @endif
+                        @if (Route::has('admin.courses.index'))
+                        <li class="sidebar-item {{ Route::is('admin.courses.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.courses.*') ? 'active' : '' }}"
+                                href="{{ route('admin.courses.index') }}" aria-expanded="false">
+                                <i class="fas fa-book"></i>
+                                <span class="hide-menu">Course Manager</span>
+                            </a>
+                        </li>
+                        @endif
                         @endadmincan
 
                         {{-- Lecture Manager --}}
                         @admincan('lectures_manager_list')
-                            @if (Route::has('admin.lectures.index'))
-                                <li class="sidebar-item {{ Route::is('admin.lectures.*') ? 'selected' : '' }}">
-                                    <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.lectures.*') ? 'active' : '' }}"
-                                        href="{{ route('admin.lectures.index') }}" aria-expanded="false">
-                                        <i class="fas fa-chalkboard-teacher"></i>
-                                        <span class="hide-menu">Lecture Manager</span>
-                                    </a>
-                                </li>
-                            @endif
+                        @if (Route::has('admin.lectures.index'))
+                        <li class="sidebar-item {{ Route::is('admin.lectures.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.lectures.*') ? 'active' : '' }}"
+                                href="{{ route('admin.lectures.index') }}" aria-expanded="false">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <span class="hide-menu">Lecture Manager</span>
+                            </a>
+                        </li>
+                        @endif
                         @endadmincan
 
                         {{-- Brand Manager --}}
                         @admincan('brands_manager_list')
-                            @if (Route::has('admin.brands.index'))
-                                <li class="sidebar-item {{ Route::is('admin.brands.*') ? 'selected' : '' }}">
-                                    <a href="{{ route('admin.brands.index') }}"
-                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.brands.*') ? 'active' : '' }}">
-                                        <i class="fas fa-shopping-bag"></i>
-                                        <span class="hide-menu">Brand Manager</span>
-                                    </a>
-                                </li>
-                            @endif
-                        @endadmincan                        
+                        @if (Route::has('admin.brands.index'))
+                        <li class="sidebar-item {{ Route::is('admin.brands.*') ? 'selected' : '' }}">
+                            <a href="{{ route('admin.brands.index') }}"
+                                class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.brands.*') ? 'active' : '' }}">
+                                <i class="fas fa-shopping-bag"></i>
+                                <span class="hide-menu">Brand Manager</span>
+                            </a>
+                        </li>
+                        @endif
+                        @endadmincan
 
                         {{-- Product Manager --}}
                         @admincan('products_manager_list')
-                            @if (Route::has('admin.products.index'))
-                                <li class="sidebar-item {{ Route::is('admin.products.*') ? 'selected' : '' }}">
-                                    <a href="{{ route('admin.products.index') }}"
-                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.products.*') ? 'active' : '' }}">
-                                        <i class="fas fa-box-open"></i>
-                                        <span class="hide-menu">Product Manager</span>
-                                    </a>
-                                </li>
-                            @endif
+                        @if (Route::has('admin.products.index'))
+                        <li class="sidebar-item {{ Route::is('admin.products.*') ? 'selected' : '' }}">
+                            <a href="{{ route('admin.products.index') }}"
+                                class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.products.*') ? 'active' : '' }}">
+                                <i class="fas fa-box-open"></i>
+                                <span class="hide-menu">Product Manager</span>
+                            </a>
+                        </li>
+                        @endif
                         @endadmincan
-                        
+
                         {{-- Product Manager --}}
                         @admincan('product_orders_manager_list')
-                            @if (Route::has('admin.orders.index'))
-                                <li class="sidebar-item {{ Route::is('admin.orders.*') ? 'selected' : '' }}">
-                                    <a href="{{ route('admin.orders.index') }}"
-                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.orders.*') ? 'active' : '' }}">
-                                        <i class="fas fa-shopping-cart"></i>
-                                        <span class="hide-menu">Order Manager</span>
-                                    </a>
-                                </li>
-                            @endif
+                        @if (Route::has('admin.orders.index'))
+                        <li class="sidebar-item {{ Route::is('admin.orders.*') ? 'selected' : '' }}">
+                            <a href="{{ route('admin.orders.index') }}"
+                                class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.orders.*') ? 'active' : '' }}">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span class="hide-menu">Order Manager</span>
+                            </a>
+                        </li>
+                        @endif
                         @endadmincan
 
                         {{-- Certificate Manager --}}
@@ -310,57 +310,57 @@
                         {{-- Shipping Charges Manager --}}
                         @admincan('shipping_charges_manager')
                         @if (Route::has('admin.shipping_rates.index') || Route::has('admin.shipping_methods.index'))
-                            <li
-                                class="sidebar-item {{ Route::is('admin.shipping_methods.*') || Route::is('admin.shipping_rates.*') ? 'selected' : '' }}">
-                                <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is('admin.shipping_methods.*') || Route::is('admin.shipping_rates.*') ? 'active' : '' }}"
-                                    href="javascript:void(0)">
-                                    <i class="fas fa-truck"></i>
-                                    <span class="hide-menu">Shipping Charges Manager</span>
-                                </a>
-                                <ul aria-expanded="{{ Route::is('admin.shipping_methods.*') || Route::is('admin.shipping_rates.*') ? 'true' : 'false' }}"
-                                    class="collapse first-level {{ Route::is('admin.shipping_methods.*') || Route::is('admin.shipping_rates.*') ? 'in' : '' }}">
+                        <li
+                            class="sidebar-item {{ Route::is('admin.shipping_methods.*') || Route::is('admin.shipping_rates.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is('admin.shipping_methods.*') || Route::is('admin.shipping_rates.*') ? 'active' : '' }}"
+                                href="javascript:void(0)">
+                                <i class="fas fa-truck"></i>
+                                <span class="hide-menu">Shipping Charges Manager</span>
+                            </a>
+                            <ul aria-expanded="{{ Route::is('admin.shipping_methods.*') || Route::is('admin.shipping_rates.*') ? 'true' : 'false' }}"
+                                class="collapse first-level {{ Route::is('admin.shipping_methods.*') || Route::is('admin.shipping_rates.*') ? 'in' : '' }}">
 
-                                    @admincan('shipping_methods_manager_list')
-                                        @if (Route::has('admin.shipping_methods.index'))
-                                            <li
-                                                class="sidebar-item {{ Route::is('admin.shipping_methods.*') ? 'selected' : '' }}">
-                                                <a href="{{ route('admin.shipping_methods.index') }}"
-                                                    class="sidebar-link {{ Route::is('admin.shipping_methods.*') ? 'active' : '' }}">
-                                                    <i class="fas fa-box-open"></i>
-                                                    <span class="hide-menu">Shipping Methods Manager</span>
-                                                </a>
-                                            </li>
-                                        @endif
-                                    @endadmincan
+                                @admincan('shipping_methods_manager_list')
+                                @if (Route::has('admin.shipping_methods.index'))
+                                <li
+                                    class="sidebar-item {{ Route::is('admin.shipping_methods.*') ? 'selected' : '' }}">
+                                    <a href="{{ route('admin.shipping_methods.index') }}"
+                                        class="sidebar-link {{ Route::is('admin.shipping_methods.*') ? 'active' : '' }}">
+                                        <i class="fas fa-box-open"></i>
+                                        <span class="hide-menu">Shipping Methods Manager</span>
+                                    </a>
+                                </li>
+                                @endif
+                                @endadmincan
 
-                                    @admincan('shipping_rates_manager_view')
-                                        @if (Route::has('admin.shipping_rates.index'))
-                                            <li
-                                                class="sidebar-item {{ Route::is('admin.shipping_rates.*') ? 'selected' : '' }}">
-                                                <a href="{{ route('admin.shipping_rates.index') }}"
-                                                    class="sidebar-link {{ Route::is('admin.shipping_rates.*') ? 'active' : '' }}">
-                                                    <i class="fas fa-box-open"></i>
-                                                    <span class="hide-menu">Shipping Rates Manager</span>
-                                                </a>
-                                            </li>
-                                        @endif
-                                    @endadmincan
-                                </ul>
-                            </li>
+                                @admincan('shipping_rates_manager_view')
+                                @if (Route::has('admin.shipping_rates.index'))
+                                <li
+                                    class="sidebar-item {{ Route::is('admin.shipping_rates.*') ? 'selected' : '' }}">
+                                    <a href="{{ route('admin.shipping_rates.index') }}"
+                                        class="sidebar-link {{ Route::is('admin.shipping_rates.*') ? 'active' : '' }}">
+                                        <i class="fas fa-box-open"></i>
+                                        <span class="hide-menu">Shipping Rates Manager</span>
+                                    </a>
+                                </li>
+                                @endif
+                                @endadmincan
+                            </ul>
+                        </li>
                         @endif
                         @endadmincan
 
                         {{-- Product Coupons --}}
                         @admincan('product_coupons_manager_list')
-                            @if (Route::has('admin.coupons.index'))
-                                <li class="sidebar-item {{ Route::is('admin.coupons.*') ? 'selected' : '' }}">
-                                    <a href="{{ route('admin.coupons.index') }}"
-                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.coupons.*') ? 'active' : '' }}">
-                                        <i class="fas fa-tags"></i>
-                                        <span class="hide-menu">Coupon Manager</span>
-                                    </a>
-                                </li>
-                            @endif
+                        @if (Route::has('admin.coupons.index'))
+                        <li class="sidebar-item {{ Route::is('admin.coupons.*') ? 'selected' : '' }}">
+                            <a href="{{ route('admin.coupons.index') }}"
+                                class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.coupons.*') ? 'active' : '' }}">
+                                <i class="fas fa-tags"></i>
+                                <span class="hide-menu">Coupon Manager</span>
+                            </a>
+                        </li>
+                        @endif
                         @endadmincan
 
                         {{-- Quiz Manager --}}
@@ -374,19 +374,19 @@
                             </a>
                         </li>
                         @endif
-                        @endadmincan 
-                        
+                        @endadmincan
+
                         {{-- Transaction Manager --}}
                         @admincan('transactions_manager_list')
-                            @if (Route::has('admin.transactions.index'))
-                                <li class="sidebar-item {{ Route::is('admin.transactions.*') ? 'selected' : '' }}">
-                                    <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.transactions.*') ? 'active' : '' }}"
-                                        href="{{ route('admin.transactions.index') }}" aria-expanded="false">
-                                        <i class="fas fa-exchange-alt"></i>
-                                        <span class="hide-menu">Transaction Manager</span>
-                                    </a>
-                                </li>
-                            @endif
+                        @if (Route::has('admin.transactions.index'))
+                        <li class="sidebar-item {{ Route::is('admin.transactions.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.transactions.*') ? 'active' : '' }}"
+                                href="{{ route('admin.transactions.index') }}" aria-expanded="false">
+                                <i class="fas fa-exchange-alt"></i>
+                                <span class="hide-menu">Transaction Manager</span>
+                            </a>
+                        </li>
+                        @endif
                         @endadmincan
 
                         {{-- Course Purchases Manager --}}
@@ -402,17 +402,30 @@
                         @endif
                         @endadmincan
 
+                        {{-- Commissions Manager --}}
+                        @admincan('commissions_manager_list')
+                        @if (Route::has('admin.commissions.index'))
+                        <li class="sidebar-item {{ Route::is('admin.commissions.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.commissions.*') ? 'active' : '' }}"
+                                href="{{ route('admin.commissions.index') }}" aria-expanded="false">
+                                <i class="fas fa-percent"></i>
+                                <span class="hide-menu">Commission Manager</span>
+                            </a>
+                        </li>
+                        @endif
+                        @endadmincan
+
                         {{-- Rating Manager --}}
                         @admincan('ratings_manager_list')
-                            @if (Route::has('admin.ratings.index'))
-                                <li class="sidebar-item {{ Route::is('admin.ratings.*') ? 'selected' : '' }}">
-                                    <a href="{{ route('admin.ratings.index') }}"
-                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.ratings.*') ? 'active' : '' }}">
-                                        <i class="fas fa-star"></i>
-                                        <span class="hide-menu">Rating Manager</span>
-                                    </a>
-                                </li>
-                            @endif
+                        @if (Route::has('admin.ratings.index'))
+                        <li class="sidebar-item {{ Route::is('admin.ratings.*') ? 'selected' : '' }}">
+                            <a href="{{ route('admin.ratings.index') }}"
+                                class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.ratings.*') ? 'active' : '' }}">
+                                <i class="fas fa-star"></i>
+                                <span class="hide-menu">Rating Manager</span>
+                            </a>
+                        </li>
+                        @endif
                         @endadmincan
 
                         {{-- Wishlist Manager --}}
@@ -434,7 +447,7 @@
                         <li class="sidebar-item {{ Route::is('admin.return_refunds.*') ? 'selected' : '' }}">
                             <a class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.return_refunds.*') ? 'active' : '' }}"
                                 href="{{ route('admin.return_refunds.index') }}" aria-expanded="false">
-                               <i class="fas fa-money-check-dollar"></i>
+                                <i class="fas fa-money-check-dollar"></i>
                                 <span class="hide-menu">Return Refund Manager</span>
                             </a>
                         </li>
@@ -454,118 +467,118 @@
                         @endif
                         @endadmincan
 
-                         {{-- CMS Pages Manager --}}
+                        {{-- CMS Pages Manager --}}
                         @admincan('pages_manager_list')
-                            @if (Route::has('admin.pages.index'))
-                                <li class="sidebar-item {{ Route::is('admin.pages.*') ? 'selected' : '' }}">
-                                    <a href="{{ route('admin.pages.index') }}"
-                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.pages.*') ? 'active' : '' }}">
-                                        <i class="fas fa-file-alt"></i>
-                                        <span class="hide-menu">CMS Pages Manager</span>
-                                    </a>
-                                </li>
-                            @endif
+                        @if (Route::has('admin.pages.index'))
+                        <li class="sidebar-item {{ Route::is('admin.pages.*') ? 'selected' : '' }}">
+                            <a href="{{ route('admin.pages.index') }}"
+                                class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.pages.*') ? 'active' : '' }}">
+                                <i class="fas fa-file-alt"></i>
+                                <span class="hide-menu">CMS Pages Manager</span>
+                            </a>
+                        </li>
+                        @endif
                         @endadmincan
 
                         {{-- Email Template Manager --}}
                         @admincan('emails_manager_list')
-                            @if (Route::has('admin.emails.index'))
-                                <li class="sidebar-item {{ Route::is('admin.emails.*') ? 'selected' : '' }}">
-                                    <a href="{{ route('admin.emails.index') }}"
-                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.emails.*') ? 'active' : '' }}">
-                                        <i class="fas fa-envelope"></i>
-                                        <span class="hide-menu">Email Template Manager</span>
-                                    </a>
-                                </li>
-                            @endif
+                        @if (Route::has('admin.emails.index'))
+                        <li class="sidebar-item {{ Route::is('admin.emails.*') ? 'selected' : '' }}">
+                            <a href="{{ route('admin.emails.index') }}"
+                                class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.emails.*') ? 'active' : '' }}">
+                                <i class="fas fa-envelope"></i>
+                                <span class="hide-menu">Email Template Manager</span>
+                            </a>
+                        </li>
+                        @endif
                         @endadmincan
 
                         {{-- Faq Manager --}}
                         @admincan('faqs_manager_list')
-                            @if (Route::has('admin.faqs.index'))
-                                <li class="sidebar-item {{ Route::is('admin.faqs.*') ? 'selected' : '' }}">
-                                    <a href="{{ route('admin.faqs.index') }}"
-                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.faqs.*') ? 'active' : '' }}">
-                                        <i class="fas fa-question-circle"></i>
-                                        <span class="hide-menu">Faq Manager</span>
-                                    </a>
-                                </li>
-                            @endif
+                        @if (Route::has('admin.faqs.index'))
+                        <li class="sidebar-item {{ Route::is('admin.faqs.*') ? 'selected' : '' }}">
+                            <a href="{{ route('admin.faqs.index') }}"
+                                class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.faqs.*') ? 'active' : '' }}">
+                                <i class="fas fa-question-circle"></i>
+                                <span class="hide-menu">Faq Manager</span>
+                            </a>
+                        </li>
+                        @endif
                         @endadmincan
 
                         {{-- Banner Manager --}}
                         @admincan('banners_manager_list')
-                            @if (Route::has('admin.banners.index'))
-                                <li class="sidebar-item {{ Route::is('admin.banners.*') ? 'selected' : '' }}">
-                                    <a href="{{ route('admin.banners.index') }}"
-                                        class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.banners.*') ? 'active' : '' }}">
-                                        <i class="fas fa-image"></i>
-                                        <span class="hide-menu">Banner Manager</span>
-                                    </a>
-                                </li>
-                            @endif
+                        @if (Route::has('admin.banners.index'))
+                        <li class="sidebar-item {{ Route::is('admin.banners.*') ? 'selected' : '' }}">
+                            <a href="{{ route('admin.banners.index') }}"
+                                class="sidebar-link waves-effect waves-dark sidebar-link {{ Route::is('admin.banners.*') ? 'active' : '' }}">
+                                <i class="fas fa-image"></i>
+                                <span class="hide-menu">Banner Manager</span>
+                            </a>
+                        </li>
+                        @endif
                         @endadmincan
 
                         @admincan('enquiry_manager_list')
-                            {{-- Enquiry Manager --}}
-                            @if (Route::has('admin.enquiries.index'))
-                                <li class="sidebar-item {{ Route::is('admin.enquiries.*') ? 'selected' : '' }}">
-                                    <a class="sidebar-link waves-effect waves-dark {{ Route::is('admin.enquiries.*') ? 'active' : '' }}"
-                                        href="{{ route('admin.enquiries.index') }}" aria-expanded="false">
-                                        <i class="fas fa-phone"></i>
-                                        <span class="hide-menu">Enquiry Manager</span>
-                                    </a>
-                                </li>
-                            @endif
+                        {{-- Enquiry Manager --}}
+                        @if (Route::has('admin.enquiries.index'))
+                        <li class="sidebar-item {{ Route::is('admin.enquiries.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link waves-effect waves-dark {{ Route::is('admin.enquiries.*') ? 'active' : '' }}"
+                                href="{{ route('admin.enquiries.index') }}" aria-expanded="false">
+                                <i class="fas fa-phone"></i>
+                                <span class="hide-menu">Enquiry Manager</span>
+                            </a>
+                        </li>
+                        @endif
                         @endadmincan
 
                         {{-- Setting Manager --}}
                         @admincan('settings_manager')
-                            <li class="sidebar-item {{ Route::is('admin.settings.*') ? 'selected' : '' }}">
-                                <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is('admin.settings.*') ? 'active' : '' }}"
-                                    href="javascript:void(0)">
-                                    <i class="fas fa-cog"></i>
-                                    <span class="hide-menu">Setting Manager</span>
-                                </a>
-                                <ul aria-expanded="{{ Route::is('admin.settings.*') ? 'true' : 'false' }}"
-                                    class="collapse first-level {{ Route::is('admin.settings.*') ? 'in' : '' }}">
-                                    @admincan('settings_manager_list')
-                                        @if (Route::has('admin.settings.index'))
-                                            <li class="sidebar-item"
-                                                {{ Route::is('admin.settings.*') && !Route::is('admin.settings.getlogos') ? 'selected' : '' }}>
-                                                <a href="{{ route('admin.settings.index') }}"
-                                                    class="sidebar-link {{ Route::is('admin.settings.*') && !Route::is('admin.settings.getlogos') ? 'active' : '' }}">
-                                                    <i class="fas fa-user-tag"></i>
-                                                    <span class="hide-menu">General Settings Manager</span>
-                                                </a>
-                                            </li>
-                                        @endif
-                                    @endadmincan
-                                    @admincan('logo_favicon_manager_view')
-                                        @if (Route::has('admin.settings.getlogos'))
-                                            <li class="sidebar-item"
-                                                {{ Route::is('admin.settings.getlogos') ? 'selected' : '' }}>
-                                                <a href="{{ route('admin.settings.getlogos') }}"
-                                                    class="sidebar-link {{ Route::is('admin.settings.getlogos') ? 'active' : '' }}">
-                                                    <i class="fas fa-user-tag"></i>
-                                                    <span class="hide-menu">Logo/Favicon Manager</span>
-                                                </a>
-                                            </li>
-                                        @endif
-                                    @endadmincan
-                                </ul>
-                            </li>
+                        <li class="sidebar-item {{ Route::is('admin.settings.*') ? 'selected' : '' }}">
+                            <a class="sidebar-link has-arrow waves-effect waves-dark {{ Route::is('admin.settings.*') ? 'active' : '' }}"
+                                href="javascript:void(0)">
+                                <i class="fas fa-cog"></i>
+                                <span class="hide-menu">Setting Manager</span>
+                            </a>
+                            <ul aria-expanded="{{ Route::is('admin.settings.*') ? 'true' : 'false' }}"
+                                class="collapse first-level {{ Route::is('admin.settings.*') ? 'in' : '' }}">
+                                @admincan('settings_manager_list')
+                                @if (Route::has('admin.settings.index'))
+                                <li class="sidebar-item"
+                                    {{ Route::is('admin.settings.*') && !Route::is('admin.settings.getlogos') ? 'selected' : '' }}>
+                                    <a href="{{ route('admin.settings.index') }}"
+                                        class="sidebar-link {{ Route::is('admin.settings.*') && !Route::is('admin.settings.getlogos') ? 'active' : '' }}">
+                                        <i class="fas fa-user-tag"></i>
+                                        <span class="hide-menu">General Settings Manager</span>
+                                    </a>
+                                </li>
+                                @endif
+                                @endadmincan
+                                @admincan('logo_favicon_manager_view')
+                                @if (Route::has('admin.settings.getlogos'))
+                                <li class="sidebar-item"
+                                    {{ Route::is('admin.settings.getlogos') ? 'selected' : '' }}>
+                                    <a href="{{ route('admin.settings.getlogos') }}"
+                                        class="sidebar-link {{ Route::is('admin.settings.getlogos') ? 'active' : '' }}">
+                                        <i class="fas fa-user-tag"></i>
+                                        <span class="hide-menu">Logo/Favicon Manager</span>
+                                    </a>
+                                </li>
+                                @endif
+                                @endadmincan
+                            </ul>
+                        </li>
                         @endadmincan
                     </ul>
                 </nav>
             </div>
             @admincan('package_manager_list')
-                <div class="sidebar-bottom-link p-3 mt-auto" style="position: sticky; bottom: 0; background: #222d32;">
-                    <a class="sidebar-link d-flex align-items-center" href="{{ route('admin.packages') }}">
-                        <i class="fas fa-box mr-2"></i>
-                        <span class="hide-menu">Package Manager</span>
-                    </a>
-                </div>
+            <div class="sidebar-bottom-link p-3 mt-auto" style="position: sticky; bottom: 0; background: #222d32;">
+                <a class="sidebar-link d-flex align-items-center" href="{{ route('admin.packages') }}">
+                    <i class="fas fa-box mr-2"></i>
+                    <span class="hide-menu">Package Manager</span>
+                </a>
+            </div>
             @endadmincan
         </aside>
         <div class="page-wrapper">
@@ -583,9 +596,9 @@
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item {{ Route::is('admin.dashboard') ? 'active' : '' }}">
                                         @if (Route::is('admin.dashboard'))
-                                            Dashboard
+                                        Dashboard
                                         @else
-                                            <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+                                        <a href="{{ route('admin.dashboard') }}">Dashboard</a>
                                         @endif
                                     </li>
                                     @yield('breadcrumb')
@@ -637,20 +650,20 @@
     <script src="{{ asset('backend/custom.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
-        @if (session('success'))
-            toastr.success("{{ session('success') }}");
+        @if(session('success'))
+        toastr.success("{{ session('success') }}");
         @endif
 
-        @if (session('error'))
-            toastr.error("{{ session('error') }}");
+        @if(session('error'))
+        toastr.error("{{ session('error') }}");
         @endif
 
-        @if (session('info'))
-            toastr.info("{{ session('info') }}");
+        @if(session('info'))
+        toastr.info("{{ session('info') }}");
         @endif
 
-        @if (session('warning'))
-            toastr.warning("{{ session('warning') }}");
+        @if(session('warning'))
+        toastr.warning("{{ session('warning') }}");
         @endif
     </script>
 
