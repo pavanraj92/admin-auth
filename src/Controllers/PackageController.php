@@ -10,9 +10,54 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use admin\admin_auth\Models\Package;
+use Illuminate\Support\Facades\Log;
 
 class PackageController extends Controller
 {
+    /**
+     * Central dependency map for all packages
+     */
+    protected array $dependencyMapForInstall = [
+        'admin/admin_role_permissions' => ['admins'],
+        'admin/products' => ['users',  'user_roles', 'brands', 'categories'],
+        'admin/courses' => ['users',  'user_roles', 'categories'],
+        'admin/users' => ['user_roles'],
+        'admin/quizzes' => ['users', 'user_roles', 'categories', 'courses', 'tags'],
+        'admin/product_transactions' => ['users', 'user_roles', 'categories', 'brands', 'products'],
+        'admin/product_inventories' => ['users', 'user_roles', 'categories', 'brands', 'products'],
+        'admin/product_reports' => ['users', 'user_roles', 'categories', 'brands', 'products'],
+        'admin/product_return_refunds' => ['users', 'user_roles', 'categories', 'brands', 'products'],
+        'admin/course_reports' => ['users', 'user_roles', 'categories', 'courses'],
+        'admin/course_transactions' => ['users', 'user_roles', 'categories', 'courses'],
+        'admin/coupons' => [
+            'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products', 'product_transactions'],
+            'education' => ['users', 'user_roles', 'categories', 'courses', 'course_transactions'],
+        ],
+        'admin/wishlists' => [
+            'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products'],
+            'education' => ['users', 'user_roles', 'categories', 'courses'],
+        ],
+        'admin/ratings' => [
+            'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products'],
+            'education' => ['users', 'user_roles', 'categories', 'courses'],
+        ],
+        'admin/tags' => [
+            'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products'],
+            'education' => ['users', 'user_roles', 'categories', 'courses'],
+        ],
+        'admin/commissions' => [
+            'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products', 'product_transactions'],
+            'education' => ['users', 'user_roles', 'categories', 'courses', 'course_transactions'],
+        ],
+    ];  
+
+    protected array $dependencyMapForUnInstall = [
+        'admin/admin_role_permissions' => ['admins'],
+        'admin/users' => ['user_roles'],
+        'admin/course_transactions' => ['coupons'],
+        'admin/product_transactions' => ['coupons'],
+    ];    
+
     public function viewpackages()
     {
         try {
@@ -33,132 +78,77 @@ class PackageController extends Controller
         }
     }
 
-
     public function installUninstallPackage(Request $request, $vendor, $package)
     {
-
         try {
-            $packagePath = base_path("vendor/{$vendor}/{$package}");
-            $isPackageInstalled = Package::where(['vendor' => $vendor, 'name' => $package, 'is_installed' => 1])->exists();
-
             set_time_limit(0);
             chdir(base_path());
 
-            if (!empty($isPackageInstalled)) {
+            $packageKey = "{$vendor}/{$package}";
+            $industry = DB::table('settings')->where('slug', 'industry')->value('config_value') ?? 'ecommerce';
 
-                if ($package === 'admin_role_permissions' && $vendor === 'admin') {
-                    $this->uninstallDependentPackage('admin', 'admins');
-                }
+            $isPackageInstalled = Package::where([
+                'vendor' => $vendor,
+                'name' => $package,
+                'is_installed' => 1
+            ])->exists();
 
-                if ($package === 'users' && $vendor === 'admin') {
-                    $this->uninstallDependentPackage('admin', 'user_roles');
-                }
 
-                if ($package === 'products' && $vendor === 'admin') {
-                    $this->uninstallDependentPackage('admin', ['wishlists', 'ratings']);
-                }
 
-                if ($package === 'courses' && $vendor === 'admin') {
-                    $this->uninstallDependentPackage('admin', ['quizzes', 'ratings', 'wishlists']);
-                }
+            // UNINSTALL
+            if ($isPackageInstalled) {
+                // Uninstall dependents FIRST (reverse dependency order)
+                $this->uninstallDependentPackage($vendor, $packageKey, $industry);
 
-                // if ($package === 'coupons' && $vendor === 'admin') {
-                //     $this->uninstallDependentPackage('admin', ['courses']);
-                // }
-
+                // Remove the package itself
                 $command = "composer remove {$vendor}/{$package}";
                 ob_start();
                 passthru($command, $exitCode);
                 $output = ob_get_clean();
 
                 if ($exitCode === 0) {
-                    // Remove published files
                     $this->removePublishedFiles($vendor, $package);
-
-                    // Update package status in database
                     $this->updatePackageStatus($vendor, $package, false);
 
-                    $packageKey = "{$vendor}/{$package}";
                     $displayName = config("constants.package_display_names.$packageKey", $packageKey);
 
                     Artisan::call('optimize:clear');
                     Artisan::call('config:clear');
                     Artisan::call('view:clear');
+
                     $message = "Package {$displayName} Uninstalled Successfully.";
                 } else {
-                    $message = "❌Composer failed. Output:\n" . $output;
+                    $message = "Composer failed. Output:\n" . $output;
                     return response()->json([
                         'status' => 'error',
                         'message' => $message
                     ], 500);
                 }
             } else {
+                // Install dependencies FIRST
+                $this->installDependentPackage($vendor, $packageKey, $industry);
 
-                $dependencyMap = [
-                    'admin/admin_role_permissions' => ['admins'],
-                    'admin/products' => ['users',  'user_roles', 'brands', 'categories'],
-                    'admin/courses' => ['users',  'user_roles', 'categories'],
-                    'admin/users' => ['user_roles'],
-                    'admin/quizzes' => ['users', 'user_roles', 'categories', 'tags', 'courses'],
-                    'admin/product_transactions' => ['users', 'user_roles', 'categories', 'brands', 'products'],
-                    'admin/product_inventories' => ['users', 'user_roles', 'categories', 'brands', 'products'],
-                    'admin/product_reports' => ['users', 'user_roles', 'categories', 'brands', 'products'],
-                    'admin/product_return_refunds' => ['users', 'user_roles', 'categories', 'brands', 'products'],
-                    'admin/course_reports' => ['users', 'user_roles', 'categories', 'courses'],
-                    'admin/course_transactions' => ['users', 'user_roles', 'categories', 'courses'],
-                    'admin/commissions' => ['categories'],
-                    'admin/coupons' => [
-                        'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products'],
-                        'education' => ['users', 'user_roles', 'categories', 'courses'],
-                    ],
-                    'admin/wishlists' => [
-                        'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products'],
-                        'education' => ['users', 'user_roles', 'categories', 'courses'],
-                    ],
-                    'admin/ratings' => [
-                        'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products'],
-                        'education' => ['users', 'user_roles', 'categories', 'courses'],
-                    ],
-                    'admin/tags' => [
-                        'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products'],
-                        'education' => ['users', 'user_roles', 'categories', 'courses'],
-                    ],
-                    'admin/commissions' => [
-                        'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products'],
-                        'education' => ['users', 'user_roles', 'categories', 'courses'],
-                    ],
-                ];
-                $packageKey = "{$vendor}/{$package}";
-
-                // Handle coupon package dependencies based on industry
-                $industry = config('GET.industry'); // or however you detect industry
-
-                if (isset($dependencyMap[$packageKey])) {
-                    $deps = $dependencyMap[$packageKey];
-                    if (is_array($deps) && isset($deps[$industry])) {
-                        $deps = $deps[$industry];
-                        $this->installDependentPackage($vendor, $deps);
-                    }
-                }
-
+                // Now install the main package
                 $command = "composer require {$vendor}/{$package}:@dev";
                 ob_start();
                 passthru($command, $exitCode);
                 $output = ob_get_clean();
+
                 if ($exitCode === 0) {
                     Artisan::call('optimize:clear');
+                    // Run migrations for the package
                     Artisan::call('migrate', [
                         '--path' => "vendor/{$vendor}/{$package}/database/migrations",
                         '--force' => true,
                     ]);
 
-                    // Run the seeder
+                    // Run seeders if package exists
                     $seeders = [
-                        'settings' => 'Admin\Settings\Database\Seeders\SettingSeeder',
-                        'users' => 'Admin\Users\Database\Seeders\SeedUserRolesSeeder',
-                        'admin_role_permissions' => 'Admin\AdminRolePermissions\Database\Seeders\AdminRolePermissionDatabaseSeeder',
-                        'emails' => 'Admin\Emails\Database\Seeders\MailDatabaseSeeder',
-                        'shipping_charges' => 'Admin\ShippingCharges\Database\Seeders\ShippingZoneSeeder',
+                        'settings'                  => 'Admin\Settings\Database\Seeders\SettingSeeder',
+                        'users'                     => 'Admin\Users\Database\Seeders\SeedUserRolesSeeder',
+                        'admin_role_permissions'    => 'Admin\AdminRolePermissions\Database\Seeders\AdminRolePermissionDatabaseSeeder',
+                        'emails'                    => 'Admin\Emails\Database\Seeders\MailDatabaseSeeder',
+                        'shipping_charges'          => 'Admin\ShippingCharges\Database\Seeders\ShippingZoneSeeder',
                     ];
 
                     foreach ($seeders as $pkg => $seederClass) {
@@ -170,15 +160,13 @@ class PackageController extends Controller
                         }
                     }
 
-                    $packageKey = "{$vendor}/{$package}";
-                    $displayName = config("constants.package_display_names.$packageKey", $packageKey);
-
-                    // Update package status in database
+                    // Update DB status
                     $this->updatePackageStatus($vendor, $package, true);
 
+                    $displayName = config("constants.package_display_names.$packageKey", $packageKey);
                     $message = "Package {$displayName} Installed Successfully.";
                 } else {
-                    $message = "❌Composer failed. Output:\n" . $output;
+                    $message = "Composer failed. Output:\n" . $output;
                     return response()->json([
                         'status' => 'error',
                         'message' => $message
@@ -186,12 +174,15 @@ class PackageController extends Controller
                 }
             }
 
+            // Return JSON if requested
             if ($request->expectsJson()) {
                 return response()->json(['status' => 'success', 'message' => $message]);
             }
 
             return back()->with('success', $message);
         } catch (\Exception $e) {
+            report($e);
+
             if ($request->expectsJson()) {
                 return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
             }
@@ -201,10 +192,114 @@ class PackageController extends Controller
     }
 
     /**
-     * Remove published files and database artifacts for a package.
+     * Install all dependencies recursively
      */
-    protected function removePublishedFiles($vendor, $package)
+    private function installDependentPackage($vendor, $packageKey, $industry)
     {
+
+        if (!isset($this->dependencyMapForInstall[$packageKey])) {
+            return;
+        }
+        $packages = $this->dependencyMapForInstall[$packageKey];
+
+        // If industry-specific dependencies
+        if (is_array($packages) && isset($packages[$industry])) {
+            $packages = $packages[$industry];
+        }
+
+        $packages = collect($packages)->flatten()->unique()->toArray();
+
+        foreach ($packages as $depPackage) {
+            $path = base_path("vendor/{$vendor}/{$depPackage}");
+
+            if (!is_dir($path)) {
+                // Recursive call for this specific dependent package
+                $this->installDependentPackage($vendor, $depPackage, $industry);
+
+                $command = "composer require {$vendor}/{$depPackage}:@dev";
+                ob_start();
+                passthru($command, $exitCode);
+                ob_end_clean();
+
+                if ($exitCode !== 0) {
+                    throw new \Exception("Failed to install dependency package: {$vendor}/{$depPackage}");
+                }
+
+                Artisan::call('optimize:clear');
+                Artisan::call('migrate', [
+                    '--path' => "vendor/{$vendor}/{$depPackage}/database/migrations",
+                    '--force' => true,
+                ]);
+
+                $this->updatePackageStatus($vendor, $depPackage, true);
+            }
+        }
+    }
+
+    /**
+     * Uninstall dependencies in reverse order recursively
+     */
+    private function uninstallDependentPackage($vendor, $packageKey, $industry)
+    {
+        if (!isset($this->dependencyMapForUnInstall[$packageKey])) {
+            return;
+        }
+
+        $packages = $this->dependencyMapForUnInstall[$packageKey];
+
+        // Use industry-specific dependencies if available
+        if (is_array($packages) && isset($packages[$industry])) {
+            $packages = $packages[$industry];
+        }
+
+        // Flatten, reverse, and make unique to ensure child tables uninstall first
+        $packages = collect($packages)->flatten()->reverse()->unique()->toArray();
+
+        foreach ($packages as $package) {
+            $path = base_path("vendor/{$vendor}/{$package}");
+
+            // Recursive uninstall
+            $this->uninstallDependentPackage($vendor, $package, $industry);
+
+            if (is_dir($path)) {
+                $command = "composer remove {$vendor}/{$package}";
+                ob_start();
+                passthru($command, $exitCode);
+                ob_end_clean();
+
+                // Remove published files & DB tables safely
+                $this->removePublishedFiles($vendor, $package, $industry);
+
+                // Update package status
+                $this->updatePackageStatus($vendor, $package, false);
+            }
+        }
+    }
+
+    /**
+     * Remove published files and drop tables safely
+     */
+    protected function removePublishedFiles($vendor, $package, $industry = null)
+    {
+        $industry ??= DB::table('settings')->where('slug', 'industry')->value('config_value') ?? 'ecommerce';
+        $packageKey = "{$vendor}/{$package}";
+
+        // Recursively remove dependent packages first
+        if (isset($this->dependencyMapForUnInstall[$packageKey])) {
+            $dependencies = $this->dependencyMapForUnInstall[$packageKey];
+
+            if (is_array($dependencies) && isset($dependencies[$industry])) {
+                $dependencies = $dependencies[$industry];
+            }
+
+            $dependencies = collect($dependencies)->flatten()->unique()->reverse()->toArray();
+
+            foreach ($dependencies as $dep) {
+                $this->removePublishedFiles($vendor, $dep, $industry); // Recursive uninstall
+            }
+        }
+
+        // Remove published files
         $singular = Str::singular($package);
         $pascalCase = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $singular)));
 
@@ -222,7 +317,9 @@ class PackageController extends Controller
             }
         }
 
-        // Package-specific table and migration cleanup
+        // Package-specific tables and migrations
+        $tables = [];
+        $migrations = [];
         switch ($package) {
             case 'admin_role_permissions':
                 $tables = ['role_admin', 'permission_role', 'permissions', 'roles'];
@@ -380,89 +477,121 @@ class PackageController extends Controller
                 break;
         }
 
+        // Drop foreign keys first to avoid SQL errors
+        foreach ($tables as $table) {
+            if (Schema::hasTable($table)) {
+                $foreignKeys = DB::select("
+                SELECT CONSTRAINT_NAME, TABLE_NAME 
+                FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
+                WHERE REFERENCED_TABLE_NAME = '{$table}' 
+                AND TABLE_SCHEMA = DATABASE()
+            ");
+                foreach ($foreignKeys as $fk) {
+                    Schema::table($fk->TABLE_NAME, function ($t) use ($fk) {
+                        $t->dropForeign($fk->CONSTRAINT_NAME);
+                    });
+                }
+            }
+        }
+
+        // Drop tables
         foreach ($tables as $table) {
             if (Schema::hasTable($table)) {
                 Schema::dropIfExists($table);
             }
         }
 
+        // Remove migrations
         foreach ($migrations as $migration) {
             DB::table('migrations')
                 ->where('migration', 'like', '%' . $migration . '%')
                 ->delete();
         }
+
+        // Update package status
+        $this->updatePackageStatus($vendor, $package, false);
     }
 
-    private function installDependentPackage($vendor, $packages)
-    {
-        $packages = collect($packages)->flatten()->unique()->toArray();
+    // protected function removePublishedFiles($vendor, $package, $industry = null)
+    // {
+    //     $industry ??= DB::table('settings')->where('slug', 'industry')->value('config_value') ?? 'ecommerce';
 
-        foreach ($packages as $package) {
-            $path = base_path("vendor/{$vendor}/{$package}");
+    //     // Determine package-specific tables & migrations
+    //     $tables = [];
+    //     $migrations = [];
 
-            if (!is_dir($path)) {
-                $command = "composer require {$vendor}/{$package}:@dev";
-                ob_start();
-                passthru($command, $exitCode);
-                ob_end_clean();
+    //     switch ($package) {
+    //         case 'users':
+    //             $tables = ['role_admin', 'user_roles', 'users']; // drop child tables first
+    //             $migrations = ['create_role_admin_table', 'create_user_roles_table', 'create_users_table'];
+    //             break;
+    //         case 'categories':
+    //             $tables = ['course_category', 'categories']; // child first
+    //             $migrations = ['create_course_category_table', 'create_categories_table'];
+    //             break;
+    //         case 'courses':
+    //             $tables = ['course_category', 'course_sections', 'course_purchases', 'lectures', 'quizzes', 'courses'];
+    //             $migrations = [
+    //                 'create_course_category_table',
+    //                 'create_course_sections_table',
+    //                 'create_course_purchases_table',
+    //                 'create_lectures_table',
+    //                 'create_quizzes_table',
+    //                 'create_courses_table'
+    //             ];
+    //             break;
+    //         case 'products':
+    //             $tables = ['product_categories', 'product_images', 'product_inventories', 'products'];
+    //             $migrations = ['create_product_categories', 'create_product_images', 'create_product_inventories', 'create_products'];
+    //             break;
+    //         // add more packages as needed
+    //         default:
+    //             $tables = [$package];
+    //             $migrations = ['create_' . $package . '_table'];
+    //             break;
+    //     }
 
-                if ($exitCode !== 0) {
-                    throw new \Exception("❌ Failed to install dependency package: {$vendor}/{$package}");
-                }
+    //     // Drop foreign key constraints and tables safely
+    //     foreach ($tables as $table) {
+    //         if (Schema::hasTable($table)) {
+    //             $foreignKeys = DB::select("SELECT CONSTRAINT_NAME, TABLE_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_NAME = '{$table}' AND TABLE_SCHEMA = DATABASE()");
+    //             foreach ($foreignKeys as $fk) {
+    //                 Schema::table($fk->TABLE_NAME, function ($t) use ($fk) {
+    //                     $t->dropForeign($fk->CONSTRAINT_NAME);
+    //                 });
+    //             }
+    //             Schema::dropIfExists($table);
+    //         }
+    //     }
 
-                Artisan::call('optimize:clear');
-                Artisan::call('migrate', [
-                    '--path' => "vendor/{$vendor}/{$package}/database/migrations",
-                    '--force' => true,
-                ]);
+    //     // Remove migrations from DB
+    //     foreach ($migrations as $migration) {
+    //         DB::table('migrations')->where('migration', 'like', "%{$migration}%")->delete();
+    //     }
+    // }
 
-                $this->updatePackageStatus($vendor, $package, true);
-
-                // 🔁 Check if this package has its own dependencies
-                if (isset($this->dependencies[$package])) {
-                    $this->installDependentPackage($vendor, $this->dependencies[$package]);
-                }
-            }
-        }
-    }
-
-    private function uninstallDependentPackage($vendor, $packages)
-    {
-        $packages = (array) $packages; // always convert to array
-
-        foreach ($packages as $package) {
-            $path = base_path("vendor/{$vendor}/{$package}");
-
-            if (is_dir($path)) {
-                $command = "composer remove {$vendor}/{$package}";
-                ob_start();
-                passthru($command, $exitCode);
-                ob_end_clean();
-
-                // Update package status in database
-                $this->updatePackageStatus($vendor, $package, false);
-            }
-        }
-    }
 
     /**
      * Update package installation status in the packages table
      */
     private function updatePackageStatus($vendor, $package, $isInstalled = true)
     {
+        $packageName = "{$vendor}/{$package}";
         try {
-            $packageName = "{$vendor}/{$package}";
             $packageRecord = Package::where('package_name', $packageName)->first();
 
-            if ($packageRecord) {
-                $packageRecord->update([
-                    'is_installed' => $isInstalled,
-                    'installed_at' => $isInstalled ? now() : null,
-                ]);
+            if (!$packageRecord) {
+                Log::warning("Package record not found: {$packageName}");
+                return;
             }
+
+            $packageRecord->update([
+                'is_installed' => $isInstalled,
+                'installed_at' => $isInstalled ? now() : null,
+            ]);
         } catch (\Exception $e) {
             // Log error but don't fail the installation process
-            \Log::error("Failed to update package status for {$packageName}: " . $e->getMessage());
+            Log::error("Failed to update package status for {$packageName}: " . $e->getMessage());
         }
     }
 
