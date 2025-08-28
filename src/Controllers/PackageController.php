@@ -54,8 +54,6 @@ class PackageController extends Controller
     protected array $dependencyMapForUnInstall = [
         'admin/admin_role_permissions' => ['admins'],
         'admin/users' => ['user_roles'],
-        'admin/course_transactions' => ['coupons'],
-        'admin/product_transactions' => ['coupons'],
     ];    
 
     public function viewpackages()
@@ -511,64 +509,6 @@ class PackageController extends Controller
         // Update package status
         $this->updatePackageStatus($vendor, $package, false);
     }
-
-    // protected function removePublishedFiles($vendor, $package, $industry = null)
-    // {
-    //     $industry ??= DB::table('settings')->where('slug', 'industry')->value('config_value') ?? 'ecommerce';
-
-    //     // Determine package-specific tables & migrations
-    //     $tables = [];
-    //     $migrations = [];
-
-    //     switch ($package) {
-    //         case 'users':
-    //             $tables = ['role_admin', 'user_roles', 'users']; // drop child tables first
-    //             $migrations = ['create_role_admin_table', 'create_user_roles_table', 'create_users_table'];
-    //             break;
-    //         case 'categories':
-    //             $tables = ['course_category', 'categories']; // child first
-    //             $migrations = ['create_course_category_table', 'create_categories_table'];
-    //             break;
-    //         case 'courses':
-    //             $tables = ['course_category', 'course_sections', 'course_purchases', 'lectures', 'quizzes', 'courses'];
-    //             $migrations = [
-    //                 'create_course_category_table',
-    //                 'create_course_sections_table',
-    //                 'create_course_purchases_table',
-    //                 'create_lectures_table',
-    //                 'create_quizzes_table',
-    //                 'create_courses_table'
-    //             ];
-    //             break;
-    //         case 'products':
-    //             $tables = ['product_categories', 'product_images', 'product_inventories', 'products'];
-    //             $migrations = ['create_product_categories', 'create_product_images', 'create_product_inventories', 'create_products'];
-    //             break;
-    //         // add more packages as needed
-    //         default:
-    //             $tables = [$package];
-    //             $migrations = ['create_' . $package . '_table'];
-    //             break;
-    //     }
-
-    //     // Drop foreign key constraints and tables safely
-    //     foreach ($tables as $table) {
-    //         if (Schema::hasTable($table)) {
-    //             $foreignKeys = DB::select("SELECT CONSTRAINT_NAME, TABLE_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_NAME = '{$table}' AND TABLE_SCHEMA = DATABASE()");
-    //             foreach ($foreignKeys as $fk) {
-    //                 Schema::table($fk->TABLE_NAME, function ($t) use ($fk) {
-    //                     $t->dropForeign($fk->CONSTRAINT_NAME);
-    //                 });
-    //             }
-    //             Schema::dropIfExists($table);
-    //         }
-    //     }
-
-    //     // Remove migrations from DB
-    //     foreach ($migrations as $migration) {
-    //         DB::table('migrations')->where('migration', 'like', "%{$migration}%")->delete();
-    //     }
-    // }
 
 
     /**
