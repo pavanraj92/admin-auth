@@ -57,10 +57,10 @@ class PackageController extends Controller
         'admin/course_transactions' => ['course_reports'],
     ];
 
-    protected array $protectedPackages = [
-        'admin/admins',
-        'admin/users',
-    ];
+    // protected array $protectedPackages = [
+    //     'admin/admins',
+    //     'admin/users',
+    // ];
 
     public function viewpackages()
     {
