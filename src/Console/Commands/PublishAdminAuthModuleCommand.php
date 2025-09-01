@@ -42,9 +42,9 @@ class PublishAdminAuthModuleCommand extends Command
 
         $filesWithNamespaces = [
             // Controllers
-            $basePath . '/Controllers/AdminLoginController.php' => base_path('Modules/AdminAuth/app/Http/Controllers/Admin/AdminLoginController.php'),
-            $basePath . '/Controllers/ForgotPasswordController.php' => base_path('Modules/AdminAuth/app/Http/Controllers/Admin/ForgotPasswordController.php'),
-            $basePath . '/Controllers/ResetPasswordController.php' => base_path('Modules/AdminAuth/app/Http/Controllers/Admin/ResetPasswordController.php'),
+            $basePath . '/Controllers/Auth/AdminLoginController.php' => base_path('Modules/AdminAuth/app/Http/Controllers/Admin/Auth/AdminLoginController.php'),
+            $basePath . '/Controllers/Auth/ForgotPasswordController.php' => base_path('Modules/AdminAuth/app/Http/Controllers/Admin/Auth/ForgotPasswordController.php'),
+            $basePath . '/Controllers/Auth/ResetPasswordController.php' => base_path('Modules/AdminAuth/app/Http/Controllers/Admin/Auth/ResetPasswordController.php'),
             $basePath . '/Controllers/AdminController.php' => base_path('Modules/AdminAuth/app/Http/Controllers/Admin/AdminController.php'),
             $basePath . '/Controllers/PackageController.php' => base_path('Modules/AdminAuth/app/Http/Controllers/Admin/PackageController.php'),
 
