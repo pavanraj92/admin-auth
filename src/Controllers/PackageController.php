@@ -49,13 +49,18 @@ class PackageController extends Controller
             'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products', 'product_transactions'],
             'education' => ['users', 'user_roles', 'categories', 'courses', 'course_transactions'],
         ],
-    ];  
+    ];
 
     protected array $dependencyMapForUnInstall = [
         'admin/admin_role_permissions' => ['admins'],
         'admin/users' => ['user_roles'],
         'admin/course_transactions' => ['course_reports'],
-    ];    
+    ];
+
+    protected array $protectedPackages = [
+        'admin/admins',
+        'admin/users',
+    ];
 
     public function viewpackages()
     {
@@ -294,11 +299,15 @@ class PackageController extends Controller
             $dependencies = collect($dependencies)->flatten()->unique()->reverse()->toArray();
 
             foreach ($dependencies as $dep) {
+                // Skip uninstalling admins tables/migrations
+                if ($dep === 'admins') {
+                    continue;
+                }
                 $this->removePublishedFiles($vendor, $dep, $industry); // Recursive uninstall
             }
         }
 
-        // Remove published files
+        // Normal cleanup flow continues for other packages
         $singular = Str::singular($package);
         $pascalCase = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $singular)));
 
@@ -314,6 +323,13 @@ class PackageController extends Controller
             if (file_exists($path)) {
                 is_dir($path) ? File::deleteDirectory($path) : File::delete($path);
             }
+        }
+
+        // Skip DB cleanup for admins
+        if ($package === 'admins') {
+            // Don’t drop tables or migrations
+            $this->updatePackageStatus($vendor, $package, false);
+            return;
         }
 
         // Package-specific tables and migrations
@@ -390,7 +406,7 @@ class PackageController extends Controller
                             $table->dropColumn(['coupon_id', 'discount_value']);
                         }
                     });
-                }else if (Schema::hasTable('course_purchases')) {
+                } else if (Schema::hasTable('course_purchases')) {
                     Schema::table('course_purchases', function ($table) {
                         if (Schema::hasColumn('course_purchases', 'coupon_id')) {
                             $table->dropForeign(['coupon_id']);
@@ -455,7 +471,7 @@ class PackageController extends Controller
                             $table->dropColumn(['commission_id', 'commission_type', 'commission_value']);
                         }
                     });
-                }else if (Schema::hasTable('course_purchases')) {
+                } else if (Schema::hasTable('course_purchases')) {
                     Schema::table('course_purchases', function ($table) {
                         if (Schema::hasColumn('course_purchases', 'commission_id')) {
                             $table->dropForeign(['commission_id']);
