@@ -27,7 +27,7 @@ class PackageController extends Controller
         'admin/product_inventories' => ['users', 'user_roles', 'categories', 'brands', 'products'],
         'admin/product_reports' => ['users', 'user_roles', 'categories', 'brands', 'products'],
         'admin/product_return_refunds' => ['users', 'user_roles', 'categories', 'brands', 'products'],
-        'admin/course_reports' => ['users', 'user_roles', 'categories', 'courses'],
+        'admin/course_reports' => ['users', 'user_roles', 'categories', 'courses', 'course_transactions'],
         'admin/course_transactions' => ['users', 'user_roles', 'categories', 'courses'],
         'admin/coupons' => [
             'ecommerce' => ['users', 'user_roles', 'categories', 'brands', 'products', 'product_transactions'],
@@ -54,6 +54,7 @@ class PackageController extends Controller
     protected array $dependencyMapForUnInstall = [
         'admin/admin_role_permissions' => ['admins'],
         'admin/users' => ['user_roles'],
+        'admin/course_transactions' => ['course_reports'],
     ];    
 
     public function viewpackages()
