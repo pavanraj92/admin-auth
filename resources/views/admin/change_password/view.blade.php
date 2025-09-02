@@ -105,7 +105,7 @@
                 },
                 submitHandler: function(form) {
                     const $btn = $('#saveBtn');
-                    $btn.prop('disabled', true).text('Updating Profile...');
+                    $btn.prop('disabled', true).text('Updating Password...');
 
                     // Now submit
                     form.submit();
