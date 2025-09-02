@@ -25,7 +25,7 @@ class AdminLoginController extends Controller
             return redirect()->intended(route('admin.dashboard'));
         }
 
-        return back()->withErrors(['email' => 'Invalid credentials']);
+        return back()->withErrors(['error' => 'The email or password you entered is incorrect. Please try again.']);
     }
 
     public function logout(Request $request)

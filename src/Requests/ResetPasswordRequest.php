@@ -12,9 +12,10 @@ class ResetPasswordRequest extends FormRequest
      */
     public function rules(): array
     {
+        $adminId = \DB::table('admins')->where('email', $this->email)->value('id');
         return [      
             'token' => 'required',
-            'email'        => 'required|email|max:100|unique:admins,email|regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/',
+            'email' => 'required|email|max:100|regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/|unique:admins,email,' . $adminId,
             'password' => [
                 'required',
                 'min:8',
