@@ -19,6 +19,9 @@
 <body class="bg-light">
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="card shadow-sm p-4 admin-login" style="min-width: 350px;">
+            <div class="text-center mb-4">
+                <img src="{{ asset('images/dots-logo-trans.png') }}" alt="Logo" style="max-width: 150px;">
+            </div>
             <h2 class="mb-4 text-center">Admin Login</h2>
             <form method="POST" id="loginForm" action="{{ route('admin.login') }}">
                 @csrf

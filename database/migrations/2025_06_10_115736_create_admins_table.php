@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('website_slug')->nullable();
             $table->string('password')->nullable();
             $table->string('industry',100)->nullable();
+            $table->boolean('is_dummy_data')->default(false); 
             $table->boolean('status')->nullable()->default(true);
             $table->string('remember_token')->nullable();   
             $table->softDeletes();

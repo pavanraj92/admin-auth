@@ -38,6 +38,7 @@ class Admin extends Authenticatable
         'website_name',
         'website_slug',
         'industry',
+        'is_dummy_data',
         'status'
     ];
 
