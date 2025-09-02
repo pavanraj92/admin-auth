@@ -54,11 +54,14 @@ class AdminModuleServiceProvider extends ServiceProvider
 
         $slug = $admin->website_slug ?? 'admin';
 
+        $routeFile = base_path('Modules/AdminAuth/routes/web.php');
+        if (!file_exists($routeFile)) {
+            $routeFile = __DIR__ . '/routes/web.php'; // fallback to package route
+        }
+
         Route::middleware('web')
             ->prefix("{$slug}/admin") // dynamic prefix
-            ->group(function () {
-                $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
-            });
+            ->group($routeFile);
     }
 
     public function register()
@@ -127,11 +130,13 @@ class AdminModuleServiceProvider extends ServiceProvider
         // Define namespace mappings
         $namespaceTransforms = [
             // Main namespace transformations
+            'namespace admin\\admin_auth\\Controllers\\Auth;' => 'namespace Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\Auth;',
             'namespace admin\\admin_auth\\Controllers;' => 'namespace Modules\\AdminAuth\\app\\Http\\Controllers\\Admin;',
             'namespace admin\\admin_auth\\Models;' => 'namespace Modules\\AdminAuth\\app\\Models;',
             'namespace admin\\admin_auth\\Requests;' => 'namespace Modules\\AdminAuth\\app\\Http\\Requests;',
             
             // Use statements transformations
+            'use admin\\admin_auth\\Controllers\\Auth\\' => 'use Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\Auth\\',
             'use admin\\admin_auth\\Controllers\\' => 'use Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\',
             'use admin\\admin_auth\\Models\\' => 'use Modules\\AdminAuth\\app\\Models\\',
             'use admin\\admin_auth\\Requests\\' => 'use Modules\\AdminAuth\\app\\Http\\Requests\\',
