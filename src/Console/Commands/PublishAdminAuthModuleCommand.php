@@ -80,17 +80,19 @@ class PublishAdminAuthModuleCommand extends Command
     protected function transformNamespaces($content, $sourceFile)
     {
         // Define namespace mappings
-        $namespaceTransforms = [
+      $namespaceTransforms = [
             // Main namespace transformations
+            'namespace admin\\admin_auth\\Controllers\\Auth;' => 'namespace Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\Auth;',
             'namespace admin\\admin_auth\\Controllers;' => 'namespace Modules\\AdminAuth\\app\\Http\\Controllers\\Admin;',
             'namespace admin\\admin_auth\\Models;' => 'namespace Modules\\AdminAuth\\app\\Models;',
             'namespace admin\\admin_auth\\Requests;' => 'namespace Modules\\AdminAuth\\app\\Http\\Requests;',
-
+            
             // Use statements transformations
+            'use admin\\admin_auth\\Controllers\\Auth\\' => 'use Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\Auth\\',
             'use admin\\admin_auth\\Controllers\\' => 'use Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\',
             'use admin\\admin_auth\\Models\\' => 'use Modules\\AdminAuth\\app\\Models\\',
             'use admin\\admin_auth\\Requests\\' => 'use Modules\\AdminAuth\\app\\Http\\Requests\\',
-
+            
             // Class references in routes
             'admin\\admin_auth\\Controllers\\Auth\\AdminLoginController' => 'Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\Auth\\AdminLoginController',
             'admin\\admin_auth\\Controllers\\Auth\\ForgotPasswordController' => 'Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\Auth\\ForgotPasswordController',
