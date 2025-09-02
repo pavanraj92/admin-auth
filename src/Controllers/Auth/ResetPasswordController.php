@@ -42,16 +42,27 @@ class ResetPasswordController extends Controller
             
             $userExists = Admin::where([ 'email'=>$request->email ])->first();
             if ($userExists) {            
-                $admin = Admin::where('id', $userExists->id)->update(['password' => Hash::make($request->password)]);
-                DB::table('admin_password_resets')->where('token','=',$request->token)->delete();
+                 // ✅ Check if new password is same as old
+                if (Hash::check($request->password, $userExists->password)) {
+                    return back()->withErrors(['error' => 'New password cannot be the same as your old password.']);
+                }
+
+                // ✅ Update password
+                $userExists->update([
+                    'password' => Hash::make($request->password)
+                ]);
+
+                DB::table('admin_password_resets')->where('token', '=', $request->token)->delete();
+
                 $slug = DB::table('admins')->select('website_slug')->first();
-                return redirect($slug->website_slug . '/admin/login')->with(['success' => "Password updated successfully. Please login here"]);
+
+                return redirect($slug->website_slug . '/admin/login')
+                    ->with(['success' => "Password updated successfully. Please login here"]);
             } else {
                 return  back()->withErrors(['email' => 'Something went wrong. Please try later']);
             }
 
         } else {
-            
             return  back()->withErrors(['email' => 'Reset password link is expired.']);
         }
     }

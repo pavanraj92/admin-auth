@@ -28,9 +28,8 @@ class ForgotPasswordController extends Controller
         $admin = Admin::where('email', $request->email)->first();
 
         if(!$admin){
-            return redirect()->back()
-            ->withError('We can not find user with this email')
-            ->withInput();
+           return back()->withErrors(['error'=>'We can not find a user with this email'])
+                 ->withInput();
         }
         else {
             //$token = base64_encode($admin->id);
