@@ -53,6 +53,15 @@ class PublishAdminAuthModuleCommand extends Command
             $basePath . '/Models/Package.php' => base_path('Modules/AdminAuth/app/Models/Package.php'),
             $basePath . '/Models/Seo.php' => base_path('Modules/AdminAuth/app/Models/Seo.php'),
 
+             //Traits
+            $basePath . '/../src/Traits/HasSeo.php' => base_path('Modules/AdminAuth/app/Traits/HasSeo.php'),
+
+            //Services
+            $basePath . '/../src/Services/ImageService.php' => base_path('Modules/AdminAuth/app/Services/ImageService.php'),
+
+            //Mail
+            $basePath . '/../src/Mail/ForgotPasswordMail.php' => base_path('Modules/AdminAuth/app/Mail/ForgotPasswordMail.php'),
+
             // Requests
             $basePath . '/Requests/ChangePasswordRequest.php' => base_path('Modules/AdminAuth/app/Http/Requests/ChangePasswordRequest.php'),
             $basePath . '/Requests/ProfileRequest.php' => base_path('Modules/AdminAuth/app/Http/Requests/ProfileRequest.php'),
@@ -85,12 +94,18 @@ class PublishAdminAuthModuleCommand extends Command
             'namespace admin\\admin_auth\\Controllers\\Auth;' => 'namespace Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\Auth;',
             'namespace admin\\admin_auth\\Controllers;' => 'namespace Modules\\AdminAuth\\app\\Http\\Controllers\\Admin;',
             'namespace admin\\admin_auth\\Models;' => 'namespace Modules\\AdminAuth\\app\\Models;',
+            'namespace admin\\admin_auth\\Services;' => 'namespace Modules\\AdminAuth\\app\\Services;',
+            'namespace admin\\admin_auth\\Traits;' => 'namespace Modules\\AdminAuth\\app\\Traits;',
+            'namespace admin\\admin_auth\\Mail;' => 'namespace Modules\\AdminAuth\\app\\Mail;',
             'namespace admin\\admin_auth\\Requests;' => 'namespace Modules\\AdminAuth\\app\\Http\\Requests;',
             
             // Use statements transformations
             'use admin\\admin_auth\\Controllers\\Auth\\' => 'use Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\Auth\\',
             'use admin\\admin_auth\\Controllers\\' => 'use Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\',
             'use admin\\admin_auth\\Models\\' => 'use Modules\\AdminAuth\\app\\Models\\',
+            'use admin\\admin_auth\\Services\\' => 'use Modules\\AdminAuth\\app\\Services\\',
+            'use admin\\admin_auth\\Traits\\' => 'use Modules\\AdminAuth\\app\\Traits\\',
+            'use admin\\admin_auth\\Mail\\' => 'use Modules\\AdminAuth\\app\\Mail\\',
             'use admin\\admin_auth\\Requests\\' => 'use Modules\\AdminAuth\\app\\Http\\Requests\\',
             
             // Class references in routes
@@ -111,6 +126,9 @@ class PublishAdminAuthModuleCommand extends Command
             $content = str_replace('use admin\\admin_auth\\Models\\Admin;', 'use Modules\\AdminAuth\\app\\Models\\Admin;', $content);
             $content = str_replace('use admin\\admin_auth\\Models\\Package;', 'use Modules\\AdminAuth\\app\\Models\\Package;', $content);
             $content = str_replace('use admin\\admin_auth\\Models\\Seo;', 'use Modules\\AdminAuth\\app\\Models\\Seo;', $content);
+            $content = str_replace('use admin\\admin_auth\\Traits\\HasSeo;', 'use Modules\\AdminAuth\\app\\Traits\\HasSeo;', $content);
+            $content = str_replace('use admin\\admin_auth\\Services\\ImageService;', 'use Modules\\AdminAuth\\app\\Services\\ImageService;', $content);
+            $content = str_replace('use admin\\admin_auth\\Mail\\ForgotPasswordMail;', 'use Modules\\AdminAuth\\app\\Mail\\ForgotPasswordMail;', $content);
             $content = str_replace('use admin\\admin_auth\\Requests\\ChangePasswordRequest;', 'use Modules\\AdminAuth\\app\\Http\\Requests\\ChangePasswordRequest;', $content);
             $content = str_replace('use admin\\admin_auth\\Requests\\ProfileRequest;', 'use Modules\\AdminAuth\\app\\Http\\Requests\\ProfileRequest;', $content);
             $content = str_replace('use admin\\admin_auth\\Requests\\ResetPasswordRequest;', 'use Modules\\AdminAuth\\app\\Http\\Requests\\ResetPasswordRequest;', $content);
