@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use admin\admin_auth\Models\Package;
 use Illuminate\Support\Facades\Log;
 
@@ -161,6 +162,19 @@ class PackageController extends Controller
                                 '--class' => $seederClass,
                                 '--force' => true,
                             ]);
+                        }
+                    }
+
+                    $adminUser = Auth::guard('admin')->user() ?? Auth::user();
+                    // Conditionally run quizzes dummy data seeder when installing quizzes and admin has is_dummy_data = 1
+                    if ($adminUser && $adminUser->is_dummy_data  == 1) {
+                        if ($package === 'quizzes') {
+                            if (is_dir(base_path('vendor/admin/quizzes'))) {
+                                 Artisan::call('db:seed', [
+                                    '--class' => 'Admin\Quizzes\Database\Seeders\\QuizSeeder',
+                                    '--force' => true,
+                                ]);
+                            }
                         }
                     }
 
