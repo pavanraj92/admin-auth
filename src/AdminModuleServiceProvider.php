@@ -95,6 +95,15 @@ class AdminModuleServiceProvider extends ServiceProvider
             __DIR__ . '/../src/Models/Admin.php' => base_path('Modules/AdminAuth/app/Models/Admin.php'),
             __DIR__ . '/../src/Models/Package.php' => base_path('Modules/AdminAuth/app/Models/Package.php'),
             __DIR__ . '/../src/Models/Seo.php' => base_path('Modules/AdminAuth/app/Models/Seo.php'),
+
+            //Traits
+            __DIR__ . '/../src/Traits/HasSeo.php' => base_path('Modules/AdminAuth/app/Traits/HasSeo.php'),
+
+            //Services
+            __DIR__ . '/../src/Services/ImageService.php' => base_path('Modules/AdminAuth/app/Services/ImageService.php'),
+
+            //Mail
+            __DIR__ . '/../src/Mail/ForgotPasswordMail.php' => base_path('Modules/AdminAuth/app/Mail/ForgotPasswordMail.php'),
             
             // Requests
             __DIR__ . '/../src/Requests/ChangePasswordRequest.php' => base_path('Modules/AdminAuth/app/Http/Requests/ChangePasswordRequest.php'),
@@ -133,12 +142,18 @@ class AdminModuleServiceProvider extends ServiceProvider
             'namespace admin\\admin_auth\\Controllers\\Auth;' => 'namespace Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\Auth;',
             'namespace admin\\admin_auth\\Controllers;' => 'namespace Modules\\AdminAuth\\app\\Http\\Controllers\\Admin;',
             'namespace admin\\admin_auth\\Models;' => 'namespace Modules\\AdminAuth\\app\\Models;',
+            'namespace admin\\admin_auth\\Services;' => 'namespace Modules\\AdminAuth\\app\\Services;',
+            'namespace admin\\admin_auth\\Traits;' => 'namespace Modules\\AdminAuth\\app\\Traits;',
+            'namespace admin\\admin_auth\\Mail;' => 'namespace Modules\\AdminAuth\\app\\Mail;',
             'namespace admin\\admin_auth\\Requests;' => 'namespace Modules\\AdminAuth\\app\\Http\\Requests;',
             
             // Use statements transformations
             'use admin\\admin_auth\\Controllers\\Auth\\' => 'use Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\Auth\\',
             'use admin\\admin_auth\\Controllers\\' => 'use Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\',
             'use admin\\admin_auth\\Models\\' => 'use Modules\\AdminAuth\\app\\Models\\',
+            'use admin\\admin_auth\\Services\\' => 'use Modules\\AdminAuth\\app\\Services\\',
+            'use admin\\admin_auth\\Traits\\' => 'use Modules\\AdminAuth\\app\\Traits\\',
+            'use admin\\admin_auth\\Mail\\' => 'use Modules\\AdminAuth\\app\\Mail\\',
             'use admin\\admin_auth\\Requests\\' => 'use Modules\\AdminAuth\\app\\Http\\Requests\\',
             
             // Class references in routes
@@ -161,6 +176,12 @@ class AdminModuleServiceProvider extends ServiceProvider
             $content = $this->transformModelNamespaces($content);
         } elseif (str_contains($sourceFile, 'Requests')) {
             $content = $this->transformRequestNamespaces($content);
+        }elseif (str_contains($sourceFile, 'Services')) {
+            $content = $this->transformServiceNamespaces($content);
+        }elseif (str_contains($sourceFile, 'Traits')) {
+            $content = $this->transformTraitNamespaces($content);
+        }elseif (str_contains($sourceFile, 'Mail')) {
+            $content = $this->transformMailNamespaces($content);
         } elseif (str_contains($sourceFile, 'routes')) {
             $content = $this->transformRouteNamespaces($content);
         }
@@ -214,6 +235,24 @@ class AdminModuleServiceProvider extends ServiceProvider
      * Transform model-specific namespaces
      */
     protected function transformModelNamespaces($content)
+    {
+        // Any model-specific transformations
+        return $content;
+    }
+
+    protected function transformServiceNamespaces($content)
+    {
+        // Any model-specific transformations
+        return $content;
+    }
+
+    protected function transformTraitNamespaces($content)
+    {
+        // Any model-specific transformations
+        return $content;
+    }
+
+    protected function transformMailNamespaces($content)
     {
         // Any model-specific transformations
         return $content;
