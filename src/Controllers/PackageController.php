@@ -168,13 +168,23 @@ class PackageController extends Controller
                     $adminUser = Auth::guard('admin')->user() ?? Auth::user();
                     // Conditionally run quizzes dummy data seeder when installing quizzes and admin has is_dummy_data = 1
                     if ($adminUser && $adminUser->is_dummy_data  == 1) {
-                        if ($package === 'quizzes') {
-                            if (is_dir(base_path('vendor/admin/quizzes'))) {
-                                 Artisan::call('db:seed', [
-                                    '--class' => 'Admin\Quizzes\Database\Seeders\\QuizSeeder',
-                                    '--force' => true,
-                                ]);
-                            }
+                        if (is_dir(base_path('vendor/admin/users'))) {
+                            $this->safeArtisanSeed('Admin\\Users\\Database\\Seeders\\UserSeeder');
+                        }
+                        if (is_dir(base_path('vendor/admin/categories'))) {
+                            $this->safeArtisanSeed('Admin\Categories\Database\Seeders\\CategorySeeder');
+                        }
+                        if (is_dir(base_path('vendor/admin/brands'))) {
+                            $this->safeArtisanSeed('Admin\Brands\Database\Seeders\\BrandSeeder');
+                        }
+                        if (is_dir(base_path('vendor/admin/products'))) {
+                            $this->safeArtisanSeed('Admin\Products\Database\Seeders\\ProductSeeder');
+                        }
+                        if (is_dir(base_path('vendor/admin/courses'))) {
+                            $this->safeArtisanSeed('Admin\Courses\Database\Seeders\\CourseWithLecturesSeeder');
+                        }
+                        if (is_dir(base_path('vendor/admin/quizzes'))) {
+                            $this->safeArtisanSeed('Admin\Quizzes\Database\Seeders\\QuizSeeder');
                         }
                     }
 
@@ -596,5 +606,13 @@ class PackageController extends Controller
     public function getPackagesForIndustry($industry)
     {
         return Package::active()->forIndustry($industry)->get();
+    }
+
+    private function safeArtisanSeed(string $seederClass): void
+    {
+        Artisan::call('db:seed', [
+            '--class' => $seederClass,
+            '--force' => true,
+        ]);
     }
 }
