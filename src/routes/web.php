@@ -33,6 +33,8 @@ Route::name('admin.')->namespace('Auth')->middleware('web')->group(function () {
         Route::post('/updatePassword', [AdminController::class, 'updatePassword'])->name('updatePassword');
 
         Route::get('/packages', [PackageController::class, 'viewpackages'])->name('packages');
+        Route::get('/packages/dependencies/{vendor}/{package}', [PackageController::class, 'getPackageDependencies'])
+        ->name('packages.dependencies');
         Route::post('/packages/toggle/{vendor}/{package}', [PackageController::class, 'installUninstallPackage'])
         ->name('packages.toggle');
 
