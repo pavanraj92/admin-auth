@@ -16,7 +16,33 @@
 
     <div id="page-overlay"
         style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 99999;  background:rgba(0,0,0,0.3); cursor: not-allowed;">
+            z-index: 99999; background: rgba(0,0,0,0.7); cursor: not-allowed;">
+        
+        <!-- Full Page Loading Content -->
+        <div id="full-page-loader" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white;">
+            <!-- Gradient Circular Loader -->
+            <div id="gradient-loader" style="width: 80px; height: 80px; margin: 0 auto 20px; position: relative;">
+                <svg width="80" height="80" viewBox="0 0 80 80" style="transform: rotate(-90deg);">
+                    <circle cx="40" cy="40" r="35" stroke="rgba(255,255,255,0.2)" stroke-width="6" fill="none"/>
+                    <circle id="progress-circle" cx="40" cy="40" r="35" stroke="url(#gradient)" stroke-width="6" fill="none" 
+                            stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220" 
+                            style="transition: stroke-dashoffset 0.3s ease;">
+                        <animateTransform attributeName="transform" type="rotate" values="0 40 40;360 40 40" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#5b73ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            
+            <!-- Loading Text and Percentage -->
+            <div id="loading-text" style="font-size: 18px; font-weight: 500; margin-bottom: 10px;">Installing Package...</div>
+            <div id="loading-percentage" style="font-size: 24px; font-weight: bold; color: #00d4ff;">1%</div>
+        </div>
     </div>
     <div id="package-progress-bar-container"
         style="height: 4px; width: 100%; background: #eee; z-index: 9999; display: none; margin-bottom: 0; position: relative; top: -47px;">
@@ -270,31 +296,70 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             allButtons.forEach(btn => btn.disabled = true);
+                            
+                            // Show full page loader
+                            const actionText = action === 'install' ? 'Installing Package...' : 'Uninstalling Package...';
+                            document.getElementById('loading-text').textContent = actionText;
+                            document.getElementById('loading-percentage').textContent = '1%';
                             document.getElementById('page-overlay').style.display = 'block';
+                            
                             const originalText = this.innerHTML;
-                            this.innerHTML =
-                                `<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Processing... <span class="processing-percent">1%</span>`;
+                            this.innerHTML = action === 'install' ? 'Installing...' : 'Uninstalling...';
 
                             let percent = 1;
                             const targetPercent = 90;
+                            let isInstallationComplete = false;
+                            let firstInterval = null;
 
-                            const progressDuration = (action === 'install') ? 40000 :
-                                25000; // in ms
-                            const intervalTime = progressDuration / (targetPercent -
-                                percent);
+                            const progressDuration = (action === 'install') ? 40000 : 25000; // in ms
+                            const intervalTime = progressDuration / (targetPercent - percent);
 
                             const btn = this;
 
-                            // First interval: 1 → 90
-                            const firstInterval = setInterval(() => {
-                                if (percent < targetPercent) {
+                            // Function to update progress display
+                            function updateProgress(progressPercent) {
+                                console.log('Updating progress to:', progressPercent + '%');
+                                document.getElementById('loading-percentage').textContent = progressPercent + '%';
+                                const progressCircle = document.getElementById('progress-circle');
+                                const circumference = 2 * Math.PI * 35; // radius = 35
+                                const offset = circumference - (progressPercent / 100) * circumference;
+                                progressCircle.style.strokeDashoffset = offset;
+                            }
+
+                            // First interval: 1 → 90 (or until installation completes)
+                            firstInterval = setInterval(() => {
+                                if (percent < targetPercent && !isInstallationComplete) {
                                     percent++;
-                                    btn.querySelector('.processing-percent')
-                                        .textContent = percent + '%';
+                                    updateProgress(percent);
+                                } else if (isInstallationComplete) {
+                                    // Installation completed before reaching 90%, complete to 100%
+                                    clearInterval(firstInterval);
+                                    completeTo100();
                                 } else {
+                                    // Reached 90%, wait for installation to complete
                                     clearInterval(firstInterval);
                                 }
                             }, intervalTime);
+
+                            // Function to complete progress to 100%
+                            const completeTo100 = () => {
+                                const completeInterval = setInterval(() => {
+                                    if (percent < 100) {
+                                        percent++;
+                                        updateProgress(percent);
+                                    } else {
+                                        clearInterval(completeInterval);
+                                    }
+                                }, 30); // Fast completion
+                            };
+
+                            // Fallback timeout to ensure 100% is reached
+                            const fallbackTimeout = setTimeout(() => {
+                                if (percent < 100) {
+                                    percent = 100;
+                                    updateProgress(100);
+                                }
+                            }, progressDuration + 5000); // 5 seconds after expected completion
 
                             startPackageProgressBar(progressDuration);
 
@@ -309,19 +374,22 @@
                                 })
                                 .then(response => response.json())
                                 .then(data => {
-                                    clearInterval(firstInterval);
+                                    // Mark installation as complete
+                                    isInstallationComplete = true;
+                                    
+                                    // Clear any existing interval and timeout
+                                    if (firstInterval) {
+                                        clearInterval(firstInterval);
+                                    }
+                                    clearTimeout(fallbackTimeout);
 
-                                    // Second interval: from current → 100
-                                    const secondInterval = setInterval(() => {
-                                        if (percent < 100) {
-                                            percent++;
-                                            btn.querySelector(
-                                                    '.processing-percent')
-                                                .textContent = percent + '%';
-                                        } else {
-                                            clearInterval(secondInterval);
-                                        }
-                                    }, 30); // fast
+                                    // Complete to 100% if not already there
+                                    if (percent < 100) {
+                                        completeTo100();
+                                    } else {
+                                        // Already at 100%, just update display
+                                        updateProgress(100);
+                                    }
 
                                     finishPackageProgressBar(percent);
 
@@ -356,19 +424,19 @@
                                     }
                                 })
                                 .catch((error) => {
-                                    clearInterval(firstInterval);
+                                    // Mark installation as complete (even if failed)
+                                    isInstallationComplete = true;
+                                    
+                                    // Clear any existing interval and timeout
+                                    if (firstInterval) {
+                                        clearInterval(firstInterval);
+                                    }
+                                    clearTimeout(fallbackTimeout);
 
-                                    // Fail case: also finish to 100 for UI consistency
-                                    const secondInterval = setInterval(() => {
-                                        if (percent < 100) {
-                                            percent++;
-                                            this.querySelector(
-                                                    '.processing-percent')
-                                                .textContent = percent + '%';
-                                        } else {
-                                            clearInterval(secondInterval);
-                                        }
-                                    }, 30);
+                                    // Complete to 100% for UI consistency
+                                    if (percent < 100) {
+                                        completeTo100();
+                                    }
 
                                     finishPackageProgressBar(percent);
 
@@ -390,4 +458,43 @@
             });
         });
     </script>
+    <style>
+        #page-overlay {
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        
+        #full-page-loader {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -60%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+        
+        #gradient-loader {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        #loading-percentage {
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
+            to { text-shadow: 0 0 20px rgba(0, 212, 255, 0.8), 0 0 30px rgba(0, 212, 255, 0.6); }
+        }
+        
+        .install-uninstall-btn:disabled {
+            opacity: 0.8;
+            cursor: not-allowed;
+        }
+    </style>
 @endpush
