@@ -83,6 +83,29 @@ class PackageController extends Controller
         }
     }
 
+    /**
+     * Get dependencies for a package
+     */
+    public function getPackageDependencies(Request $request, $vendor, $package)
+    {
+        try {
+            $packageKey = "{$vendor}/{$package}";
+            $industry = DB::table('settings')->where('slug', 'industry')->value('config_value') ?? 'ecommerce';
+            
+            $dependentNames = $this->getDependentPackageNames($vendor, $packageKey, $industry);
+            
+            return response()->json([
+                'status' => 'success',
+                'dependencies' => $dependentNames
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function installUninstallPackage(Request $request, $vendor, $package)
     {
         try {
@@ -122,6 +145,7 @@ class PackageController extends Controller
                     Artisan::call('view:clear');
 
                     $message = "Package {$displayName} Uninstalled Successfully.";
+                    $dependentNames = []; // No dependencies for uninstall
                 } else {
                     $message = "Composer failed. Output:\n" . $output;
                     return response()->json([
@@ -192,7 +216,12 @@ class PackageController extends Controller
                     $this->updatePackageStatus($vendor, $package, true);
 
                     $displayName = config("constants.package_display_names.$packageKey", $packageKey);
+                    $dependentNames = $this->getDependentPackageNames($vendor, $packageKey, $industry);
+                    
                     $message = "Package {$displayName} Installed Successfully.";
+                    if (!empty($dependentNames)) {
+                        $message .= " Dependencies installed: " . implode(', ', $dependentNames) . ".";
+                    }
                 } else {
                     $message = "Composer failed. Output:\n" . $output;
                     return response()->json([
@@ -204,7 +233,11 @@ class PackageController extends Controller
 
             // Return JSON if requested
             if ($request->expectsJson()) {
-                return response()->json(['status' => 'success', 'message' => $message]);
+                $responseData = ['status' => 'success', 'message' => $message];
+                if (!$isPackageInstalled && !empty($dependentNames)) {
+                    $responseData['dependencies'] = $dependentNames;
+                }
+                return response()->json($responseData);
             }
 
             return back()->with('success', $message);
@@ -217,6 +250,34 @@ class PackageController extends Controller
 
             return back()->with('error', $e->getMessage());
         }
+    }
+
+    /**
+     * Get dependent package names for a given package
+     */
+    private function getDependentPackageNames($vendor, $packageKey, $industry)
+    {
+        if (!isset($this->dependencyMapForInstall[$packageKey])) {
+            return [];
+        }
+        
+        $packages = $this->dependencyMapForInstall[$packageKey];
+
+        // If industry-specific dependencies
+        if (is_array($packages) && isset($packages[$industry])) {
+            $packages = $packages[$industry];
+        }
+
+        $packages = collect($packages)->flatten()->unique()->toArray();
+        $dependentNames = [];
+
+        foreach ($packages as $depPackage) {
+            $depPackageKey = "{$vendor}/{$depPackage}";
+            $displayName = config("constants.package_display_names.$depPackageKey", $depPackageKey);
+            $dependentNames[] = $displayName;
+        }
+
+        return $dependentNames;
     }
 
     /**
