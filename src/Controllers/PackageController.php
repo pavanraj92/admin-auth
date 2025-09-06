@@ -91,12 +91,41 @@ class PackageController extends Controller
         try {
             $packageKey = "{$vendor}/{$package}";
             $industry = DB::table('settings')->where('slug', 'industry')->value('config_value') ?? 'ecommerce';
-            
-            $dependentNames = $this->getDependentPackageNames($vendor, $packageKey, $industry);
-            
+            $action = $request->query('action', 'install');
+
+            $dependencies = [];
+
+            if ($action === 'uninstall') {
+                $dependents = $this->collectUninstallDependents($vendor, $packageKey, $industry);
+                // Only show those currently installed
+                $dependencies = collect($dependents)
+                    ->filter(function ($dep) use ($vendor) {
+                        return $this->isPackageInstalledInDbOrFs($vendor, $dep);
+                    })
+                    ->map(function ($dep) use ($vendor) {
+                        $depKey = "{$vendor}/{$dep}";
+                        return config("constants.package_display_names.$depKey", $depKey);
+                    })
+                    ->values()
+                    ->toArray();
+            } else {
+                // install: show only not-yet-installed dependencies (including transitive)
+                $deps = $this->collectInstallDependencies($vendor, $packageKey, $industry);
+                $dependencies = collect($deps)
+                    ->filter(function ($dep) use ($vendor) {
+                        return !$this->isPackageInstalledInDbOrFs($vendor, $dep);
+                    })
+                    ->map(function ($dep) use ($vendor) {
+                        $depKey = "{$vendor}/{$dep}";
+                        return config("constants.package_display_names.$depKey", $depKey);
+                    })
+                    ->values()
+                    ->toArray();
+            }
+
             return response()->json([
                 'status' => 'success',
-                'dependencies' => $dependentNames
+                'dependencies' => $dependencies,
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -154,6 +183,22 @@ class PackageController extends Controller
                     ], 500);
                 }
             } else {
+                // Prepare dependency names to display (only those not already installed)
+                $depsToInstallDisplayNames = [];
+                $depsForInstall = $this->collectInstallDependencies($vendor, $packageKey, $industry);
+                if (!empty($depsForInstall)) {
+                    $depsToInstallDisplayNames = collect($depsForInstall)
+                        ->filter(function ($dep) use ($vendor) {
+                            return !$this->isPackageInstalledInDbOrFs($vendor, $dep);
+                        })
+                        ->map(function ($dep) use ($vendor) {
+                            $depKey = "{$vendor}/{$dep}";
+                            return config("constants.package_display_names.$depKey", $depKey);
+                        })
+                        ->values()
+                        ->toArray();
+                }
+
                 // Install dependencies FIRST
                 $this->installDependentPackage($vendor, $packageKey, $industry);
 
@@ -216,7 +261,8 @@ class PackageController extends Controller
                     $this->updatePackageStatus($vendor, $package, true);
 
                     $displayName = config("constants.package_display_names.$packageKey", $packageKey);
-                    $dependentNames = $this->getDependentPackageNames($vendor, $packageKey, $industry);
+                    // Only show dependencies that were actually installed now
+                    $dependentNames = $depsToInstallDisplayNames;
                     
                     $message = "Package {$displayName} Installed Successfully.";
                     if (!empty($dependentNames)) {
@@ -278,6 +324,70 @@ class PackageController extends Controller
         }
 
         return $dependentNames;
+    }
+
+    /**
+     * Recursively collect all install dependencies (package slugs like 'users')
+     */
+    private function collectInstallDependencies($vendor, $packageKey, $industry, &$collected = [])
+    {
+        if (!isset($this->dependencyMapForInstall[$packageKey])) {
+            return $collected;
+        }
+
+        $packages = $this->dependencyMapForInstall[$packageKey];
+
+        if (is_array($packages) && isset($packages[$industry])) {
+            $packages = $packages[$industry];
+        }
+
+        foreach (collect($packages)->flatten()->toArray() as $depPackage) {
+            if (!in_array($depPackage, $collected, true)) {
+                $collected[] = $depPackage;
+                $this->collectInstallDependencies($vendor, "$vendor/{$depPackage}", $industry, $collected);
+            }
+        }
+
+        return $collected;
+    }
+
+    /**
+     * Recursively collect uninstall dependents (packages that must be removed first)
+     */
+    private function collectUninstallDependents($vendor, $packageKey, $industry, &$collected = [])
+    {
+        if (!isset($this->dependencyMapForUnInstall[$packageKey])) {
+            return $collected;
+        }
+
+        $packages = $this->dependencyMapForUnInstall[$packageKey];
+        if (is_array($packages) && isset($packages[$industry])) {
+            $packages = $packages[$industry];
+        }
+
+        foreach (collect($packages)->flatten()->toArray() as $dep) {
+            if (!in_array($dep, $collected, true)) {
+                $collected[] = $dep;
+                $this->collectUninstallDependents($vendor, "$vendor/{$dep}", $industry, $collected);
+            }
+        }
+
+        return $collected;
+    }
+
+    /**
+     * Check install status via DB first, fallback to vendor path presence
+     */
+    private function isPackageInstalledInDbOrFs(string $vendor, string $package): bool
+    {
+        $full = "$vendor/$package";
+        try {
+            $db = Package::where('package_name', $full)->where('is_installed', true)->exists();
+            if ($db) return true;
+        } catch (\Throwable $e) {
+            // ignore DB issues here
+        }
+        return is_dir(base_path("vendor/{$vendor}/{$package}"));
     }
 
     /**

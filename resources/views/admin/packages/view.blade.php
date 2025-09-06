@@ -17,17 +17,20 @@
     <div id="page-overlay"
         style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 99999; background: rgba(0,0,0,0.7); cursor: not-allowed;">
-        
+
         <!-- Full Page Loading Content -->
-        <div id="full-page-loader" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white;">
+        <div id="full-page-loader"
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white;">
             <!-- Gradient Circular Loader -->
             <div id="gradient-loader" style="width: 80px; height: 80px; margin: 0 auto 20px; position: relative;">
                 <svg width="80" height="80" viewBox="0 0 80 80" style="transform: rotate(-90deg);">
-                    <circle cx="40" cy="40" r="35" stroke="rgba(255,255,255,0.2)" stroke-width="6" fill="none"/>
-                    <circle id="progress-circle" cx="40" cy="40" r="35" stroke="url(#gradient)" stroke-width="6" fill="none" 
-                            stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220" 
-                            style="transition: stroke-dashoffset 0.3s ease;">
-                        <animateTransform attributeName="transform" type="rotate" values="0 40 40;360 40 40" dur="2s" repeatCount="indefinite"/>
+                    <circle cx="40" cy="40" r="35" stroke="rgba(255,255,255,0.2)" stroke-width="6"
+                        fill="none" />
+                    <circle id="progress-circle" cx="40" cy="40" r="35" stroke="url(#gradient)"
+                        stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="220"
+                        stroke-dashoffset="220" style="transition: stroke-dashoffset 0.3s ease;">
+                        <animateTransform attributeName="transform" type="rotate" values="0 40 40;360 40 40" dur="2s"
+                            repeatCount="indefinite" />
                     </circle>
                     <defs>
                         <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -38,9 +41,11 @@
                     </defs>
                 </svg>
             </div>
-            
+
             <!-- Loading Text and Percentage -->
-            <div id="loading-text" style="font-size: 18px; font-weight: 500; margin-bottom: 10px;">Installing Package...</div>
+            <div id="loading-text" style="font-size: 18px; font-weight: 500; margin-bottom: 10px;">Installing Package...
+            </div>
+            <div id="package-counter" style="font-size: 14px; color: #888; margin-bottom: 5px;">Package 1 of 1</div>
             <div id="loading-percentage" style="font-size: 24px; font-weight: bold; color: #00d4ff;">1%</div>
         </div>
     </div>
@@ -89,7 +94,8 @@
                                             @if (!$installed)
                                                 <button type="button" class="btn btn-outline-success install-uninstall-btn"
                                                     data-package="{{ $package->package_name }}"
-                                                    data-name="{{ $package->display_name }}" data-action="install">
+                                                    data-name="{{ $package->display_name }}" data-action="install"
+                                                    data-deps-url="{{ route('admin.packages.dependencies', ['vendor' => $vendor, 'package' => $packageName]) }}">
                                                     Install
                                                 </button>
                                             @else
@@ -105,7 +111,8 @@
                                             @if (!$installed)
                                                 <button type="button" class="btn btn-outline-success install-uninstall-btn"
                                                     data-package="{{ $package->package_name }}"
-                                                    data-name="{{ $package->display_name }}" data-action="install">
+                                                    data-name="{{ $package->display_name }}" data-action="install"
+                                                    data-deps-url="{{ route('admin.packages.dependencies', ['vendor' => $vendor, 'package' => $packageName]) }}">
                                                     Install
                                                 </button>
                                             @else
@@ -120,7 +127,8 @@
                                                 class="btn btn-outline-{{ $installed ? 'danger' : 'success' }} install-uninstall-btn"
                                                 data-package="{{ $package->package_name }}"
                                                 data-name="{{ $package->display_name }}"
-                                                data-action="{{ $installed ? 'uninstall' : 'install' }}">
+                                                data-action="{{ $installed ? 'uninstall' : 'install' }}"
+                                                data-deps-url="{{ route('admin.packages.dependencies', ['vendor' => $vendor, 'package' => $packageName]) }}">
                                                 {{ $installed ? 'Uninstall' : 'Install' }}
                                             </button>
                                         @endif
@@ -179,7 +187,8 @@
                                                     <button type="button"
                                                         class="btn btn-outline-success install-uninstall-btn"
                                                         data-package="{{ $package->package_name }}"
-                                                        data-name="{{ $package->display_name }}" data-action="install">
+                                                        data-name="{{ $package->display_name }}" data-action="install"
+                                                        data-deps-url="{{ route('admin.packages.dependencies', ['vendor' => $vendor, 'package' => $packageName]) }}">
                                                         Install
                                                     </button>
                                                 @else
@@ -196,7 +205,8 @@
                                                     <button type="button"
                                                         class="btn btn-outline-success install-uninstall-btn"
                                                         data-package="{{ $package->package_name }}"
-                                                        data-name="{{ $package->display_name }}" data-action="install">
+                                                        data-name="{{ $package->display_name }}" data-action="install"
+                                                        data-deps-url="{{ route('admin.packages.dependencies', ['vendor' => $vendor, 'package' => $packageName]) }}">
                                                         Install
                                                     </button>
                                                 @else
@@ -211,7 +221,8 @@
                                                     class="btn btn-outline-{{ $installed ? 'danger' : 'success' }} install-uninstall-btn"
                                                     data-package="{{ $package->package_name }}"
                                                     data-name="{{ $package->display_name }}"
-                                                    data-action="{{ $installed ? 'uninstall' : 'install' }}">
+                                                    data-action="{{ $installed ? 'uninstall' : 'install' }}"
+                                                    data-deps-url="{{ route('admin.packages.dependencies', ['vendor' => $vendor, 'package' => $packageName]) }}">
                                                     {{ $installed ? 'Uninstall' : 'Install' }}
                                                 </button>
                                             @endif
@@ -230,6 +241,9 @@
 @push('scripts')
     <script>
         let progressBarTimeout = null;
+        let overlayDeps = [];
+        let overlayAction = 'install';
+        let overlayMainPackage = '';
 
         function startPackageProgressBar(durationMs) {
             $('#package-progress-bar-container').show();
@@ -280,180 +294,295 @@
                     const displayName = this.dataset.name;
                     const url = form.action;
                     const token = form.querySelector('input[name="_token"]').value;
+                    const depsUrl = this.dataset.depsUrl;
 
-                    Swal.fire({
-                        text: `Are you sure you want to ${action} ${displayName} package?`,
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: `Yes, ${action} it!`,
-                        cancelButtonText: 'No, cancel!',
-                        customClass: {
-                            confirmButton: 'btn btn-outline-success',
-                            cancelButton: 'btn btn-outline-danger',
-                        }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            allButtons.forEach(btn => btn.disabled = true);
-                            
-                            // Show full page loader
-                            const actionText = action === 'install' ? 'Installing Package...' : 'Uninstalling Package...';
-                            document.getElementById('loading-text').textContent = actionText;
-                            document.getElementById('loading-percentage').textContent = '1%';
-                            document.getElementById('page-overlay').style.display = 'block';
-                            
-                            const originalText = this.innerHTML;
-                            this.innerHTML = action === 'install' ? 'Installing...' : 'Uninstalling...';
-
-                            let percent = 1;
-                            const targetPercent = 90;
-                            let isInstallationComplete = false;
-                            let firstInterval = null;
-
-                            const progressDuration = (action === 'install') ? 40000 : 25000; // in ms
-                            const intervalTime = progressDuration / (targetPercent - percent);
-
-                            const btn = this;
-
-                            // Function to update progress display
-                            function updateProgress(progressPercent) {
-                                console.log('Updating progress to:', progressPercent + '%');
-                                document.getElementById('loading-percentage').textContent = progressPercent + '%';
-                                const progressCircle = document.getElementById('progress-circle');
-                                const circumference = 2 * Math.PI * 35; // radius = 35
-                                const offset = circumference - (progressPercent / 100) * circumference;
-                                progressCircle.style.strokeDashoffset = offset;
+                    // Step 1: fetch dependencies and show confirmation with list
+                    const queryUrl = `${depsUrl}?action=${encodeURIComponent(action)}`;
+                    fetch(queryUrl, {
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(r => r.json())
+                        .then(depRes => {
+                            const deps = Array.isArray(depRes.dependencies) ? depRes
+                                .dependencies : [];
+                            const hasDeps = deps.length > 0;
+                            const actionVerb = action === 'install' ? 'install' : 'uninstall';
+                            const title = hasDeps ?
+                                `${actionVerb.charAt(0).toUpperCase() + actionVerb.slice(1)} ${displayName}` :
+                                `Confirm ${actionVerb}`;
+                            let html =
+                                `Are you sure you want to ${actionVerb} <b>${displayName}</b>?`;
+                            if (hasDeps) {
+                                const depList = deps.map(d => `<li>${d}</li>`).join('');
+                                const note = action === 'install' ?
+                                    'The following dependency packages will also be installed:' :
+                                    'The following dependent packages will also be uninstalled:';
+                                html +=
+                                    `<div style="text-align:left;margin-top:10px">${note}<ul style="margin-top:8px">${depList}</ul></div>`;
                             }
 
-                            // First interval: 1 → 90 (or until installation completes)
-                            firstInterval = setInterval(() => {
-                                if (percent < targetPercent && !isInstallationComplete) {
-                                    percent++;
-                                    updateProgress(percent);
-                                } else if (isInstallationComplete) {
-                                    // Installation completed before reaching 90%, complete to 100%
-                                    clearInterval(firstInterval);
-                                    completeTo100();
-                                } else {
-                                    // Reached 90%, wait for installation to complete
-                                    clearInterval(firstInterval);
+                            // Store for overlay display
+                            overlayDeps = deps;
+                            overlayAction = action;
+                            overlayMainPackage = displayName;
+
+                            return Swal.fire({
+                                title: title,
+                                html: html,
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: `Yes, ${actionVerb} it!`,
+                                cancelButtonText: 'No, cancel!',
+                                customClass: {
+                                    confirmButton: 'btn btn-outline-success',
+                                    cancelButton: 'btn btn-outline-danger',
                                 }
-                            }, intervalTime);
+                            });
+                        })
+                        .then((result) => {
+                            if (result.isConfirmed) {
+                                allButtons.forEach(btn => btn.disabled = true);
 
-                            // Function to complete progress to 100%
-                            const completeTo100 = () => {
-                                const completeInterval = setInterval(() => {
-                                    if (percent < 100) {
-                                        percent++;
-                                        updateProgress(percent);
-                                    } else {
-                                        clearInterval(completeInterval);
+                                // Show full page loader with step-by-step package installation
+                                const allPackages = [...overlayDeps, displayName]; // Dependencies first, then main package
+                                const actionText = action === 'install' ? 'Installing Packages...' : 'Uninstalling Packages...';
+                                document.getElementById('loading-text').textContent = actionText;
+                                document.getElementById('loading-percentage').textContent = '1%';
+                                document.getElementById('page-overlay').style.display = 'block';
+
+                                const originalText = this.innerHTML;
+                                this.innerHTML = action === 'install' ? 'Installing...' : 'Uninstalling...';
+
+                                let currentPackageIndex = 0;
+                                let currentPackagePercent = 0;
+                                let totalPercent = 0;
+                                let isInstallationComplete = false;
+                                let progressInterval = null;
+                                let packageProgressInterval = null;
+
+                                // Calculate timing based on number of packages
+                                const totalPackages = allPackages.length;
+                                const baseDurationPerPackage = 40000; // 40 seconds per package
+                                const totalDuration = baseDurationPerPackage * totalPackages;
+
+                                const btn = this;
+
+                                // Function to update progress display
+                                function updateProgress(progressPercent, packageName = '') {
+                                    console.log('Updating progress to:', progressPercent + '%', 'Package:', packageName);
+                                    document.getElementById('loading-percentage').textContent = Math.round(progressPercent) + '%';
+                                    
+                                    // Update package name display
+                                    if (packageName) {
+                                        document.getElementById('loading-text').textContent = 
+                                            (action === 'install' ? 'Installing: ' : 'Uninstalling: ') + packageName;
                                     }
-                                }, 30); // Fast completion
-                            };
-
-                            // Fallback timeout to ensure 100% is reached
-                            const fallbackTimeout = setTimeout(() => {
-                                if (percent < 100) {
-                                    percent = 100;
-                                    updateProgress(100);
+                                    
+                                    // Update package counter
+                                    document.getElementById('package-counter').textContent = 
+                                        `Package ${currentPackageIndex + 1} of ${totalPackages}`;
+                                    
+                                    const progressCircle = document.getElementById('progress-circle');
+                                    const circumference = 2 * Math.PI * 35; // radius = 35
+                                    const offset = circumference - (progressPercent / 100) * circumference;
+                                    progressCircle.style.strokeDashoffset = offset;
                                 }
-                            }, progressDuration + 5000); // 5 seconds after expected completion
 
-                            startPackageProgressBar(progressDuration);
-
-                            fetch(url, {
-                                    method: 'POST',
-                                    headers: {
-                                        'X-CSRF-TOKEN': token,
-                                        'Accept': 'application/json',
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({})
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    // Mark installation as complete
-                                    isInstallationComplete = true;
-                                    
-                                    // Clear any existing interval and timeout
-                                    if (firstInterval) {
-                                        clearInterval(firstInterval);
-                                    }
-                                    clearTimeout(fallbackTimeout);
-
-                                    // Complete to 100% if not already there
-                                    if (percent < 100) {
+                                // Function to start progress for current package
+                                function startPackageProgress() {
+                                    if (currentPackageIndex >= allPackages.length) {
+                                        // All packages processed, complete to 100%
                                         completeTo100();
-                                    } else {
-                                        // Already at 100%, just update display
-                                        updateProgress(100);
+                                        return;
                                     }
 
-                                    finishPackageProgressBar(percent);
-
-                                    if (data.success || data.status === 'success') {
-                                        setTimeout(() => {
-                                            document.getElementById(
-                                                    'page-overlay').style
-                                                .display = 'none';
-                                            btn.innerHTML = `Completed`;
-                                            Swal.fire({
-                                                title: 'Success',
-                                                text: data.message ||
-                                                    'Operation successful.',
-                                                icon: 'success',
-                                                timer: 1500,
-                                                showConfirmButton: false
-                                            }).then(() => window.location
-                                                .reload());
-                                        }, 700);
-                                    } else {
-                                        setTimeout(() => {
-                                            document.getElementById(
-                                                    'page-overlay').style
-                                                .display = 'none';
-                                            Swal.fire('Error', data.message ||
-                                                'Operation failed.', 'error'
-                                            );
-                                            allButtons.forEach(btn => btn
-                                                .disabled = false);
-                                            btn.innerHTML = originalText;
-                                        }, 700);
-                                    }
-                                })
-                                .catch((error) => {
-                                    // Mark installation as complete (even if failed)
-                                    isInstallationComplete = true;
+                                    const currentPackage = allPackages[currentPackageIndex];
+                                    const isLastPackage = currentPackageIndex === allPackages.length - 1;
                                     
-                                    // Clear any existing interval and timeout
-                                    if (firstInterval) {
-                                        clearInterval(firstInterval);
-                                    }
-                                    clearTimeout(fallbackTimeout);
+                                    console.log(`Starting package ${currentPackageIndex + 1}/${totalPackages}: ${currentPackage}`);
+                                    
+                                    // Reset package progress
+                                    currentPackagePercent = 0;
+                                    
+                                    // Update display for current package
+                                    updateProgress(0, currentPackage);
+                                    
+                                    // Start package-specific progress
+                                    packageProgressInterval = setInterval(() => {
+                                        if (currentPackagePercent < 100 && !isInstallationComplete) {
+                                            // For last package, stop at 90% until installation completes
+                                            const targetPercent = isLastPackage ? 90 : 100;
+                                            
+                                            if (currentPackagePercent < targetPercent) {
+                                                currentPackagePercent += 1; // 1% increments
+                                                updateProgress(currentPackagePercent, currentPackage);
+                                            } else if (isLastPackage && currentPackagePercent >= 90) {
+                                                // Last package reached 90%, wait for real installation
+                                                clearInterval(packageProgressInterval);
+                                                return;
+                                            } else if (!isLastPackage) {
+                                                // Non-last package completed, move to next
+                                                clearInterval(packageProgressInterval);
+                                                finishCurrentPackage();
+                                            }
+                                        } else if (isInstallationComplete && isLastPackage) {
+                                            // Installation completed, finish last package to 100%
+                                            clearInterval(packageProgressInterval);
+                                            completeLastPackage();
+                                        } else if (!isLastPackage) {
+                                            // Non-last package completed, move to next
+                                            clearInterval(packageProgressInterval);
+                                            finishCurrentPackage();
+                                        }
+                                    }, baseDurationPerPackage / 100); // 100 intervals per package
+                                }
 
-                                    // Complete to 100% for UI consistency
-                                    if (percent < 100) {
-                                        completeTo100();
-                                    }
-
-                                    finishPackageProgressBar(percent);
-
-                                    console.error('Fetch error:', error);
+                                // Function to finish current package and move to next
+                                function finishCurrentPackage() {
+                                    updateProgress(100, allPackages[currentPackageIndex]);
+                                    
+                                    currentPackageIndex++;
+                                    
+                                    // Small delay before next package
                                     setTimeout(() => {
-                                        document.getElementById('page-overlay')
-                                            .style.display = 'none';
-                                        Swal.fire('Error',
-                                            'Something went wrong.', 'error'
-                                        );
-                                        allButtons.forEach(btn => btn.disabled =
-                                            false);
-                                        this.innerHTML = originalText;
-                                    }, 700);
-                                });
-                        }
-                    });
+                                        startPackageProgress();
+                                    }, 1000);
+                                }
+
+                                // Function to complete last package to 100%
+                                function completeLastPackage() {
+                                    const completeInterval = setInterval(() => {
+                                        if (currentPackagePercent < 100) {
+                                            currentPackagePercent += 2;
+                                            updateProgress(currentPackagePercent, allPackages[currentPackageIndex]);
+                                        } else {
+                                            clearInterval(completeInterval);
+                                            totalPercent = 100;
+                                        }
+                                    }, 50); // Fast completion
+                                }
+
+                                // Function to complete progress to 100%
+                                function completeTo100() {
+                                    totalPercent = 100;
+                                    updateProgress(totalPercent, 'Finalizing...');
+                                }
+
+                                // Waiter to proceed only after reaching 100%
+                                function waitUntilHundred(callback) {
+                                    const watcher = setInterval(() => {
+                                        if (totalPercent >= 100) {
+                                            clearInterval(watcher);
+                                            callback();
+                                        }
+                                    }, 50);
+                                }
+
+                                // Start the step-by-step progress
+                                startPackageProgress();
+                                startPackageProgressBar(totalDuration);
+
+                                fetch(url, {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRF-TOKEN': token,
+                                            'Accept': 'application/json',
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({})
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        // Mark installation as complete
+                                        isInstallationComplete = true;
+
+                                        // Clear any existing intervals
+                                        if (packageProgressInterval) {
+                                            clearInterval(packageProgressInterval);
+                                        }
+                                        if (progressInterval) {
+                                            clearInterval(progressInterval);
+                                        }
+
+                                        // Complete last package to 100% if it's the last one
+                                        if (currentPackageIndex === allPackages.length - 1) {
+                                            completeLastPackage();
+                                        } else {
+                                            // Complete to 100% if not already there
+                                            completeTo100();
+                                        }
+
+                                        finishPackageProgressBar(totalPercent);
+
+                                        if (data.success || data.status === 'success') {
+                                            waitUntilHundred(() => {
+                                                document.getElementById('page-overlay').style.display = 'none';
+                                                btn.innerHTML = `Completed`;
+                                                Swal.fire({
+                                                    title: 'Success',
+                                                    text: data.message || 'Operation successful.',
+                                                    icon: 'success',
+                                                    timer: 1500,
+                                                    showConfirmButton: false
+                                                }).then(() => window.location.reload());
+                                            });
+                                        } else {
+                                            waitUntilHundred(() => {
+                                                document.getElementById('page-overlay').style.display = 'none';
+                                                Swal.fire('Error', data.message || 'Operation failed.', 'error');
+                                                allButtons.forEach(btn => btn.disabled = false);
+                                                btn.innerHTML = originalText;
+                                            });
+                                        }
+                                    })
+                                    .catch((error) => {
+                                        // Mark installation as complete (even if failed)
+                                        isInstallationComplete = true;
+
+                                        // Clear any existing intervals
+                                        if (packageProgressInterval) {
+                                            clearInterval(packageProgressInterval);
+                                        }
+                                        if (progressInterval) {
+                                            clearInterval(progressInterval);
+                                        }
+
+                                        // Complete to 100% for UI consistency
+                                        completeTo100();
+
+                                        finishPackageProgressBar(totalPercent);
+
+                                        console.error('Fetch error:', error);
+                                        waitUntilHundred(() => {
+                                            document.getElementById('page-overlay').style.display = 'none';
+                                            Swal.fire('Error', 'Something went wrong.', 'error');
+                                            allButtons.forEach(btn => btn.disabled = false);
+                                            this.innerHTML = originalText;
+                                        });
+                                    });
+                            }
+                        }).catch(() => {
+                            // If deps fetch fails, fallback to simple confirm
+                            Swal.fire({
+                                text: `Are you sure you want to ${action} ${displayName} package?`,
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: `Yes, ${action} it!`,
+                                cancelButtonText: 'No, cancel!'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    allButtons.forEach(btn => btn.disabled = true);
+                                    // Trigger original flow by programmatically clicking again without deps fetch
+                                    // But we directly proceed with the POST below for simplicity
+                                    const evt = new Event('proceed-install-uninstall');
+                                    button.dispatchEvent(evt);
+                                }
+                            });
+                        });
                 });
             });
         });
@@ -463,35 +592,68 @@
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
         }
-        
+
         #full-page-loader {
             animation: fadeIn 0.3s ease-in;
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translate(-50%, -60%); }
-            to { opacity: 1; transform: translate(-50%, -50%); }
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
         }
-        
+
         #gradient-loader {
             animation: pulse 2s ease-in-out infinite;
         }
-        
+
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
         }
-        
+
         #loading-percentage {
             text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
             animation: glow 2s ease-in-out infinite alternate;
         }
-        
+
         @keyframes glow {
-            from { text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
-            to { text-shadow: 0 0 20px rgba(0, 212, 255, 0.8), 0 0 30px rgba(0, 212, 255, 0.6); }
+            from {
+                text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            }
+
+            to {
+                text-shadow: 0 0 20px rgba(0, 212, 255, 0.8), 0 0 30px rgba(0, 212, 255, 0.6);
+            }
         }
-        
+
+        #package-counter {
+            animation: fadeInOut 1s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(10px); }
+            50% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        #loading-text {
+            transition: all 0.3s ease;
+        }
+
         .install-uninstall-btn:disabled {
             opacity: 0.8;
             cursor: not-allowed;
