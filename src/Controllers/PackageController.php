@@ -409,9 +409,8 @@ class PackageController extends Controller
         $packages = collect($packages)->flatten()->unique()->toArray();
 
         foreach ($packages as $depPackage) {
-            $path = base_path("vendor/{$vendor}/{$depPackage}");
-
-            if (!is_dir($path)) {
+            // Check both database status and file system presence
+            if (!$this->isPackageInstalledInDbOrFs($vendor, $depPackage)) {
                 // Recursive call for this specific dependent package
                 $this->installDependentPackage($vendor, $depPackage, $industry);
 
