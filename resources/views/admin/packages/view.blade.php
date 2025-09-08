@@ -462,6 +462,10 @@
                                         } else {
                                             clearInterval(completeInterval);
                                             totalPercent = 100;
+                                            // Ensure we call the completion callback
+                                            if (typeof completeTo100 === 'function') {
+                                                completeTo100();
+                                            }
                                         }
                                     }, 50); // Fast completion
                                 }
@@ -510,7 +514,11 @@
 
                                         // Complete last package to 100% if it's the last one
                                         if (currentPackageIndex === allPackages.length - 1) {
-                                            completeLastPackage();
+                                            // Force complete the last package to 100%
+                                            currentPackagePercent = 100;
+                                            totalPercent = 100;
+                                            updateProgress(100, allPackages[currentPackageIndex]);
+                                            completeTo100();
                                         } else {
                                             // Complete to 100% if not already there
                                             completeTo100();
@@ -552,6 +560,9 @@
                                         }
 
                                         // Complete to 100% for UI consistency
+                                        currentPackagePercent = 100;
+                                        totalPercent = 100;
+                                        updateProgress(100, 'Finalizing...');
                                         completeTo100();
 
                                         finishPackageProgressBar(totalPercent);
