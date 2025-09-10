@@ -9,6 +9,10 @@ use admin\admin_auth\Controllers\Auth\ResetPasswordController;
 
 Route::name('admin.')->namespace('Auth')->middleware('web')->group(function () {
 
+    // Password reset should be reachable even if admin is logged in
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'resetPassword'])->name('password.reset');
+    Route::post('/reset-password', [ResetPasswordController::class, 'postResetPassword'])->name('password.update');
+
     Route::middleware('guest:admin')->group(function () {
         Route::get('/', [AdminLoginController::class, 'showLoginForm'])->name('login');
         Route::get('/login', [AdminLoginController::class, 'showLoginForm'])->name('login');
@@ -16,9 +20,6 @@ Route::name('admin.')->namespace('Auth')->middleware('web')->group(function () {
         
         Route::get('/forgot-password', [ForgotPasswordController::class, 'forgotPassword'])->name('forgotPassword');
         Route::post('/send-reset-password-link', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('sendResetLinkEmail');
-
-        Route::get('/reset-password/{token}', [ResetPasswordController::class, 'resetPassword'])->name('password.reset');
-        Route::post('/reset-password', [ResetPasswordController::class, 'postResetPassword'])->name('password.update');
     });
 
     Route::middleware('admin.auth')->group(function () {

@@ -17,6 +17,13 @@ class ResetPasswordController extends Controller
 {
     public function resetPassword(Request $request, $token)
     {
+        // If admin is already authenticated, redirect to website-specific dashboard
+        if (Auth::guard('admin')->check()) {
+            $slug = DB::table('admins')->select('website_slug')->first();
+            $base = $slug && $slug->website_slug ? $slug->website_slug : '';
+            return redirect($base . '/admin/dashboard');
+        }
+
         $checkTokenExpired = DB::table('admin_password_resets')
                                     ->where('token','=', $token)
                                     ->where('created_at','>',Carbon::now()->subHours(2))
