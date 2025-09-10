@@ -49,10 +49,7 @@
                                 <div class="form-group">
                                     <label for="example-email">Email<span class="text-danger">*</span></label>
                                     <input type="email" placeholder="Email" class="form-control form-control-line"
-                                        name="email" id="email" value="{{ $admin->email ?? '' }}">
-                                    @error('email')
-                                        <div class="text-danger validation-error">{{ $message }}</div>
-                                    @enderror
+                                        name="email" id="email" value="{{ $admin->email ?? '' }}" readonly>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -96,11 +93,6 @@
                         required: true,
                         minlength: 3
                     },
-                    email: {
-                        required: true,
-                        email: true,
-                        customEmail: true
-                    },
                     website_name: {
                         required: true,
                         minlength: 3
@@ -114,10 +106,6 @@
                     last_name: {
                         required: "Please enter last name",
                         minlength: "Last name must be at least 3 characters long"
-                    },
-                    email: {
-                        required: "Please enter email",
-                        email: "Please enter a valid email address"
                     },
                     website_name: {
                         required: "Please enter website name",
