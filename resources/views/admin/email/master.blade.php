@@ -23,7 +23,7 @@
         }
 
         .mail-header {
-            background: #007bff;
+            background: #333;
             color: #fff;
             padding: 32px 32px 24px 32px;
             text-align: center;
@@ -43,12 +43,12 @@
         .mail-body h2 {
             margin-top: 0;
             font-size: 1.25rem;
-            color: #007bff;
+            color: #333;
         }
 
         .mail-footer {
-            background: #f4f6f8;
-            color: #888;
+            background: #333;
+            color: #fff;
             text-align: center;
             padding: 20px 32px;
             font-size: 0.95rem;
@@ -76,9 +76,10 @@
     <div class="mail-container">
         <div class="mail-header">
             <table width="100%" cellpadding="0" cellspacing="0"
-                style="background:#fff; border-bottom:solid 3px #0b5aa4; padding:20px; text-align:center;">
+                style="background:#333; padding:20px; text-align:center;">
                 <tr>
-                    <td align="center"><a href="{{ url('/') }}"><img src="{{ asset('images/logo.png') }}" /></a>
+                    <td align="center">
+                       <img src="{{ config('GET.main_logo') ? url(Storage::url(config('GET.main_logo'))) : asset('images/logo.png') }}" alt="Dotsquares" />
                     </td>
                 </tr>
             </table>
@@ -99,7 +100,7 @@
             <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                     <td align="center"
-                        style="background-color:#e5ebeb; color:#4a5a5a; font-size:12px; font-family:Arial, Helvetica, sans-serif; text-align:center; padding:10px;">
+                        style="background-color:#333; color:#fff; font-size:12px; font-family:Arial, Helvetica, sans-serif; text-align:center; padding:10px;">
                         Powered by <a href="{{ url('/') }}">{{ env('APP_NAME', 'Dotsquares') }}</a>.
                     </td>
                 </tr>
