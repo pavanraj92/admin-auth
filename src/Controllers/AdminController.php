@@ -23,7 +23,7 @@ class AdminController extends Controller
 
             $admin->first_name   = $request->first_name ?? '';
             $admin->last_name    = $request->last_name ?? '';
-            $admin->email        = $request->email ?? '';
+            // $admin->email        = $request->email ?? '';
             $admin->website_name = $request->website_name ?? '';
     
             $admin->save();
