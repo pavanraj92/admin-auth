@@ -17,11 +17,8 @@ class ResetPasswordController extends Controller
 {
     public function resetPassword(Request $request, $token)
     {
-        // If admin is already authenticated, redirect to website-specific dashboard
         if (Auth::guard('admin')->check()) {
-            $slug = DB::table('admins')->select('website_slug')->first();
-            $base = $slug && $slug->website_slug ? $slug->website_slug : '';
-            return redirect($base . '/admin/dashboard');
+            return redirect()->route('admin.dashboard');
         }
 
         $checkTokenExpired = DB::table('admin_password_resets')
@@ -44,33 +41,28 @@ class ResetPasswordController extends Controller
                 ->where('created_at','>',Carbon::now()->subHours(2))
                 ->first();
 
-        if(isset($checkTokenExpired)) {
+        if(!isset($checkTokenExpired)) {
+            return  back()->withErrors(['email' => 'Reset password link is expired.']);
+        }
 
-            
-            $userExists = Admin::where([ 'email'=>$request->email ])->first();
-            if ($userExists) {            
-                 // ✅ Check if new password is same as old
-                if (Hash::check($request->password, $userExists->password)) {
-                    return back()->withErrors(['error' => 'New password cannot be the same as your old password.']);
-                }
-
-                // ✅ Update password
-                $userExists->update([
-                    'password' => Hash::make($request->password)
-                ]);
-
-                DB::table('admin_password_resets')->where('token', '=', $request->token)->delete();
-
-                $slug = DB::table('admins')->select('website_slug')->first();
-
-                return redirect($slug->website_slug . '/admin/login')
-                    ->with(['success' => "Password updated successfully. Please login here"]);
-            } else {
-                return  back()->withErrors(['email' => 'Something went wrong. Please try later']);
+        $userExists = Admin::where([ 'email'=>$request->email ])->first();
+        if ($userExists) {            
+             // ✅ Check if new password is same as old
+            if (Hash::check($request->password, $userExists->password)) {
+                return back()->withErrors(['error' => 'New password cannot be the same as your old password.']);
             }
 
+            // ✅ Update password
+            $userExists->update([
+                'password' => Hash::make($request->password)
+            ]);
+
+            DB::table('admin_password_resets')->where('token', '=', $request->token)->delete();
+
+            return redirect()->route('admin.login')
+                ->with(['success' => "Password updated successfully. Please login here"]);
         } else {
-            return  back()->withErrors(['email' => 'Reset password link is expired.']);
+            return  back()->withErrors(['email' => 'Something went wrong. Please try later']);
         }
     }
 }

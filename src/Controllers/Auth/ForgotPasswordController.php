@@ -21,31 +21,29 @@ class ForgotPasswordController extends Controller
 
     public function sendResetLinkEmail(Request $request)
     {
-        $request->validate([            
-            'email' => 'required|email:rfc,dns',            
+        $validated = $request->validate([
+            'email' => 'required|email',
         ]);
 
-        $admin = Admin::where('email', $request->email)->first();
+        $admin = Admin::where('email', $validated['email'])->first();
 
-        if(!$admin){
-           return back()->withErrors(['error'=>'We can not find a user with this email'])
-                 ->withInput();
+        if (!$admin) {
+            return back()->withErrors(['error' => 'We cannot find a user with this email.'])->withInput();
         }
-        else {
-            //$token = base64_encode($admin->id);
-            $token = Str::random(7);
 
-            $admin->token = $token;
-            DB::table('admin_password_resets')->where('email','=', $request->email)->delete();
-            DB::table('admin_password_resets')->insert([
-                'email' => $request->email,
-                'token' => $token,
-                'created_at' => Carbon::now()
-            ]);
+        $token = Str::random(64);
 
-            $mail_status = Mail::to($admin->email)->send(new ForgotPasswordMail($admin));
-            return redirect()->route('admin.forgotPassword')->with(['success' => "We have emailed you password reset link!"]);
-        }
+        DB::table('admin_password_resets')->where('email', '=', $validated['email'])->delete();
+        DB::table('admin_password_resets')->insert([
+            'email' => $validated['email'],
+            'token' => $token,
+            'created_at' => Carbon::now()
+        ]);
+
+        $admin->token = $token;
+        Mail::to($admin->email)->send(new ForgotPasswordMail($admin));
+
+        return redirect()->route('admin.forgotPassword')->with(['success' => 'We have emailed you a password reset link.']);
     }
 
 }
