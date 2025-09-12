@@ -175,3 +175,12 @@
     color: #6c757d;
     z-index: 10;
 }
+
+.custom-upload-box {
+    transition: border-color 0.2s;
+}
+
+.custom-upload-box.dragover {
+    border-color: #0056b3;
+    background: #f0f8ff;
+}

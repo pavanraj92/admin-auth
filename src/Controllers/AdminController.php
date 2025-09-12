@@ -12,7 +12,7 @@ class AdminController extends Controller
 {
     public function viewProfile()
     {
-        $admin = \DB::table('admins')->find(auth('admin')->user()->id);
+        $admin = auth('admin')->user();
         return view('admin::admin.profile.view', compact('admin'));
     }
 
@@ -37,7 +37,7 @@ class AdminController extends Controller
 
     public function viewChangePassword()
     {
-        $admin = \DB::table('admins')->find(auth('admin')->user()->id);
+        $admin = auth('admin')->user();
         return view('admin::admin.change_password.view', compact('admin'));
     }
 
