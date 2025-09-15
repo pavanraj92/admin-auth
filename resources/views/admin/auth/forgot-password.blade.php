@@ -21,6 +21,7 @@
                 Send Password Reset Link
             </button>
         </div>
+        
     </form>
     <div class="mt-3 text-center">
         <a href="{{ route('admin.login') }}">Back to Login</a>

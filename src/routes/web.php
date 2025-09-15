@@ -18,6 +18,11 @@ Route::name('admin.')->namespace('Auth')->middleware('web')->group(function () {
         Route::get('/login', [AdminLoginController::class, 'showLoginForm'])->name('login');
         Route::post('/login', [AdminLoginController::class, 'login']);
         
+        // OTP Verification Routes
+        Route::get('/otp-verify', [AdminLoginController::class, 'showOtpVerificationForm'])->name('otp.verify');
+        Route::post('/otp-verify', [AdminLoginController::class, 'verifyOtp']);
+        Route::post('/otp-resend', [AdminLoginController::class, 'resendOtp'])->name('otp.resend');
+        
         Route::get('/forgot-password', [ForgotPasswordController::class, 'forgotPassword'])->name('forgotPassword');
         Route::post('/send-reset-password-link', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('sendResetLinkEmail');
     });

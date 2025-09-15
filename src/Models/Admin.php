@@ -145,4 +145,25 @@ class Admin extends Authenticatable
             'role_id'          // foreign key on pivot table for Role model
         );
     }
+
+    /**
+     * Relationship with AdminOtp
+     */
+    public function otps()
+    {
+        return $this->hasMany(\admin\admin_auth\Models\AdminOtp::class);
+    }
+
+    /**
+     * Get the latest valid OTP for this admin
+     */
+    public function getLatestValidOtp($type = 'login')
+    {
+        return $this->otps()
+                   ->where('type', $type)
+                   ->where('is_used', false)
+                   ->where('expires_at', '>', now())
+                   ->latest()
+                   ->first();
+    }
 }

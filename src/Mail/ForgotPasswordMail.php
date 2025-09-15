@@ -6,6 +6,8 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Http\Request;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * This class used for frontend user as customer/home owner user
@@ -23,7 +25,7 @@ class ForgotPasswordMail extends Mailable
 
     public function build()
     {
-        $slug = \DB::table('admins')->select('website_slug')->first();
+        $slug = DB::table('admins')->select('website_slug')->first();
         $link = url(($slug ? $slug->website_slug . '/admin/reset-password' : 'admin/reset-password') . '/' . $this->user->token . '?email=' . $this->user->email);
         // return $this->subject('Reset Your Password - ' . env('APP_NAME'))
         //     ->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'))
@@ -33,8 +35,8 @@ class ForgotPasswordMail extends Mailable
 
     
         try {
-            if (\Schema::hasTable('emails')) {
-                $emailTemplate = \DB::table('emails')->where('slug', 'password_reset')->first(['subject', 'description']);
+            if (Schema::hasTable('emails')) {
+                $emailTemplate = DB::table('emails')->where('slug', 'password_reset')->first(['subject', 'description']);
             } else {
                 $emailTemplate = null;
             }
