@@ -7,6 +7,10 @@ This package provides authentication features for the admin section of your appl
 ## Features
 
 - Secure admin login/logout
+- Email-based OTP: 6-digit codes sent to admin email addresses
+- 5-minute OTP expiration
+- Visual timer showing remaining time
+- Resend OTP with 60-second cooldown
 - Password hashing
 - Profile Update
 - Middleware protection for admin routes

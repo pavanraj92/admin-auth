@@ -38,9 +38,24 @@ class AdminModuleServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../database/migrations' => base_path('Modules/AdminAuth/database/migrations'),
             __DIR__ . '/../resources/views' => base_path('Modules/AdminAuth/resources/views/'),
+            __DIR__ . '/../src/Console/Commands/CleanupExpiredOtpsCommand.php' => base_path('Modules/AdminAuth/app/Console/Commands/CleanupExpiredOtpsCommand.php'),
+            __DIR__ . '/../src/Services/OtpService.php' => base_path('Modules/AdminAuth/app/Services/OtpService.php'),
+            __DIR__ . '/../src/Models/AdminOtp.php' => base_path('Modules/AdminAuth/app/Models/AdminOtp.php'),
+            __DIR__ . '/../src/Mail/OtpMail.php' => base_path('Modules/AdminAuth/app/Mail/OtpMail.php'),
         ], 'admin_auth');
        
         $this->registerAdminRoutes();
+
+        // Ensure the auth provider model points to the published namespace when available
+        try {
+            if (class_exists('Modules\\AdminAuth\\app\\Models\\Admin')) {
+                \Config::set('auth.providers.admins.model', 'Modules\\AdminAuth\\app\\Models\\Admin');
+            } else {
+                \Config::set('auth.providers.admins.model', 'admin\\admin_auth\\Models\\Admin');
+            }
+        } catch (\Throwable $e) {
+            // silent fail; do not block boot
+        }
     }
 
     protected function registerAdminRoutes()
@@ -67,13 +82,22 @@ class AdminModuleServiceProvider extends ServiceProvider
 
     public function register()
     {
+        // Register services
+        $this->app->singleton(\admin\admin_auth\Services\OtpService::class);
+        
         // Register the publish command
         if ($this->app->runningInConsole()) {
+            // Prefer published command classes if they exist; otherwise fall back to package ones
+            $cleanupCmd = class_exists('Modules\\AdminAuth\\app\\Console\\Commands\\CleanupExpiredOtpsCommand')
+                ? 'Modules\\AdminAuth\\app\\Console\\Commands\\CleanupExpiredOtpsCommand'
+                : \admin\admin_auth\Console\Commands\CleanupExpiredOtpsCommand::class;
+
             $this->commands([
                 \admin\admin_auth\Console\Commands\PublishAdminAuthModuleCommand::class,
                 \admin\admin_auth\Console\Commands\CheckModuleStatusCommand::class,
                 \admin\admin_auth\Console\Commands\DebugAdminAuthModuleCommand::class,
                 \admin\admin_auth\Console\Commands\TestAdminAuthViewResolutionCommand::class,
+                $cleanupCmd,
             ]);
         }
     }
@@ -96,20 +120,26 @@ class AdminModuleServiceProvider extends ServiceProvider
             __DIR__ . '/../src/Models/Admin.php' => base_path('Modules/AdminAuth/app/Models/Admin.php'),
             __DIR__ . '/../src/Models/Package.php' => base_path('Modules/AdminAuth/app/Models/Package.php'),
             __DIR__ . '/../src/Models/Seo.php' => base_path('Modules/AdminAuth/app/Models/Seo.php'),
+            __DIR__ . '/../src/Models/AdminOtp.php' => base_path('Modules/AdminAuth/app/Models/AdminOtp.php'),
 
             //Traits
             __DIR__ . '/../src/Traits/HasSeo.php' => base_path('Modules/AdminAuth/app/Traits/HasSeo.php'),
 
             //Services
             __DIR__ . '/../src/Services/ImageService.php' => base_path('Modules/AdminAuth/app/Services/ImageService.php'),
+            __DIR__ . '/../src/Services/OtpService.php' => base_path('Modules/AdminAuth/app/Services/OtpService.php'),
 
             //Mail
             __DIR__ . '/../src/Mail/ForgotPasswordMail.php' => base_path('Modules/AdminAuth/app/Mail/ForgotPasswordMail.php'),
+            __DIR__ . '/../src/Mail/OtpMail.php' => base_path('Modules/AdminAuth/app/Mail/OtpMail.php'),
             
             // Requests
             __DIR__ . '/../src/Requests/ChangePasswordRequest.php' => base_path('Modules/AdminAuth/app/Http/Requests/ChangePasswordRequest.php'),
             __DIR__ . '/../src/Requests/ProfileRequest.php' => base_path('Modules/AdminAuth/app/Http/Requests/ProfileRequest.php'),
             __DIR__ . '/../src/Requests/ResetPasswordRequest.php' => base_path('Modules/AdminAuth/app/Http/Requests/ResetPasswordRequest.php'),
+
+            // Console Commands
+            __DIR__ . '/../src/Console/Commands/CleanupExpiredOtpsCommand.php' => base_path('Modules/AdminAuth/app/Console/Commands/CleanupExpiredOtpsCommand.php'),
             
             // Routes
             __DIR__ . '/routes/web.php' => base_path('Modules/AdminAuth/routes/web.php'),
@@ -147,6 +177,7 @@ class AdminModuleServiceProvider extends ServiceProvider
             'namespace admin\\admin_auth\\Traits;' => 'namespace Modules\\AdminAuth\\app\\Traits;',
             'namespace admin\\admin_auth\\Mail;' => 'namespace Modules\\AdminAuth\\app\\Mail;',
             'namespace admin\\admin_auth\\Requests;' => 'namespace Modules\\AdminAuth\\app\\Http\\Requests;',
+            'namespace admin\\admin_auth\\Console\\Commands;' => 'namespace Modules\\AdminAuth\\app\\Console\\Commands;',
             
             // Use statements transformations
             'use admin\\admin_auth\\Controllers\\Auth\\' => 'use Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\Auth\\',
@@ -156,6 +187,7 @@ class AdminModuleServiceProvider extends ServiceProvider
             'use admin\\admin_auth\\Traits\\' => 'use Modules\\AdminAuth\\app\\Traits\\',
             'use admin\\admin_auth\\Mail\\' => 'use Modules\\AdminAuth\\app\\Mail\\',
             'use admin\\admin_auth\\Requests\\' => 'use Modules\\AdminAuth\\app\\Http\\Requests\\',
+            'use admin\\admin_auth\\Console\\Commands\\' => 'use Modules\\AdminAuth\\app\\Console\\Commands\\',
             
             // Class references in routes
             'admin\\admin_auth\\Controllers\\Auth\\AdminLoginController' => 'Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\Auth\\AdminLoginController',
@@ -185,6 +217,13 @@ class AdminModuleServiceProvider extends ServiceProvider
             $content = $this->transformMailNamespaces($content);
         } elseif (str_contains($sourceFile, 'routes')) {
             $content = $this->transformRouteNamespaces($content);
+        } elseif (str_contains($sourceFile, 'Console')) {
+            // ensure command classes reference published namespaces
+            $content = str_replace(
+                'use admin\\admin_auth\\Services\\',
+                'use Modules\\AdminAuth\\app\\Services\\',
+                $content
+            );
         }
 
         return $content;
@@ -199,6 +238,11 @@ class AdminModuleServiceProvider extends ServiceProvider
         $content = str_replace(
             'use admin\\admin_auth\\Models\\Admin;',
             'use Modules\\AdminAuth\\app\\Models\\Admin;',
+            $content
+        );
+        $content = str_replace(
+            'use admin\\admin_auth\\Services\\OtpService;',
+            'use Modules\\AdminAuth\\app\\Services\\OtpService;',
             $content
         );
         $content = str_replace(
@@ -238,6 +282,7 @@ class AdminModuleServiceProvider extends ServiceProvider
     protected function transformModelNamespaces($content)
     {
         // Any model-specific transformations
+         $content = str_replace('\\admin\\admin_auth\\Models\\AdminOtp', 'Modules\\AdminAuth\\app\\Models\\AdminOtp', $content);
         return $content;
     }
 

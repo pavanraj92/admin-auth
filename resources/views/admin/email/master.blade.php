@@ -89,9 +89,11 @@
                 <tr>
                     <td
                         style="font-family:Arial, Helvetica, sans-serif; font-size:18px; color:#4a5a5a; padding-bottom: 15px;">
-                        @isset($template)
+                        {{-- @hasSection('content')
+                            @yield('content') --}}
+                        @if(isset($template))
                             {!! $template !!}
-                        @endisset
+                        @endif
                     </td>
                 </tr>
             </table>

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\File;
 
 class PublishAdminAuthModuleCommand extends Command
 {
-   protected $signature = 'admin_auth:publish {--force : Force overwrite existing files}';
+    protected $signature = 'admin_auth:publish {--force : Force overwrite existing files}';
     protected $description = 'Publish Admin Auth module files with proper namespace transformation';
 
     public function handle()
@@ -22,7 +22,7 @@ class PublishAdminAuthModuleCommand extends Command
 
         // Publish with namespace transformation
         $this->publishWithNamespaceTransformation();
-        
+
         // Publish other files
         $this->call('vendor:publish', [
             '--tag' => 'admin_auth',
@@ -52,20 +52,27 @@ class PublishAdminAuthModuleCommand extends Command
             $basePath . '/Models/Admin.php' => base_path('Modules/AdminAuth/app/Models/Admin.php'),
             $basePath . '/Models/Package.php' => base_path('Modules/AdminAuth/app/Models/Package.php'),
             $basePath . '/Models/Seo.php' => base_path('Modules/AdminAuth/app/Models/Seo.php'),
+            $basePath . '/../src/Models/AdminOtp.php' => base_path('Modules/AdminAuth/app/Models/AdminOtp.php'),
 
-             //Traits
+            //Traits
             $basePath . '/../src/Traits/HasSeo.php' => base_path('Modules/AdminAuth/app/Traits/HasSeo.php'),
 
             //Services
             $basePath . '/../src/Services/ImageService.php' => base_path('Modules/AdminAuth/app/Services/ImageService.php'),
+            $basePath . '/../src/Services/OtpService.php' => base_path('Modules/AdminAuth/app/Services/OtpService.php'),
+
 
             //Mail
             $basePath . '/../src/Mail/ForgotPasswordMail.php' => base_path('Modules/AdminAuth/app/Mail/ForgotPasswordMail.php'),
+            $basePath . '/../src/Mail/OtpMail.php' => base_path('Modules/AdminAuth/app/Mail/OtpMail.php'),
 
             // Requests
             $basePath . '/Requests/ChangePasswordRequest.php' => base_path('Modules/AdminAuth/app/Http/Requests/ChangePasswordRequest.php'),
             $basePath . '/Requests/ProfileRequest.php' => base_path('Modules/AdminAuth/app/Http/Requests/ProfileRequest.php'),
             $basePath . '/Requests/ResetPasswordRequest.php' => base_path('Modules/AdminAuth/app/Http/Requests/ResetPasswordRequest.php'),
+
+            // Console Commands
+            $basePath . '/../src/Console/Commands/CleanupExpiredOtpsCommand.php' => base_path('Modules/AdminAuth/app/Console/Commands/CleanupExpiredOtpsCommand.php'),
 
             // Routes
             $basePath . '/routes/web.php' => base_path('Modules/AdminAuth/routes/web.php'),
@@ -74,10 +81,10 @@ class PublishAdminAuthModuleCommand extends Command
         foreach ($filesWithNamespaces as $source => $destination) {
             if (File::exists($source)) {
                 File::ensureDirectoryExists(dirname($destination));
-                
+
                 $content = File::get($source);
                 $content = $this->transformNamespaces($content, $source);
-                
+
                 File::put($destination, $content);
                 $this->info("Published: " . basename($destination));
             } else {
@@ -89,7 +96,7 @@ class PublishAdminAuthModuleCommand extends Command
     protected function transformNamespaces($content, $sourceFile)
     {
         // Define namespace mappings
-      $namespaceTransforms = [
+        $namespaceTransforms = [
             // Main namespace transformations
             'namespace admin\\admin_auth\\Controllers\\Auth;' => 'namespace Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\Auth;',
             'namespace admin\\admin_auth\\Controllers;' => 'namespace Modules\\AdminAuth\\app\\Http\\Controllers\\Admin;',
@@ -98,7 +105,8 @@ class PublishAdminAuthModuleCommand extends Command
             'namespace admin\\admin_auth\\Traits;' => 'namespace Modules\\AdminAuth\\app\\Traits;',
             'namespace admin\\admin_auth\\Mail;' => 'namespace Modules\\AdminAuth\\app\\Mail;',
             'namespace admin\\admin_auth\\Requests;' => 'namespace Modules\\AdminAuth\\app\\Http\\Requests;',
-            
+            'namespace admin\\admin_auth\\Console\\Commands;' => 'namespace Modules\\AdminAuth\\app\\Console\\Commands;',
+
             // Use statements transformations
             'use admin\\admin_auth\\Controllers\\Auth\\' => 'use Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\Auth\\',
             'use admin\\admin_auth\\Controllers\\' => 'use Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\',
@@ -107,7 +115,8 @@ class PublishAdminAuthModuleCommand extends Command
             'use admin\\admin_auth\\Traits\\' => 'use Modules\\AdminAuth\\app\\Traits\\',
             'use admin\\admin_auth\\Mail\\' => 'use Modules\\AdminAuth\\app\\Mail\\',
             'use admin\\admin_auth\\Requests\\' => 'use Modules\\AdminAuth\\app\\Http\\Requests\\',
-            
+            'use admin\\admin_auth\\Console\\Commands\\' => 'use Modules\\AdminAuth\\app\\Console\\Commands\\',
+
             // Class references in routes
             'admin\\admin_auth\\Controllers\\Auth\\AdminLoginController' => 'Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\Auth\\AdminLoginController',
             'admin\\admin_auth\\Controllers\\Auth\\ForgotPasswordController' => 'Modules\\AdminAuth\\app\\Http\\Controllers\\Admin\\Auth\\ForgotPasswordController',
@@ -132,6 +141,14 @@ class PublishAdminAuthModuleCommand extends Command
             $content = str_replace('use admin\\admin_auth\\Requests\\ChangePasswordRequest;', 'use Modules\\AdminAuth\\app\\Http\\Requests\\ChangePasswordRequest;', $content);
             $content = str_replace('use admin\\admin_auth\\Requests\\ProfileRequest;', 'use Modules\\AdminAuth\\app\\Http\\Requests\\ProfileRequest;', $content);
             $content = str_replace('use admin\\admin_auth\\Requests\\ResetPasswordRequest;', 'use Modules\\AdminAuth\\app\\Http\\Requests\\ResetPasswordRequest;', $content);
+        }elseif(str_contains($sourceFile, 'Models')){
+            $content = str_replace('\\admin\\admin_auth\\Models\\AdminOtp', 'Modules\\AdminAuth\\app\\Models\\AdminOtp', $content);
+        }elseif(str_contains($sourceFile, 'Console')){
+            $content = str_replace(
+                'use admin\\admin_auth\\Services\\',
+                'use Modules\\AdminAuth\\app\\Services\\',
+                $content
+            );
         }
 
         return $content;
@@ -150,4 +167,4 @@ class PublishAdminAuthModuleCommand extends Command
             $this->info('Updated composer.json autoload');
         }
     }
-} 
+}
