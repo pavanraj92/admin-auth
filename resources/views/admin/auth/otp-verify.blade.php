@@ -9,7 +9,7 @@
         <img src="{{ asset('images/dots-logo-trans.png') }}" alt="Logo" style="max-width: 150px;">
     </div>
     <h2 class="mb-4 text-center">Two-Factor Authentication</h2>
-    
+
     <div class="alert alert-info text-center mb-4">
         <i class="fa fa-info-circle"></i>
         We've sent a 6-digit verification code to <strong>{{ $admin->email }}</strong>
@@ -29,13 +29,20 @@
         <div class="mb-3">
             <label class="form-label">Enter Verification Code<span class="text-danger">*</span></label>
             <div class="d-flex justify-content-between gap-2 otp-inputs" style="max-width: 360px; margin:0 auto;">
-                <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" class="form-control text-center otp-box" maxlength="1" data-index="0">
-                <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" class="form-control text-center otp-box" maxlength="1" data-index="1">
-                <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" class="form-control text-center otp-box" maxlength="1" data-index="2">
-                <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" class="form-control text-center otp-box" maxlength="1" data-index="3">
-                <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" class="form-control text-center otp-box" maxlength="1" data-index="4">
-                <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" class="form-control text-center otp-box" maxlength="1" data-index="5">
+                <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code"
+                    class="form-control text-center otp-box" maxlength="1" data-index="0">
+                <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code"
+                    class="form-control text-center otp-box" maxlength="1" data-index="1">
+                <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code"
+                    class="form-control text-center otp-box" maxlength="1" data-index="2">
+                <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code"
+                    class="form-control text-center otp-box" maxlength="1" data-index="3">
+                <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code"
+                    class="form-control text-center otp-box" maxlength="1" data-index="4">
+                <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code"
+                    class="form-control text-center otp-box" maxlength="1" data-index="5">
             </div>
+            <div id="otp_validation" style="display:block; text-align:center; margin-top:8px;"></div>
             <input type="hidden" id="otp_code" name="otp_code" value="">
             @error('otp_code')
                 <div class="text-danger validation-error text-center">{{ $message }}</div>
@@ -63,11 +70,56 @@
 
 @push('scripts')
     <script>
+        // Form validation
+        $('#otpForm').validate({
+            ignore: [],
+            errorElement: 'div',
+            errorClass: 'text-danger',
+            rules: {
+                otp_code: {
+                    required: true,
+                    minlength: 6,
+                    maxlength: 6,
+                    digits: true
+                }
+            },
+            messages: {
+                otp_code: {
+                    required: "Please enter the verification code",
+                    minlength: "Please enter all 6 digits",
+                    maxlength: "Please enter only 6 digits",
+                    digits: "Please enter only numbers"
+                }
+            },
+            errorPlacement: function(error, element) {
+                // hide any server-side error block
+                $('.validation-error').hide();
+
+                // style inline (no external CSS)
+                error.attr('style', 'display:block; text-align:center; margin-top:8px;');
+
+                // If validation relates to OTP (hidden or otp inputs), append to placeholder
+                if (element.hasClass('otp-box') || element.attr('id') === 'otp_code' || element.is(':hidden')) {
+                    // ensure only one message - replace existing
+                    $('#otp_validation').empty().append(error);
+                } else {
+                    // regular placement for other fields
+                    error.insertAfter(element);
+                }
+            },
+            submitHandler: function(form) {
+                const $btn = $('#verifyBtn');
+                $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Verifying...');
+                form.submit();
+            }
+        });
+
         $(document).ready(function() {
-            let timeLeft = {{ isset($remainingSeconds) ? (int)$remainingSeconds : 300 }}; // server-provided remaining seconds
+            let timeLeft =
+                {{ isset($remainingSeconds) ? (int) $remainingSeconds : 300 }}; // server-provided remaining seconds
             // Compute resend time left based on server timestamps to avoid drift
-            const serverNow = {{ isset($serverNow) ? (int)$serverNow : 'null' }};
-            const resendAllowedAt = {{ isset($resendAllowedAt) ? (int)$resendAllowedAt : 'null' }};
+            const serverNow = {{ isset($serverNow) ? (int) $serverNow : 'null' }};
+            const resendAllowedAt = {{ isset($resendAllowedAt) ? (int) $resendAllowedAt : 'null' }};
             let resendTimeLeft = 60;
             if (serverNow && resendAllowedAt) {
                 const clientNow = Math.floor(Date.now() / 1000);
@@ -90,16 +142,18 @@
                 countdownInterval = setInterval(function() {
                     $('#countdown').text(formatTime(timeLeft));
                     timeLeft--;
-                    
+
                     if (timeLeft <= 0) {
                         clearInterval(countdownInterval);
                         $('#countdown').text('00:00');
                         $('.timer-display').addClass('expired');
                         $('#verifyBtn').prop('disabled', true).text('Code Expired');
-                        
+
                         // Show expired message
                         if (!$('.expired-message').length) {
-                            $('.otp-timer').after('<div class="alert alert-warning expired-message text-center">OTP has expired. Please request a new code.</div>');
+                            $('.otp-timer').after(
+                                '<div class="alert alert-warning expired-message text-center">OTP has expired. Please request a new code.</div>'
+                            );
                         }
                     }
                 }, 1000);
@@ -110,14 +164,14 @@
                 if (resendInterval) clearInterval(resendInterval);
                 // Ensure button has countdown markup
                 if (!$('#resendCountdown').length) {
-                    $('#resendBtn').html('Resend Code (<span id="resendCountdown">'+resendTimeLeft+'</span>s)');
+                    $('#resendBtn').html('Resend Code (<span id="resendCountdown">' + resendTimeLeft + '</span>s)');
                 }
                 $('#resendBtn').prop('disabled', resendTimeLeft > 0);
                 $('#resendCountdown').text(resendTimeLeft);
                 resendInterval = setInterval(function() {
                     resendTimeLeft = Math.max(0, resendTimeLeft - 1);
                     $('#resendCountdown').text(resendTimeLeft);
-                    
+
                     if (resendTimeLeft <= 0) {
                         clearInterval(resendInterval);
                         $('#resendBtn').prop('disabled', false).html('Resend Code');
@@ -155,7 +209,9 @@
             // Select text on focus for quick replace
             $otpBoxes.on('focus', function() {
                 const input = this;
-                setTimeout(function() { input.select(); }, 0);
+                setTimeout(function() {
+                    input.select();
+                }, 0);
             });
 
             $otpBoxes.on('keydown', function(e) {
@@ -167,7 +223,9 @@
             });
 
             function syncHiddenOtp() {
-                const code = $otpBoxes.map(function() { return this.value || ''; }).get().join('');
+                const code = $otpBoxes.map(function() {
+                    return this.value || '';
+                }).get().join('');
                 $('#otp_code').val(code);
                 if (code.length === 6) {
                     $('#otpForm').submit();
@@ -177,15 +235,16 @@
             // Resend OTP
             $('#resendBtn').on('click', function() {
                 if ($(this).prop('disabled')) return;
-                
+
                 $.ajax({
-                    url: '{{ route("admin.otp.resend") }}',
+                    url: '{{ route('admin.otp.resend') }}',
                     method: 'POST',
                     data: {
                         _token: '{{ csrf_token() }}'
                     },
                     beforeSend: function() {
-                        $('#resendBtn').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Sending...');
+                        $('#resendBtn').prop('disabled', true).html(
+                            '<i class="fa fa-spinner fa-spin"></i> Sending...');
                     },
                     success: function(response, status, xhr) {
                         if (response && response.success) {
@@ -195,20 +254,22 @@
                             $('.timer-display').removeClass('expired');
                             $('#verifyBtn').prop('disabled', false).text('Verify Code');
                             $('.expired-message').remove();
-                            
+
                             // Restart countdown
                             clearInterval(countdownInterval);
                             startCountdown();
-                            
+
                             // Start resend countdown from fresh 60s and restore button markup
                             resendTimeLeft = 60;
-                            $('#resendBtn').html('Resend Code (<span id="resendCountdown">'+resendTimeLeft+'</span>s)').prop('disabled', true);
+                            $('#resendBtn').html('Resend Code (<span id="resendCountdown">' +
+                                resendTimeLeft + '</span>s)').prop('disabled', true);
                             startResendCountdown();
-                            
+
                             // Show success message
                             showAlert('success', 'New OTP sent to your email.');
                         } else {
-                            showAlert('error', (response && response.message) ? response.message : 'Failed to resend OTP. Please try again.');
+                            showAlert('error', (response && response.message) ? response
+                                .message : 'Failed to resend OTP. Please try again.');
                         }
                     },
                     error: function(xhr) {
@@ -220,41 +281,11 @@
                     },
                     complete: function() {
                         if (!resendInterval && resendTimeLeft > 0) {
-                            $('#resendBtn').html('Resend Code (<span id="resendCountdown">'+resendTimeLeft+'</span>s)').prop('disabled', true);
+                            $('#resendBtn').html('Resend Code (<span id="resendCountdown">' +
+                                resendTimeLeft + '</span>s)').prop('disabled', true);
                         }
                     }
                 });
-            });
-
-            // Form validation
-            $('#otpForm').validate({
-                rules: {
-                    otp_code: {
-                        required: true,
-                        minlength: 6,
-                        maxlength: 6,
-                        digits: true
-                    }
-                },
-                messages: {
-                    otp_code: {
-                        required: "Please enter the verification code",
-                        minlength: "Please enter all 6 digits",
-                        maxlength: "Please enter only 6 digits",
-                        digits: "Please enter only numbers"
-                    }
-                },
-                submitHandler: function(form) {
-                    const $btn = $('#verifyBtn');
-                    $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Verifying...');
-                    form.submit();
-                },
-                errorElement: 'div',
-                errorClass: 'text-danger custom-error',
-                errorPlacement: function(error, element) {
-                    $('.validation-error').hide();
-                    error.insertAfter(element);
-                }
             });
 
             // Show alert function
@@ -264,9 +295,9 @@
                     ${message}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>`;
-                
+
                 $('.alert-info').after(alertHtml);
-                
+
                 // Auto-hide after 5 seconds
                 setTimeout(function() {
                     $('.alert:not(.alert-info)').fadeOut();
