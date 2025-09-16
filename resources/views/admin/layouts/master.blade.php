@@ -16,6 +16,7 @@
     @endif
     <title>@yield('title', 'Admin Panel')</title>
     <link href="{{ asset('backend/assets/libs/chartist/dist/chartist.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ asset('backend/assets/libs/summernote/dist/summernote-bs4.css') }}">
     <link href="{{ asset('backend/dist/css/style.min.css') }}" rel="stylesheet">
     <link href="{{ asset('backend/custom.css') }}" rel="stylesheet">
     <!-- Toastr CSS -->
@@ -628,6 +629,7 @@
     <!-- Bootstrap tether Core JavaScript -->
     <script src="{{ asset('backend/assets/libs/popper.js/dist/umd/popper.min.js') }}"></script>
     <script src="{{ asset('backend/assets/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/libs/summernote/dist/summernote-bs4.min.js') }}"></script>
     <!-- slimscrollbar scrollbar JavaScript -->
     <script src="{{ asset('backend/assets/extra-libs/sparkline/sparkline.js') }}"></script>
     <!--Wave Effects -->
