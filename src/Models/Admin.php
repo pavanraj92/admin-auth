@@ -3,6 +3,7 @@
 namespace admin\admin_auth\Models;
 
 use admin\admin_role_permissions\Models\Role;
+use admin\admin_auth\Models\AdminOtp;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -151,7 +152,7 @@ class Admin extends Authenticatable
      */
     public function otps()
     {
-        return $this->hasMany(\admin\admin_auth\Models\AdminOtp::class);
+        return $this->hasMany(AdminOtp::class);
     }
 
     /**

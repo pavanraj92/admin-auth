@@ -142,7 +142,17 @@ class PublishAdminAuthModuleCommand extends Command
             $content = str_replace('use admin\\admin_auth\\Requests\\ProfileRequest;', 'use Modules\\AdminAuth\\app\\Http\\Requests\\ProfileRequest;', $content);
             $content = str_replace('use admin\\admin_auth\\Requests\\ResetPasswordRequest;', 'use Modules\\AdminAuth\\app\\Http\\Requests\\ResetPasswordRequest;', $content);
         }elseif(str_contains($sourceFile, 'Models')){
-            $content = str_replace('\\admin\\admin_auth\\Models\\AdminOtp', 'Modules\\AdminAuth\\app\\Models\\AdminOtp', $content);
+            $content = str_replace(
+                'use admin\\admin_auth\\Models\\AdminOtp;',
+                'use Modules\\AdminAuth\\app\\Models\\AdminOtp;',
+                $content
+            );
+
+            $content = str_replace(
+                'use admin\\admin_role_permissions\\Models\\Role;',
+                'use Modules\\AdminRolePermissions\\app\\Models\\Role;',
+                $content
+            );
         }elseif(str_contains($sourceFile, 'Console')){
             $content = str_replace(
                 'use admin\\admin_auth\\Services\\',
