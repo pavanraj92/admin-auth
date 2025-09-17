@@ -9,7 +9,7 @@
         <img src="{{ asset('images/dots-logo-trans.png') }}" alt="Logo" style="max-width: 150px;">
     </div>
     <h2 class="mb-4 text-center">Admin Login</h2>
-    <form method="POST" id="loginForm" action="{{ route('admin.login') }}">
+    <form method="POST" id="loginForm" action="{{ route('admin.login.post') }}">
         @csrf
         <div class="mb-3">
             <label for="email" class="form-label">Email<span class="text-danger">*</span></label>
