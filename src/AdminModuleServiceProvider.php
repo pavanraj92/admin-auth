@@ -282,7 +282,18 @@ class AdminModuleServiceProvider extends ServiceProvider
     protected function transformModelNamespaces($content)
     {
         // Any model-specific transformations
-         $content = str_replace('\\admin\\admin_auth\\Models\\AdminOtp', 'Modules\\AdminAuth\\app\\Models\\AdminOtp', $content);
+        $content = str_replace(
+            'use admin\\admin_auth\\Models\\AdminOtp;',
+            'use Modules\\AdminAuth\\app\\Models\\AdminOtp;',
+            $content
+        );
+        
+        $content = str_replace(
+            'use admin\\admin_role_permissions\\Models\\Role;',
+            'use Modules\\AdminRolePermissions\\app\\Models\\Role;',
+            $content
+        );
+        
         return $content;
     }
 
